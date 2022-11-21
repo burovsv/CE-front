@@ -1,0 +1,79 @@
+.table {
+  display: grid;
+  overflow: scroll;
+}
+.table::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+.table__wrap {
+  margin-top: 20px;
+  position: relative;
+  padding: 20px;
+  background-color: #fff;
+  margin-bottom: 40px;
+}
+.table__btn {
+  padding: 15px 20px;
+  background-color: #fdec31;
+  /* margin: 10px; */
+}
+
+.table__more {
+  font-family: 'Roboto', sans-serif;
+  margin-top: 20px;
+}
+.table__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+}
+.table__icon img {
+  width: 12px;
+  height: 12px;
+}
+.table__icon {
+  display: flex;
+  justify-content: center;
+}
+.table__head {
+  padding: 15px;
+  background-color: #fdec31;
+}
+.table__col {
+  padding: 15px;
+  background-color: #fff;
+}
+.table__col--even {
+  background-color: #fbf8f8 !important;
+}
+.loading-account {
+  width: min-content;
+  white-space: nowrap;
+  clip-path: inset(0 10px 0 0);
+  animation: l 1s steps(4) infinite;
+}
+
+@keyframes l {
+  to {
+    clip-path: inset(0 -2px 0 0);
+  }
+}
+.calendar-filter {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 250px;
+  padding-top: 25px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.calendar-filter .react-calendar__tile:hover,
+.calendar-filter .react-calendar__tile--active {
+  color: rgb(255, 13, 13);
+}
+.report__total {
+  margin-left: 20px;
+  background: #fff;
+  padding: 15px;
+}

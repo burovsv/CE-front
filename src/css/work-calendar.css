@@ -1,0 +1,54 @@
+.work-calendar {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+.work-calendar .react-calendar__month-view__weekdays {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.work-calendar .react-calendar__month-view__weekdays abbr {
+  text-decoration: none;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.work-calendar .react-calendar__navigation__next-button,
+.react-calendar__navigation__prev-button {
+  background-color: #000;
+}
+.work-calendar .react-calendar__navigation {
+  margin: 0 auto;
+  max-width: none;
+  padding: 15px 10px;
+  border-bottom: 1px solid #dedcdc;
+}
+.work-calendar .react-calendar__tile {
+  aspect-ratio: 1/1;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: 0.5px solid #fff;
+  /* margin: 1px; */
+}
+
+.work-calendar .react-calendar__tile abbr {
+  display: block;
+  margin-bottom: 25.6px;
+  color: #949494;
+}
+.work-calendar .tile-work {
+  background-color: #e5ffed;
+}
+.work-calendar .tile-vacation {
+  background-color: #ffe7e5;
+}
+.work-calendar .tile-sick {
+  background-color: #dfe2fe;
+}
+.work-calendar .tile-work abbr {
+  margin-bottom: 12px;
+}
