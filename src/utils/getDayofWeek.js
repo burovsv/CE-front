@@ -1,18 +1,18 @@
 export const getDayOfWeek = (day) => {
   switch (day) {
-    case 0:
-      return 'пн';
     case 1:
-      return 'вт';
+      return 'пн';
     case 2:
-      return 'ср';
+      return 'вт';
     case 3:
-      return 'чт';
+      return 'ср';
     case 4:
-      return 'пт';
+      return 'чт';
     case 5:
-      return 'сб';
+      return 'пт';
     case 6:
+      return 'сб';
+    case 0:
       return 'вс';
     default:
       return '';

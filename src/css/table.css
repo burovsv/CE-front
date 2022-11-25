@@ -50,13 +50,13 @@
 .loading-account {
   width: min-content;
   white-space: nowrap;
-  clip-path: inset(0 10px 0 0);
+  clip-path: inset(0 0.8em 0 0);
   animation: l 1s steps(4) infinite;
 }
 
 @keyframes l {
   to {
-    clip-path: inset(0 -2px 0 0);
+    clip-path: inset(0 -0.3em 0 0);
   }
 }
 .calendar-filter {

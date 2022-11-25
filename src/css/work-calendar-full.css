@@ -4,10 +4,26 @@
   /* grid-template-columns: repeat(auto-fit, minmax(0, auto)); */
   /* width: 300%; */
 }
+.work-calendar-full-grid-loading {
+  position: relative;
+}
+.work-calendar-full-grid-loading::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
 .work-calendar-full-title span {
   color: #ff0000;
 }
 .work-calendar-full-title {
+  display: flex;
+  align-items: center;
   margin-top: 50px;
   margin-bottom: 100px;
   margin-left: 25px;

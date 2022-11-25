@@ -10,6 +10,9 @@ import CalendarFilter from '../CalendarFilter';
 import { getEmployees } from '../../redux/actions/employee/getEmployees.action';
 import WorkCalendar from '../WorkCalendar';
 import WorkCalendarFull from '../WorkCalendarFull';
+import { setShowFullCalendar } from '../../redux/slices/workCalendar.slice';
+import { resetGetEmployees } from '../../redux/slices/employee.slice';
+import { convertMinsToHrsMins } from '../calendarFull/WorkCalendarFullRow';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -28,10 +31,20 @@ const AccountPage = () => {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
   } = useSelector((state) => state.employee);
-  useEffect(() => {
-    const paramsEmployees = { page: 0, search: '', subdivision: dataUser?.postSubdivision?.subdivisionId };
+  const {
+    activeMonthYear,
+    getWorkCalendarMonth: { data: workCalendarData, loading: workCalendarMonthLoading },
+    showFullCalendar,
+  } = useSelector((state) => state.workCalendar);
+  const handleClickOpenFullCalendar = () => {
+    const paramsEmployees = { page: 0, search: '', subdivision: dataUser?.postSubdivision?.subdivisionId, dateCalendar: activeMonthYear };
     dispatch(getEmployees(paramsEmployees));
-  }, [dataUser]);
+  };
+  useEffect(() => {
+    if (employees?.length >= 1) {
+      dispatch(setShowFullCalendar(true));
+    }
+  }, [employees]);
 
   const dateWatch = watch('date');
   const onBlurDate = () => {
@@ -53,7 +66,7 @@ const AccountPage = () => {
   // ) : (
   //  (
   //   dataAccount && (
-  const [showFullCalendar, setShowFullCalendar] = useState(false);
+  // const [showFullCalendar, setShowFullCalendar] = useState(false);
   const [activeTab, setActiveTab] = useState('balance-tab');
   const [showDateFilter, setShowDateFilter] = useState(false);
   useEffect(() => {
@@ -63,7 +76,9 @@ const AccountPage = () => {
       document.body.style.overflow = 'auto';
     }
   }, [showFullCalendar]);
-
+  const isAccessEditCalendar = () => {
+    return dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1;
+  };
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -208,44 +223,46 @@ const AccountPage = () => {
         </div>
       ) : (
         <div class="tabcontent">
-          {loadingEmployees ? (
-            <div style={{ marginLeft: '20px' }} className="loading-account">
-              Идет загрузка...
-            </div>
-          ) : (
+          {
             <>
-              {employees?.length >= 1 && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div class="modal__select">
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {/* <div class="modal__select">
                     <select style={{ width: '218px' }}>
                       {employees.map((value) => {
                         return <option selected={value?.id === dataUser?.id} value={value?.id}>{`${value?.firstName} ${value?.lastName}`}</option>;
                       })}
                     </select>
-                  </div>
-                  <div style={{ padding: '15px 20px', marginBottom: '20px', background: '#fff', marginLeft: '20px' }}>
-                    Рабочие часы:&nbsp; <b>87</b>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowFullCalendar(true);
-                    }}
-                    class="report__btn"
-                    style={{ marginBottom: '20px', marginLeft: '20px' }}>
-                    Редактировать
-                  </button>
+                  </div> */}
+                <div style={{ padding: '15px 20px', marginBottom: '20px', background: '#fff' }}>
+                  Рабочие часы:&nbsp;{' '}
+                  <b>
+                    {convertMinsToHrsMins(
+                      workCalendarData?.workCalendars
+                        ?.map((item1) => {
+                          return moment(item1?.endTime).set('seconds', 0).diff(moment(item1?.startTime).set('seconds', 0), 'minutes');
+                        })
+                        .reduce((partialSum, a) => partialSum + a, 0),
+                    )}
+                  </b>
                 </div>
-              )}
+                {
+                  <button onClick={handleClickOpenFullCalendar} class="report__btn" style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                    {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : isAccessEditCalendar() ? 'Редактировать' : 'Просмотреть'}
+                  </button>
+                }
+              </div>
+
               <WorkCalendar />
               {showFullCalendar && (
                 <WorkCalendarFull
                   onClose={() => {
-                    setShowFullCalendar(false);
+                    dispatch(setShowFullCalendar(false));
+                    dispatch(resetGetEmployees());
                   }}
                 />
               )}
             </>
-          )}
+          }
         </div>
       )}
     </>
