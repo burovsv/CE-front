@@ -15,12 +15,12 @@ import { randomInt } from '../utils/randomInt';
 import SelectMonth from './calendarFull/SelectMonth';
 import WorkCalendarFullItem from './calendarFull/WorkCalendarFullItem';
 import WorkCalendarFullRow from './calendarFull/WorkCalendarFullRow';
-const WorkCalendarFull = ({ onClose }) => {
+const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   const {
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
-
+  const [isEdited, setIsEdited] = useState(false);
   const [allDays, setAllDays] = useState([]);
   const {
     activeMonthYear,
@@ -70,6 +70,7 @@ const WorkCalendarFull = ({ onClose }) => {
     dispatch(getEmployees(paramsEmployees));
   }, [activeMonthYear]);
   const onSubmit = (data) => {
+    setIsEdited(false);
     dispatch(upsertWorkCalendarFull({ calendar: data?.calendar, monthYear: activeMonthYear }));
   };
   useEffect(() => {
@@ -190,13 +191,14 @@ const WorkCalendarFull = ({ onClose }) => {
   return (
     <div class="work-calendar-full">
       {/* {show && <div style={{ position: 'fixed', padding: '10px', top: anchorPoint.y, left: anchorPoint.x }}>меню</div>} */}
-      <button onClick={onClose} className="work-calendar-full-close"></button>
+      <button onClick={() => onClose(isEdited)} className="work-calendar-full-close"></button>
       <div className="work-calendar-full-title">
         <div>График работы</div>
         {upsertWorkCalendarLoading && <div className="loading-account">&nbsp;Идет сохранение...</div>}
         {loadingEmployees && <div className="loading-account">&nbsp;Идет загрузка...</div>}
         {showSaved && <span style={{ color: 'green' }}>&nbsp;Сохранено!</span>}
         {upsertWorkCalendarError && <span style={{ color: 'red' }}>&nbsp;Ошибка!</span>}
+        {isEdited && <span style={{ color: 'red' }}>&nbsp;был изменен, сохраните!</span>}
       </div>
       <div class={clsx((upsertWorkCalendarLoading || loadingEmployees) && 'work-calendar-full-grid-loading')}>
         <table className={clsx('work-calendar-full-grid')}>
@@ -206,9 +208,11 @@ const WorkCalendarFull = ({ onClose }) => {
                 <SelectMonth
                   currentMonth={activeMonthYear}
                   onNextMonth={() => {
+                    setIsEdited(false);
                     dispatch(setActiveMonthYear(moment(activeMonthYear).add(1, 'months').toString()));
                   }}
                   onPrevMonth={() => {
+                    setIsEdited(false);
                     dispatch(setActiveMonthYear(moment(activeMonthYear).subtract(1, 'months').toString()));
                   }}
                 />
@@ -254,7 +258,7 @@ const WorkCalendarFull = ({ onClose }) => {
             </td>
           </tr>
           {fields?.map((item, index) => {
-            return <WorkCalendarFullRow item={item} index={index} control={control} />;
+            return <WorkCalendarFullRow setIsEdited={setIsEdited} item={item} index={index} control={control} />;
           })}
           <tr>
             <td colSpan="2" class="work-calendar-full-cell-thin">
@@ -302,6 +306,7 @@ const WorkCalendarFull = ({ onClose }) => {
             );
           })}
         </div>
+        {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', width: '310px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
         {isAccessEditCalendar() && (
           <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '50px' }} disabled={upsertWorkCalendarLoading || loadingEmployees}>
             {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Сохранить'}

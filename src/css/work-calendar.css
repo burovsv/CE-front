@@ -83,3 +83,7 @@
 .work-calendar .tile-day-off abbr {
   margin-bottom: 12px;
 }
+.work-calendar .react-calendar__month-view__weekdays__weekday--weekend {
+  background-color: #ff0000;
+  color: #fff;
+}

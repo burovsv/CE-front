@@ -13,7 +13,7 @@ export const convertMinsToHrsMins = (minutes) => {
     return h + ':' + m;
   } else return 0;
 };
-const WorkCalendarFullRow = ({ item, control, index }) => {
+const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -63,6 +63,7 @@ const WorkCalendarFullRow = ({ item, control, index }) => {
                   const currentEndTime = moment(dayItem?.endTime);
                   if (!resultTime.isBefore(minStartTime) && !resultTime.isSameOrAfter(currentEndTime)) {
                     update(indexItem, { ...dayItem, startTime: resultTime.set('seconds', 0).toDate() });
+                    setIsEdited(true);
                   }
                 }
               }
@@ -75,6 +76,7 @@ const WorkCalendarFullRow = ({ item, control, index }) => {
                   const currentStartTime = moment(dayItem?.startTime);
                   if (!resultTime.isAfter(minEndTime) && !resultTime.isSameOrBefore(currentStartTime)) {
                     update(indexItem, { ...dayItem, endTime: resultTime.set('seconds', 0).toDate() });
+                    setIsEdited(true);
                   }
                 }
               }
@@ -111,6 +113,7 @@ const WorkCalendarFullRow = ({ item, control, index }) => {
                 } else {
                   update(indexItem, {});
                 }
+                setIsEdited(true);
               }
             }}
             style={{ position: 'relative' }}

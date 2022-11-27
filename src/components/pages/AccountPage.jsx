@@ -13,6 +13,8 @@ import WorkCalendarFull from '../WorkCalendarFull';
 import { setShowFullCalendar } from '../../redux/slices/workCalendar.slice';
 import { resetGetEmployees } from '../../redux/slices/employee.slice';
 import { convertMinsToHrsMins } from '../calendarFull/WorkCalendarFullRow';
+import ModalAcceptTable from '../modals/ModalAcceptTable';
+import { getWorkCalendarMonth } from '../../redux/actions/workCalendar/getWorkCalendarMonth.slice';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -31,6 +33,7 @@ const AccountPage = () => {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
   } = useSelector((state) => state.employee);
+
   const {
     activeMonthYear,
     getWorkCalendarMonth: { data: workCalendarData, loading: workCalendarMonthLoading },
@@ -54,6 +57,7 @@ const AccountPage = () => {
     }
   };
   const dispatch = useDispatch();
+  const [showAccept, setShowAccept] = useState(false);
   const {
     getEmployeeUser: { data: employee },
   } = useSelector((state) => state.employee);
@@ -255,9 +259,30 @@ const AccountPage = () => {
               <WorkCalendar />
               {showFullCalendar && (
                 <WorkCalendarFull
+                  onOpenAccept={() => {
+                    setShowAccept(true);
+                  }}
+                  onClose={(isEdited) => {
+                    if (isEdited) {
+                      setShowAccept(true);
+                    } else {
+                      dispatch(setShowFullCalendar(false));
+                      dispatch(resetGetEmployees());
+                      dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
+                    }
+                  }}
+                />
+              )}
+              {showAccept && (
+                <ModalAcceptTable
                   onClose={() => {
+                    setShowAccept(false);
+                  }}
+                  onSave={() => {
+                    setShowAccept(false);
                     dispatch(setShowFullCalendar(false));
                     dispatch(resetGetEmployees());
+                    dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
                   }}
                 />
               )}

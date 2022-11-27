@@ -8,6 +8,7 @@ import { getDaysInMonth } from '../utils/getDaysInMouth';
 import { randomInt } from '../utils/randomInt';
 import { setActiveMonthYear } from '../redux/slices/workCalendar.slice';
 import { getWorkCalendarMonth } from '../redux/actions/workCalendar/getWorkCalendarMonth.slice';
+import { convertMinsToHrsMins } from './calendarFull/WorkCalendarFullRow';
 const dataCalendar = [
   {
     date: moment('10.11.2022'),
@@ -32,15 +33,14 @@ const WorkCalendar = () => {
   } = useSelector((state) => state.workCalendar);
   const dispatch = useDispatch();
   useEffect(() => {
-    if (activeMonthYear && !showFullCalendar) {
-      dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
-    }
+    // if (activeMonthYear && showFullCalendar) {
+    dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
+    // }
   }, [activeMonthYear]);
   const findDateInCalendar = (date) => {
     const itemDate = moment(date).format('DD.MM.YYYY').toString();
 
     const findDate = workCalendarData?.workCalendars?.find((itemCalendar) => moment(itemCalendar?.date).format('DD.MM.YYYY').toString() === itemDate);
-    console.log(findDate);
     return findDate ? findDate : false;
   };
   return (
@@ -56,6 +56,7 @@ const WorkCalendar = () => {
         maxDetail="month"
         defaultView="month"
         className={clsx('work-calendar', workCalendarMonthLoading && 'work-calendar-loading')}
+        activeStartDate={moment(activeMonthYear).toDate()}
         onActiveStartDateChange={(monthYear) => {
           dispatch(setActiveMonthYear(monthYear.activeStartDate));
         }}
@@ -80,7 +81,12 @@ const WorkCalendar = () => {
           const findDate = findDateInCalendar(date);
           if (findDate) {
             if (findDate?.type == 'work') {
-              return <div style={{ color: '#000' }}>{`${moment(findDate?.startTime).format('HH:mm').toString()}-${moment(findDate?.endTime).format('HH:mm').toString()}`}</div>;
+              return (
+                <div style={{ color: '#000', marginTop: '-4px' }}>
+                  {`${moment(findDate?.startTime).format('HH:mm').toString()}-${moment(findDate?.endTime).format('HH:mm').toString()}`} <br />
+                  <div style={{ marginTop: '5px', color: ' #949494' }}>{convertMinsToHrsMins(moment(findDate?.endTime).set('seconds', 0).diff(moment(findDate?.startTime).set('seconds', 0), 'minutes'))}</div>
+                </div>
+              );
             } else if (findDate?.type == 'vacation') {
               return <div style={{ color: '#000' }}>ОТП</div>;
             } else if (findDate?.type == 'sick') {

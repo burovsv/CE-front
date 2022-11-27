@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
 import clsx from 'clsx';
 import { setActiveModal } from '../../redux/slices/app.slice';
-const Modal = ({ titleCenter, children, onSave, onClose, title, disabled, textSend, textCancel, modalStyle = {}, isThanks }) => {
+const Modal = ({ styleSendBtn = {}, titleCenter, children, onSave, onClose, title, disabled, textSend, textCancel, modalStyle = {}, isThanks }) => {
   const dispatch = useDispatch();
   return (
     <>
@@ -26,7 +26,7 @@ const Modal = ({ titleCenter, children, onSave, onClose, title, disabled, textSe
           <div className="modal__body">{children}</div>
           {!isThanks && (
             <div className="modal__footer">
-              <button className="modal__btn" disabled={disabled} onClick={onSave}>
+              <button className="modal__btn" style={styleSendBtn} disabled={disabled} onClick={onSave}>
                 {textSend || 'Сохранить'}
               </button>
               <button
