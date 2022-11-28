@@ -51,14 +51,15 @@ const WorkCalendar = () => {
         </div>
       )}
       <Calendar
-        value={moment(activeMonthYear).toDate()}
+        // value={moment(activeMonthYear).toDate()}
         minDetail="month"
         maxDetail="month"
         defaultView="month"
         className={clsx('work-calendar', workCalendarMonthLoading && 'work-calendar-loading')}
         activeStartDate={moment(activeMonthYear).toDate()}
         onActiveStartDateChange={(monthYear) => {
-          dispatch(setActiveMonthYear(monthYear.activeStartDate));
+          console.log(monthYear);
+          dispatch(setActiveMonthYear(moment(monthYear.activeStartDate).toString()));
         }}
         tileContent={({ date }) => {
           // const currentDay = parseInt(moment(date).format('D').toString());
