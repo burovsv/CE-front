@@ -9,8 +9,12 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
+  const {
+    getEmployeeHistory: { data: employeeHistory },
+    activeCalendarSubdivision,
+  } = useSelector((state) => state.employeeHistory);
   const isAccessEditCalendar = () => {
-    return dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1;
+    return (dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1) && dataUser?.postSubdivision?.subdivisionId == activeCalendarSubdivision?.id;
   };
   const [showMenu, setShowMenu] = useState(false);
   const handleContextMenu = (event) => {

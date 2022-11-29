@@ -15,6 +15,8 @@ import { resetGetEmployees } from '../../redux/slices/employee.slice';
 import { convertMinsToHrsMins } from '../calendarFull/WorkCalendarFullRow';
 import ModalAcceptTable from '../modals/ModalAcceptTable';
 import { getWorkCalendarMonth } from '../../redux/actions/workCalendar/getWorkCalendarMonth.slice';
+import { getEmployeeHistory } from '../../redux/actions/employeeHistory/getEmployeeHistory.action';
+import { setActiveCalendarSubdivision } from '../../redux/slices/employeeHistory.slice';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -39,8 +41,13 @@ const AccountPage = () => {
     getWorkCalendarMonth: { data: workCalendarData, loading: workCalendarMonthLoading },
     showFullCalendar,
   } = useSelector((state) => state.workCalendar);
+
+  const {
+    getEmployeeHistory: { data: employeeHistory },
+    activeCalendarSubdivision,
+  } = useSelector((state) => state.employeeHistory);
   const handleClickOpenFullCalendar = () => {
-    const paramsEmployees = { page: 0, search: '', subdivision: dataUser?.postSubdivision?.subdivisionId, dateCalendar: activeMonthYear };
+    const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: activeMonthYear };
     dispatch(getEmployees(paramsEmployees));
   };
   useEffect(() => {
@@ -61,9 +68,18 @@ const AccountPage = () => {
   const {
     getEmployeeUser: { data: employee },
   } = useSelector((state) => state.employee);
+
   const onSubmit = (data) => {
     dispatch(getAccount({ idService: employee?.idService, date: moment(data?.date).format('YYYY-MM-DD') }));
   };
+  useEffect(() => {
+    if (employeeHistory && dataUser) {
+      const findCurrentSubdiv = employeeHistory?.find((historyItem) => historyItem?.id === dataUser?.postSubdivision?.subdivisionId);
+      if (findCurrentSubdiv) {
+        dispatch(setActiveCalendarSubdivision(findCurrentSubdiv));
+      }
+    }
+  }, [employeeHistory, dataUser]);
 
   // return errorAccount ? (
   //   <Navigate to={'/'} />
@@ -81,8 +97,12 @@ const AccountPage = () => {
     }
   }, [showFullCalendar]);
   const isAccessEditCalendar = () => {
-    return dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1;
+    return (dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1) && dataUser?.postSubdivision?.subdivisionId == activeCalendarSubdivision?.id;
   };
+  useEffect(() => {
+    dispatch(getEmployeeHistory());
+  }, []);
+
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -230,14 +250,25 @@ const AccountPage = () => {
           {
             <>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                {/* <div class="modal__select">
-                    <select style={{ width: '218px' }}>
-                      {employees.map((value) => {
-                        return <option selected={value?.id === dataUser?.id} value={value?.id}>{`${value?.firstName} ${value?.lastName}`}</option>;
-                      })}
-                    </select>
-                  </div> */}
-                <div style={{ padding: '15px 20px', marginBottom: '20px', background: '#fff' }}>
+                <div class="modal__select">
+                  <select
+                    style={{ width: '218px' }}
+                    onChange={(event) => {
+                      if (event.target.value) {
+                        const findCurrentSubdiv = employeeHistory?.find((historyItem) => historyItem?.id == event.target.value);
+                        dispatch(setActiveCalendarSubdivision(findCurrentSubdiv));
+                      }
+                    }}>
+                    {employeeHistory.map((value) => {
+                      return (
+                        <option selected={value?.id === activeCalendarSubdivision?.id} value={value?.id}>
+                          {value?.name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div style={{ padding: '15px 20px', marginBottom: '20px', background: '#fff', marginLeft: '20px' }}>
                   Рабочие часы:&nbsp;{' '}
                   <b>
                     {convertMinsToHrsMins(
@@ -268,7 +299,7 @@ const AccountPage = () => {
                     } else {
                       dispatch(setShowFullCalendar(false));
                       dispatch(resetGetEmployees());
-                      dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
+                      dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), subdivision: activeCalendarSubdivision?.id }));
                     }
                   }}
                 />
@@ -282,7 +313,7 @@ const AccountPage = () => {
                     setShowAccept(false);
                     dispatch(setShowFullCalendar(false));
                     dispatch(resetGetEmployees());
-                    dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
+                    dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), subdivision: activeCalendarSubdivision?.id }));
                   }}
                 />
               )}

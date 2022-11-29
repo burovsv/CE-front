@@ -22,6 +22,7 @@
   color: #ff0000;
 }
 .work-calendar-full-title {
+  white-space: nowrap;
   display: flex;
   align-items: center;
   margin-top: 50px;

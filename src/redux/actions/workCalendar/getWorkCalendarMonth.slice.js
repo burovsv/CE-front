@@ -10,6 +10,7 @@ export const getWorkCalendarMonth = createAsyncThunk('testingFilter/getWorkCalen
     .get(`${process.env.REACT_APP_SERVER_API}/work-calendar/month`, {
       params: {
         date: data?.date,
+        subdivision: data?.subdivision,
       },
     })
     .then((res) => {

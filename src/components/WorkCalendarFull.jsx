@@ -20,6 +20,10 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
+  const {
+    getEmployeeHistory: { data: employeeHistory },
+    activeCalendarSubdivision,
+  } = useSelector((state) => state.employeeHistory);
   const [isEdited, setIsEdited] = useState(false);
   const [allDays, setAllDays] = useState([]);
   const {
@@ -66,12 +70,12 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   });
   useEffect(() => {
     reset();
-    const paramsEmployees = { page: 0, search: '', subdivision: dataUser?.postSubdivision?.subdivisionId, dateCalendar: activeMonthYear };
+    const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: activeMonthYear };
     dispatch(getEmployees(paramsEmployees));
   }, [activeMonthYear]);
   const onSubmit = (data) => {
     setIsEdited(false);
-    dispatch(upsertWorkCalendarFull({ calendar: data?.calendar, monthYear: activeMonthYear }));
+    dispatch(upsertWorkCalendarFull({ calendar: data?.calendar, monthYear: activeMonthYear, subdivision: activeCalendarSubdivision?.id }));
   };
   useEffect(() => {
     if (employees?.length >= 1) {
@@ -132,7 +136,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     };
   }, []);
   const isAccessEditCalendar = () => {
-    return dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1;
+    return (dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1) && dataUser?.postSubdivision?.subdivisionId == activeCalendarSubdivision?.id;
   };
   const dispatch = useDispatch();
   const countMinTimeWorkers = (val, day, prop) => {
@@ -193,7 +197,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       {/* {show && <div style={{ position: 'fixed', padding: '10px', top: anchorPoint.y, left: anchorPoint.x }}>меню</div>} */}
       <button onClick={() => onClose(isEdited)} className="work-calendar-full-close"></button>
       <div className="work-calendar-full-title">
-        <div>График работы</div>
+        <div>График работы {activeCalendarSubdivision?.name}</div>
         {upsertWorkCalendarLoading && <div className="loading-account">&nbsp;Идет сохранение...</div>}
         {loadingEmployees && <div className="loading-account">&nbsp;Идет загрузка...</div>}
         {showSaved && <span style={{ color: 'green' }}>&nbsp;Сохранено!</span>}
@@ -306,7 +310,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             );
           })}
         </div>
-        {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', width: '310px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
+        {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', minWidth: '310px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
         {isAccessEditCalendar() && (
           <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '50px' }} disabled={upsertWorkCalendarLoading || loadingEmployees}>
             {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Сохранить'}

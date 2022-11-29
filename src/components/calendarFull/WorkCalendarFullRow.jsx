@@ -17,7 +17,10 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
-
+  const {
+    getEmployeeHistory: { data: employeeHistory },
+    activeCalendarSubdivision,
+  } = useSelector((state) => state.employeeHistory);
   const { fields, append, update, prepend, remove, swap, move, insert } = useFieldArray({
     control,
     name: `calendar[${index}].calendarData`,
@@ -41,7 +44,7 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
 
   const { activeMonthYear } = useSelector((state) => state.workCalendar);
   const isAccessEditCalendar = () => {
-    return dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1;
+    return (dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1) && dataUser?.postSubdivision?.subdivisionId == activeCalendarSubdivision?.id;
   };
   return (
     <tr>
@@ -72,7 +75,7 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
               if (isAccessEditCalendar()) {
                 const resultTime = validateTime(newEndTime, dayItem?.endTime);
                 if (resultTime) {
-                  const minEndTime = moment(dayItem?.date).set('hours', 21).set('minutes', 0);
+                  const minEndTime = moment(dayItem?.date).set('hours', 23).set('minutes', 0);
                   const currentStartTime = moment(dayItem?.startTime);
                   if (!resultTime.isAfter(minEndTime) && !resultTime.isSameOrBefore(currentStartTime)) {
                     update(indexItem, { ...dayItem, endTime: resultTime.set('seconds', 0).toDate() });
@@ -95,7 +98,7 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
                       .toDate();
                     updateCell.endTime = moment(activeMonthYear)
                       .set('date', indexItem + 1)
-                      .set('hours', 21)
+                      .set('hours', 23)
                       .set('minutes', 0)
                       .set('seconds', 0)
                       .toDate();

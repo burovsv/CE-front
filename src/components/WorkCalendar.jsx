@@ -31,12 +31,15 @@ const WorkCalendar = () => {
     showFullCalendar,
     getWorkCalendarMonth: { data: workCalendarData, loading: workCalendarMonthLoading },
   } = useSelector((state) => state.workCalendar);
+  const { activeCalendarSubdivision } = useSelector((state) => state.employeeHistory);
   const dispatch = useDispatch();
   useEffect(() => {
     // if (activeMonthYear && showFullCalendar) {
-    dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
+    if (activeCalendarSubdivision) {
+      dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), subdivision: activeCalendarSubdivision?.id }));
+    }
     // }
-  }, [activeMonthYear]);
+  }, [activeMonthYear, activeCalendarSubdivision]);
   const findDateInCalendar = (date) => {
     const itemDate = moment(date).format('DD.MM.YYYY').toString();
 
