@@ -16,6 +16,7 @@ import AdminEmployeePage from './components/pages/AdminEmployeePage';
 import NewsSinglePage from './components/pages/NewsSinglePage';
 import TestingPage from './components/pages/TestingPage';
 import StudyPage from './components/pages/StudyPage';
+import KnowledgeBasePage from './components/pages/KnowledgeBasePage';
 import SearchPage from './components/pages/SearchPage';
 import axios from 'axios';
 import { resetLoginEmployee } from './redux/slices/employee.slice';
@@ -75,6 +76,7 @@ function App() {
     }
   }, [auth]);
 
+  // sveta добавила knowledgeBase
   let routes = useRoutes([
     { path: '/', element: <HomePage /> },
     { path: '/auth', element: <AuthPage /> },
@@ -84,6 +86,7 @@ function App() {
 
     { path: '/study/', element: <StudyPage /> },
     { path: '/testing', element: <TestingPage /> },
+    { path: '/knowledgeBase', element: <KnowledgeBasePage /> },
     { path: '/account', element: <AccountPage /> },
     { path: '/admin/news', element: auth?.role === 'admin' ? <AdminNewsPage /> : <Navigate to="/" /> },
     { path: '/admin/training', element: auth?.role === 'admin' ? <AdminTestingPage /> : <Navigate to="/" /> },

@@ -8,13 +8,13 @@ export const userMenu = [
   { name: 'Главная', path: '/', icon: '/img/nav/main.png' },
   { name: 'Обучения', path: '/study', icon: '/img/nav/training.png' },
   { name: 'Тестирование', path: '/testing', icon: '/img/nav/testing.png' },
-  { name: 'База знаний', path: '/knowledge', icon: '/img/nav/knowledge.png' },
+  { name: 'База знаний', path: '/knowledgeBase', icon: '/img/nav/knowledge.png' },
 ];
 export const adminMenu = [
   { name: 'Новости', path: '/admin/news', icon: '/img/nav/main.png' },
   { name: 'Обучение', path: '/admin/news/?study=true', icon: '/img/nav/main.png' },
   { name: 'Тестирование', path: '/admin/training', icon: '/img/nav/training.png' },
-  { name: 'База знаний', path: '/knowledge', icon: '/img/nav/сertification.png' },
+  { name: 'База знаний', path: '/knowledgeBase', icon: '/img/nav/knowledge.png' },
 
   { name: 'Пользователи', path: '/admin/users', icon: '/img/nav/testing.png' },
   { name: 'Отчеты', path: '/admin/reports', icon: '/img/list.svg' },
