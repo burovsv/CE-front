@@ -13,7 +13,7 @@ export const convertMinsToHrsMins = (minutes) => {
     return h + ':' + m;
   } else return 0;
 };
-const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
+const WorkCalendarFullRow = ({ setIsEdited, item, control, index, isAccessEdit }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -43,9 +43,7 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
   };
 
   const { activeMonthYear } = useSelector((state) => state.workCalendar);
-  const isAccessEditCalendar = () => {
-    return (dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1) && dataUser?.postSubdivision?.subdivisionId == activeCalendarSubdivision?.id;
-  };
+
   return (
     <tr>
       <td width="150" className="work-calendar-full-cell-wrap ">
@@ -58,8 +56,9 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
       {fields?.map((dayItem, indexItem) => {
         return (
           <WorkCalendarFullItem
+            isAccessEdit={isAccessEdit}
             onChangeStartTime={(newStartTime) => {
-              if (isAccessEditCalendar()) {
+              if (isAccessEdit) {
                 const resultTime = validateTime(newStartTime, dayItem?.startTime);
                 if (resultTime) {
                   const minStartTime = moment(dayItem?.date).set('hours', 8).set('minutes', 0);
@@ -72,7 +71,7 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
               }
             }}
             onChangeEndTime={(newEndTime) => {
-              if (isAccessEditCalendar()) {
+              if (isAccessEdit) {
                 const resultTime = validateTime(newEndTime, dayItem?.endTime);
                 if (resultTime) {
                   const minEndTime = moment(dayItem?.date).set('hours', 23).set('minutes', 0);
@@ -85,8 +84,8 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
               }
             }}
             onClickMenu={(type) => {
-              console.log(isAccessEditCalendar());
-              if (isAccessEditCalendar()) {
+              console.log(isAccessEdit);
+              if (isAccessEdit) {
                 let updateCell = { type };
                 if (type) {
                   if (type === 'work' && (!dayItem?.startTime || !dayItem?.endTime)) {

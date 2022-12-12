@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import moment from 'moment';
 import OutsideClickHandler from 'react-outside-click-handler';
 import NumberFormat from 'react-number-format';
-const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {} }) => {
+const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {}, isAccessEdit }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -13,12 +13,10 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
     getEmployeeHistory: { data: employeeHistory },
     activeCalendarSubdivision,
   } = useSelector((state) => state.employeeHistory);
-  const isAccessEditCalendar = () => {
-    return (dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1) && dataUser?.postSubdivision?.subdivisionId == activeCalendarSubdivision?.id;
-  };
+
   const [showMenu, setShowMenu] = useState(false);
   const handleContextMenu = (event) => {
-    if (isAccessEditCalendar()) {
+    if (isAccessEdit) {
       setShowMenu(!showMenu);
     }
   };
@@ -27,14 +25,14 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
   };
 
   const onSaveStartTime = (val) => {
-    if (isAccessEditCalendar()) {
+    if (isAccessEdit) {
       setEditStartTime(false);
       onChangeStartTime(val.target.value);
     }
   };
 
   const onSaveEndTime = (val) => {
-    if (isAccessEditCalendar()) {
+    if (isAccessEdit) {
       setEditEndTime(false);
       onChangeEndTime(val.target.value);
     }
@@ -66,7 +64,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
             ) : (
               <div
                 onClick={() => {
-                  if (isAccessEditCalendar()) {
+                  if (isAccessEdit) {
                     setEditStartTime(true);
                   }
                 }}>
@@ -92,7 +90,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
             ) : (
               <div
                 onClick={() => {
-                  if (isAccessEditCalendar()) {
+                  if (isAccessEdit) {
                     setEditEndTime(true);
                   }
                 }}>
