@@ -13,6 +13,8 @@ import { testingReducer } from './slices/testing.slice';
 import { testingFilterReducer } from './slices/testingFilter.slice';
 import { workCalendarReducer } from './slices/workCalendar.slice';
 
+import { articleReducer } from './slices/article.slice';
+
 export const store = configureStore({
   reducer: {
     employeeHistory: employeeHistoryReducer,
@@ -28,5 +30,6 @@ export const store = configureStore({
     search: searchReducer,
     testingFilter: testingFilterReducer,
     workCalendar: workCalendarReducer,
+    article: articleReducer,
   },
 });
