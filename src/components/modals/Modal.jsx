@@ -8,24 +8,9 @@ import { setActiveModal } from '../../redux/slices/app.slice';
 const Modal = ({ styleSendBtn = {}, titleCenter, children, onSave, onClose, title, disabled, textSend, textCancel, modalStyle = {}, isThanks }) => {
   const dispatch = useDispatch();
   
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') closeModal();
-    }
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [closeModal])
-  
-  function closeModal(){
-    dispatch(setActiveModal(''))
-  }
-  const onMouseDownHeandler = (e) => {
-    if (e.target == document.querySelector('.overlay-modal')) closeModal();
-  } 
-
   return (
     <>
-      <div className="overlay-modal" onMouseDown={onMouseDownHeandler}>
+      <div className="overlay-modal">
         <div className="modal" onClick={(e) => e.stopPropagation()} style={{ ...modalStyle }}>
           {!isThanks && (
             <div
