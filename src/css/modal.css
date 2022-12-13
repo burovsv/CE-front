@@ -201,3 +201,13 @@ input[type='checkbox'] {
 .upload img {
   opacity: 0.3;
 }
+
+/* Может в др файл разместить? */
+.moadal__article__select-group {
+  display: flex;
+  width: 70%;
+}
+
+.moadal__article__select-group div {
+  width: 50%;
+}
