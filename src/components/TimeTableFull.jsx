@@ -104,18 +104,15 @@ const TimeTableFull = () => {
             }
             const cellMomentFormat = cellMoment.format('DD.MM.YYYY');
             const dayMomentFormat = dayMoment.format('DD.MM.YYYY');
-            if (cellMomentFormat === dayMomentFormat && itemTimeTable?.time_start !== '00:00' && itemTimeTable?.time_finish !== '00:00') {
+            if (cellMomentFormat === dayMomentFormat && itemTimeTable?.hours !== 0) {
               return true;
             }
           });
           if (findEqualDay) {
-            const splitStartTime = findEqualDay?.time_start?.split(':');
-            const splitEndTime = findEqualDay?.time_finish?.split(':');
             return {
               date: dayItem,
-              type: 'work',
-              startTime: moment(dayItem).set('hours', splitStartTime[0]).set('minutes', splitStartTime[1]).toDate(),
-              endTime: moment(dayItem).set('hours', splitEndTime[0]).set('minutes', splitEndTime[1]).toDate(),
+              type: 'hours',
+              hours: findEqualDay?.hours,
             };
           } else {
             return {};

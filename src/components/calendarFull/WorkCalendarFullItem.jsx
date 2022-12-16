@@ -105,6 +105,8 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
           <div className="work-calendar-full-cell-day-sick">блн</div>
         ) : item?.type == 'day-off' ? (
           <div className="work-calendar-full-cell-day-off">вых</div>
+        ) : item?.type == 'hours' ? (
+          <div className="work-calendar-full-cell-day-off">{item?.hours}</div>
         ) : (
           <></>
         )}
