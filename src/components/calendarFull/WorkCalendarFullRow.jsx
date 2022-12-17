@@ -125,13 +125,13 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index, isAccessEdit }
       })}
 
       <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold">
-        {convertMinsToHrsMins(
+        {parseFloat(
           fields
             ?.map((item1) => {
-              return moment(item1?.endTime).set('seconds', 0).diff(moment(item1?.startTime).set('seconds', 0), 'minutes');
+              return item1?.hours;
             })
             .reduce((partialSum, a) => partialSum + a, 0),
-        )}
+        ).toFixed(2)}
       </td>
       <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold">{fields?.filter((item3) => item3?.type === 'day-off')?.length}</td>
       <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold">{fields?.filter((item3) => item3?.type === 'vacation')?.length}</td>
