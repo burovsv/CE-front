@@ -251,7 +251,7 @@ const TimeTableFull = () => {
           </td>
         </tr>
         {fields?.map((item, index) => {
-          return <WorkCalendarFullRow isAccessEdit={false} setIsEdited={setIsEdited} item={item} index={index} control={control} />;
+          return <WorkCalendarFullRow isTimeTable isAccessEdit={false} setIsEdited={setIsEdited} item={item} index={index} control={control} />;
         })}
         <tr>
           <td colSpan="2" class="work-calendar-full-cell-thin">

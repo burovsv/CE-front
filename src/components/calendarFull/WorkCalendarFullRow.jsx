@@ -13,7 +13,7 @@ export const convertMinsToHrsMins = (minutes) => {
     return h + ':' + m;
   } else return 0;
 };
-const WorkCalendarFullRow = ({ setIsEdited, item, control, index, isAccessEdit }) => {
+const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -125,13 +125,21 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index, isAccessEdit }
       })}
 
       <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold">
-        {parseFloat(
-          fields
-            ?.map((item1) => {
-              return item1?.hours;
-            })
-            .reduce((partialSum, a) => partialSum + a, 0),
-        ).toFixed(2)}
+        {isTimeTable
+          ? parseFloat(
+              fields
+                ?.map((item1) => {
+                  return item1?.hours || 0;
+                })
+                .reduce((partialSum, a) => partialSum + a, 0),
+            ).toFixed(2)
+          : convertMinsToHrsMins(
+              fields
+                ?.map((item1) => {
+                  return moment(item1?.endTime).set('seconds', 0).diff(moment(item1?.startTime).set('seconds', 0), 'minutes');
+                })
+                .reduce((partialSum, a) => partialSum + a, 0),
+            )}
       </td>
       <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold">{fields?.filter((item3) => item3?.type === 'day-off')?.length}</td>
       <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold">{fields?.filter((item3) => item3?.type === 'vacation')?.length}</td>
