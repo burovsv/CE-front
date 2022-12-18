@@ -15,6 +15,7 @@ import { randomInt } from '../utils/randomInt';
 import SelectMonth from './calendarFull/SelectMonth';
 import WorkCalendarFullItem from './calendarFull/WorkCalendarFullItem';
 import WorkCalendarFullRow from './calendarFull/WorkCalendarFullRow';
+import TimeTableFull from './TimeTableFull';
 const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   const {
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
@@ -125,7 +126,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       setValue('calendar', formatEmployees);
     }
   }, [employees]);
-
+  console.log(watch());
   const handleContextMenu = useCallback((event) => {
     event.preventDefault();
   }, []);
@@ -180,7 +181,6 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       let totalWorkers1 = [];
       let totalWorkers2 = [];
       let totalWorkers3 = [];
-      console.log(value);
       allDays?.map((item, dayIndex) => {
         totalWorkers1.push(countWorkers(value?.calendar, dayIndex));
         totalWorkers2.push(countMinTimeWorkers(value?.calendar, dayIndex, 'startTime'));
@@ -194,7 +194,6 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   }, [watch, allDays]);
   return (
     <div class="work-calendar-full">
-      {/* {show && <div style={{ position: 'fixed', padding: '10px', top: anchorPoint.y, left: anchorPoint.x }}>меню</div>} */}
       <button onClick={() => onClose(isEdited)} className="work-calendar-full-close"></button>
       <div className="work-calendar-full-title">
         <div>График работы {activeCalendarSubdivision?.name}</div>
@@ -210,6 +209,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             <td colSpan="2" width="300" className="work-calendar-full-cell-wrap ">
               <div>
                 <SelectMonth
+                  isEdited={isEdited}
                   currentMonth={activeMonthYear}
                   onNextMonth={() => {
                     setIsEdited(false);
@@ -262,7 +262,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             </td>
           </tr>
           {fields?.map((item, index) => {
-            return <WorkCalendarFullRow setIsEdited={setIsEdited} item={item} index={index} control={control} />;
+            return <WorkCalendarFullRow isAccessEdit={isAccessEditCalendar()} setIsEdited={setIsEdited} item={item} index={index} control={control} />;
           })}
           <tr>
             <td colSpan="2" class="work-calendar-full-cell-thin">
@@ -317,6 +317,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           </button>
         )}
       </div>
+      <TimeTableFull />
     </div>
   );
 };
