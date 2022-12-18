@@ -209,6 +209,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             <td colSpan="2" width="300" className="work-calendar-full-cell-wrap ">
               <div>
                 <SelectMonth
+                  isEdited={isEdited}
                   currentMonth={activeMonthYear}
                   onNextMonth={() => {
                     setIsEdited(false);
