@@ -17,6 +17,7 @@ import ModalAcceptTable from '../modals/ModalAcceptTable';
 import { getWorkCalendarMonth } from '../../redux/actions/workCalendar/getWorkCalendarMonth.slice';
 import { getEmployeeHistory } from '../../redux/actions/employeeHistory/getEmployeeHistory.action';
 import { setActiveCalendarSubdivision } from '../../redux/slices/employeeHistory.slice';
+import PlanTab from '../PlanTab';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -97,7 +98,7 @@ const AccountPage = () => {
     }
   }, [showFullCalendar]);
   const isAccessEditCalendar = () => {
-    return (dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1) && dataUser?.postSubdivision?.subdivisionId == activeCalendarSubdivision?.id;
+    return dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1;
   };
   useEffect(() => {
     dispatch(getEmployeeHistory());
@@ -113,6 +114,15 @@ const AccountPage = () => {
             }}
             class={`filter__item tablinks ${activeTab === 'balance-tab' && 'active'}`}>
             Баланс
+          </button>
+        </div>
+        <div class="tab">
+          <button
+            onClick={() => {
+              setActiveTab('plan-tab');
+            }}
+            class={`filter__item tablinks ${activeTab === 'plan-tab' && 'active'}`}>
+            План
           </button>
         </div>
         <div class="tab">
@@ -245,6 +255,8 @@ const AccountPage = () => {
             )}
           </div>
         </div>
+      ) : activeTab == 'plan-tab' ? (
+        <PlanTab />
       ) : (
         <div class="tabcontent">
           {
