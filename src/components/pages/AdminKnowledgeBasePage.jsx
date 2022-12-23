@@ -76,7 +76,7 @@ const AdminKnowledgeBasePage = () => {
               console.log();
             }}
             // onDelete={(val) => dispatch(deleteTesting({ testingId: val?.id }))}
-            onDelete={(val) => console.log()}
+            onDelete={(val) => console.log('удалаяем статью', val)}
           />
           {activeModal === 'modal-knowledgeBase' && <ModalArticle />}
           {/* {(createTestingLoading || deleteTestingLoading || updateTestingLoading) && <Loading overlay />} */}

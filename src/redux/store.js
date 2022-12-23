@@ -14,6 +14,9 @@ import { testingFilterReducer } from './slices/testingFilter.slice';
 import { workCalendarReducer } from './slices/workCalendar.slice';
 
 import { articleReducer } from './slices/article.slice';
+import { markReducer } from './slices/mark.slice';
+import { sectionReducer } from './slices/section.slice';
+import { sectionGroupReducer } from './slices/sectionGroup.slice';
 
 export const store = configureStore({
   reducer: {
@@ -31,5 +34,8 @@ export const store = configureStore({
     testingFilter: testingFilterReducer,
     workCalendar: workCalendarReducer,
     article: articleReducer,
+    mark: markReducer,
+    section: sectionReducer,
+    sectionGroup: sectionGroupReducer,
   },
 });
