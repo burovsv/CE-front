@@ -73,7 +73,7 @@ const KnowledgeBasePage = () => {
                     <div style={{
                         fontWeight: 700,
                         color: 'blue',
-                    }}>
+                    }} onClick={() => onClick(article)}>
                         {article?.name??''}
                     </div>
                     <div style={{
@@ -102,7 +102,6 @@ const KnowledgeBasePage = () => {
     };
 
     const initHierarchicalItem = (el, level, parent=null, isGroup=false, isCollapsed=false) => {
-        console.log('element: ', el);
         return {
             id: el.id,
             name: el.name,
@@ -143,6 +142,10 @@ const KnowledgeBasePage = () => {
         getSectionGroups:  { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
     } = useSelector((state) => state.sectionGroup);
 
+
+    const onClick = (e) => {
+        console.log('click: ', e);
+    }
     // определяем массивы статей, разделов и групп разделов
 
     useEffect(() => {
@@ -163,6 +166,7 @@ const KnowledgeBasePage = () => {
             setSectionGroupsList(sectionGroupsArray);
         }
 
+        /*
         console.log(articles)
         console.log(sectionGroups)
         console.log(sections)
@@ -171,6 +175,7 @@ const KnowledgeBasePage = () => {
         console.log(articlesArray);
         console.log(sectionsArray);
         console.log(sectionGroupsArray);
+        */
 
         //   создать массив иерархических групп разделов
 
@@ -190,8 +195,6 @@ const KnowledgeBasePage = () => {
             });
             if (!_.isEmpty(sectionGroupChildren)) hierarchicalList.push(sectionGroup, ...sectionGroupChildren);
         })
-
-        console.log('hierarchical', hierarchicalList);
 
         let groupsList = hierarchicalList.map( (el) => {
             switch (el.level) {
