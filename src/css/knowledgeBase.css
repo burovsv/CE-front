@@ -1,0 +1,11 @@
+
+.knowledge-base__article__content__body__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+
+.knowledge-base__article__container {
+  padding: '10px 10px 10px 60px',
+}

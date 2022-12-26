@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import '../../css/knowledgeBase.css';
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
@@ -64,7 +65,6 @@ const KnowledgeBasePage = () => {
             <div style={{
                     padding: '10px 10px 10px 60px',
                     }}>
-
                 <div style={{
                         display: 'flex',
                         justifyContent: 'space-between',
@@ -96,8 +96,6 @@ const KnowledgeBasePage = () => {
                         код, Спорт
                     </div>
                 </div>
-
-                
             </div>
         );
         return element;
@@ -114,9 +112,6 @@ const KnowledgeBasePage = () => {
             level: level,
         }
     } 
-
-
-
 
     const dispatch = useDispatch();
     // const {
@@ -184,7 +179,6 @@ const KnowledgeBasePage = () => {
         _.forEach(sectionGroupsArray, (sectionGroup) => {
             let id = sectionGroup.id;
             let sectionGroupChildren = [];
-
             _.forEach(sectionsArray, (section) => {
                 if (section.parent == id) {
                     let sectionChildren = [];
@@ -196,6 +190,7 @@ const KnowledgeBasePage = () => {
             });
             if (!_.isEmpty(sectionGroupChildren)) hierarchicalList.push(sectionGroup, ...sectionGroupChildren);
         })
+
         console.log('hierarchical', hierarchicalList);
 
         let groupsList = hierarchicalList.map( (el) => {
@@ -213,8 +208,6 @@ const KnowledgeBasePage = () => {
 
         setSectionGroupsElement(groupsList);
     }, [articles, sectionGroups, sections, marks])
-
-
 
     let element = (
         <>
