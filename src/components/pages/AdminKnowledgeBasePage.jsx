@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Table from '../Table';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAdminArticles } from '../../redux/actions/knowledgeBase/getAdminArticles.action';
+import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
+import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
 import { setActiveModal } from '../../redux/slices/app.slice';
 import ModalArticle from '../modals/ModalArticle';
 import ModalTesting from '../modals/ModalTesting';
@@ -26,10 +28,27 @@ const AdminKnowledgeBasePage = () => {
     // updateArticle: { data: updateArticleData, loading: updateArticleLoading },
     // deleteArticle: { data: deleteArticleData, loading: deleteArticleLoading },
   } = useSelector((state) => state.article)
+  const {
+    getSections:  { data: sections, loading: loadingSection, error: errorSection, count: sectionCount }
+  } = useSelector((state) => state.section);
+
+  const {
+    getSectionGroups:  { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
+  } = useSelector((state) => state.sectionGroup);
 
   useEffect(() => {
-    console.log(articles);
-    setViewData(articles)
+    // добаить еще раздел и группу
+    let adminArticles = articles?.map((article) => {
+      let section = sections?.find((section) => section?.id === article?.sectionId);
+      let sectionGroup = sectionGroups?.find((sectionGroup) => sectionGroup?.id === section?.sectionGroup);
+      return {
+        ...article,
+        sectionName: section?.name,
+        sectionGroupName: sectionGroup?.name,
+      }
+    })
+
+    setViewData(adminArticles)
   }, [articles])
 
     const header = [
@@ -47,11 +66,11 @@ const AdminKnowledgeBasePage = () => {
           //   // return moment(val).format('DD.MM.YYYY');
           // },
         },
-        { title: 'Раздел', prop: 'section'},
+        { title: 'Раздел', prop: 'sectionName'},
     
         {
           title: 'Группа',
-          prop: 'sectionGroup'
+          prop: 'sectionGroupName'
           // onChange: (val) => {
           //   // return val?.categories?.map((cat) => <div>{cat?.name}</div>);
           // },
@@ -73,7 +92,6 @@ const AdminKnowledgeBasePage = () => {
             onEdit={(val) => {
               dispatch(setActiveModal('modal-knowledgeBase'));
             //   dispatch(getAdminTestingSingle({ id: val?.id }));
-              console.log();
             }}
             // onDelete={(val) => dispatch(deleteTesting({ testingId: val?.id }))}
             onDelete={(val) => console.log('удалаяем статью', val)}
