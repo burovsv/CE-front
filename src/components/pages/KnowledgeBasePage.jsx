@@ -36,7 +36,8 @@ const KnowledgeBasePage = () => {
         return element;
     };
 
-    const sectionElement = (section, result = 0) => {
+    const sectionElement = (section) => {
+        let result = (section?.children) ? section.children.length : 0;
         const element = (
             <div style={{
                         backgroundColor: '#E7E7E7',
@@ -126,7 +127,6 @@ const KnowledgeBasePage = () => {
     };
 
     const initHierarchicalItem = (el, level, parent=null, isGroup=false, isCollapsed=false) => {
-        console.log(el);
         return {
             id: el.id,
             name: el.name,
@@ -134,6 +134,7 @@ const KnowledgeBasePage = () => {
             isGroup: isGroup,
             isCollapsed: isCollapsed,
             level: level,
+            children : (el?.children) ? el.children : null,
         }
     } 
 
@@ -217,7 +218,6 @@ const KnowledgeBasePage = () => {
                     })
                     if (!_.isEmpty(sectionChildren)) {
                         section.children = sectionChildren;
-                        console.log(section);
                         sectionGroupChildren.push(section, ...sectionChildren)
                     };
                 }
