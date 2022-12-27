@@ -17,6 +17,7 @@ import NewsSinglePage from './components/pages/NewsSinglePage';
 import TestingPage from './components/pages/TestingPage';
 import StudyPage from './components/pages/StudyPage';
 import KnowledgeBasePage from './components/pages/KnowledgeBasePage';
+import KnowledgeBaseSinglePage from './components/pages/KnowledgeBaseSinglePage';
 import SearchPage from './components/pages/SearchPage';
 import axios from 'axios';
 import { resetLoginEmployee } from './redux/slices/employee.slice';
@@ -88,6 +89,7 @@ function App() {
     { path: '/study/', element: <StudyPage /> },
     { path: '/testing', element: <TestingPage /> },
     { path: '/knowledgeBase', element: <KnowledgeBasePage /> },
+    { path: '/knowledgeBase/:knowledgeBaseId', element: <KnowledgeBaseSinglePage /> },
     { path: '/account', element: <AccountPage /> },
     { path: '/admin/knowledgeBase', element: auth?.role === 'admin' ? <AdminKnowledgeBasePage /> : <Navigate to="/" /> },
     { path: '/admin/news', element: auth?.role === 'admin' ? <AdminNewsPage /> : <Navigate to="/" /> },

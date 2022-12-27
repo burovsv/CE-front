@@ -7,6 +7,8 @@ import { getAdminArticles } from '../../redux/actions/knowledgeBase/getAdminArti
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
 import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
 import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
+import { Link } from 'react-router-dom';
+
 
 
 const KnowledgeBasePage = () => {
@@ -61,6 +63,13 @@ const KnowledgeBasePage = () => {
     };
 
     const articleElement = (article) => {
+        let foundArticle = _.find(articles, {id: article.id});
+        let articlesMarks = [];
+        _.forEach(foundArticle.markId, (mark) => {
+            let foundMark = _.find(marks, {id: mark});
+            articlesMarks.push(foundMark);
+        });
+
         const element = (
             <div style={{
                     padding: '10px 10px 10px 60px',
@@ -70,12 +79,12 @@ const KnowledgeBasePage = () => {
                         justifyContent: 'space-between',
                         marginBottom: '10px',
                 }}>
-                    <div style={{
+                    <Link to={`/knowledgeBase/${article?.id}`} style={{
                         fontWeight: 700,
                         color: 'blue',
                     }} onClick={() => onClick(article)}>
                         {article?.name??''}
-                    </div>
+                    </Link>
                     <div style={{
                         color: '#00000080',
                     }}>
@@ -93,7 +102,22 @@ const KnowledgeBasePage = () => {
                         color: '#00000080',
                         marginLeft: '5px',
                     }}>
-                        код, Спорт
+                        {articlesMarks.map((mark, index) => {
+                            // на последний элемент не ставим запятую
+                            if (index === articlesMarks.length - 1) {
+                                return (
+                                    <span>
+                                         {mark?.name}
+                                    </span>
+                                )
+                            } else {
+                                return (
+                                    <span>
+                                        {`${mark?.name}, `}
+                                    </span>
+                                )
+                            }
+                        })}
                     </div>
                 </div>
             </div>
@@ -102,6 +126,7 @@ const KnowledgeBasePage = () => {
     };
 
     const initHierarchicalItem = (el, level, parent=null, isGroup=false, isCollapsed=false) => {
+        console.log(el);
         return {
             id: el.id,
             name: el.name,
@@ -144,7 +169,7 @@ const KnowledgeBasePage = () => {
 
 
     const onClick = (e) => {
-        console.log('click: ', e);
+        // console.log('click: ', e);
     }
     // определяем массивы статей, разделов и групп разделов
 
@@ -190,7 +215,11 @@ const KnowledgeBasePage = () => {
                     _.forEach(articlesArray, (article) => {
                         if (article.parent == section.id) sectionChildren.push(article);
                     })
-                    if (!_.isEmpty(sectionChildren)) sectionGroupChildren.push(section, ...sectionChildren);
+                    if (!_.isEmpty(sectionChildren)) {
+                        section.children = sectionChildren;
+                        console.log(section);
+                        sectionGroupChildren.push(section, ...sectionChildren)
+                    };
                 }
             });
             if (!_.isEmpty(sectionGroupChildren)) hierarchicalList.push(sectionGroup, ...sectionGroupChildren);
@@ -213,10 +242,15 @@ const KnowledgeBasePage = () => {
     }, [articles, sectionGroups, sections, marks])
 
     let element = (
-        <>
-            Здесь будет база знаний
+        <div
+            style={{
+                userSelect: 'none',
+                WebkitUserDrag: 'none',
+                WebkitTouchCallout: 'none',
+            }}
+        >
             {sectionGroupsElement}
-        </>
+        </div>
     )
     return element;
 }
