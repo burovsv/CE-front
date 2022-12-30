@@ -122,7 +122,7 @@ const AccountPage = () => {
               setActiveTab('plan-tab');
             }}
             class={`filter__item tablinks ${activeTab === 'plan-tab' && 'active'}`}>
-            План
+            Конкурсы
           </button>
         </div>
         <div class="tab">

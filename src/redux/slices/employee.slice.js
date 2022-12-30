@@ -4,7 +4,10 @@ import { initStateDeleteEmployee, reducerDeleteEmployee } from '../actions/emplo
 import { initStateDownloadEmployees, reducerDownloadEmployees } from '../actions/employee/downloadEmployees.action';
 import { initStateFeedbackEmployee, reducerFeedbackEmployee } from '../actions/employee/feedback.action';
 import { initStateGetAccount, reducerGetAccount } from '../actions/employee/getAccount.action';
+import { initStateGetCompetitionProducts, reducerGetCompetitionProducts } from '../actions/employee/getCompetitionProducts.action';
+import { initStateGetCompetitions, reducerGetCompetitions } from '../actions/employee/getCompetitions.action';
 import { initStateGetEmployee, reducerGetEmployee } from '../actions/employee/getEmployee.action';
+import { initStateGetEmployeeCompetitions, reducerGetEmployeeCompetitions } from '../actions/employee/getEmployeeCompetitions.action';
 import { initStateGetEmployees, reducerGetEmployees } from '../actions/employee/getEmployees.action';
 import { initStateGetEmployeeUser, reducerGetEmployeeUser } from '../actions/employee/getEmployeeUser.action';
 import { initStateLoginEmployee, reducerLoginEmployee } from '../actions/employee/login.action';
@@ -25,6 +28,9 @@ export const initialState = {
   ...initStateFeedbackEmployee,
   ...initStateDownloadEmployees,
   ...initStateGetAccount,
+  ...initStateGetCompetitions,
+  ...initStateGetEmployeeCompetitions,
+  ...initStateGetCompetitionProducts,
 };
 
 export const employeeSlice = createSlice({
@@ -63,6 +69,9 @@ export const employeeSlice = createSlice({
     ...reducerSync1C,
     ...reducerDownloadEmployees,
     ...reducerGetAccount,
+    ...reducerGetCompetitions,
+    ...reducerGetEmployeeCompetitions,
+    ...reducerGetCompetitionProducts,
   },
 });
 export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount } = employeeSlice.actions;
