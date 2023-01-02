@@ -18,7 +18,7 @@ const PlanTab = () => {
     getEmployeeHistory: { data: employeeHistory },
     activeCalendarSubdivision,
   } = useSelector((state) => state.employeeHistory);
-  const isManager = dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID;
+  const isManager = dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID;
 
   const [activeTab, setActiveTab] = useState('one-tab');
   const [activeCompetition, setActiveCompetition] = useState(null);
@@ -143,7 +143,7 @@ const PlanTab = () => {
                       {itemCompt?.use_personal_plan && <th width="100px">Факт</th>}
                       {itemCompt?.use_plan && <th width="100px">План</th>}
 
-                      <th width="100px">Прогноз</th>
+                      <th width="100px">Процент выполнение</th>
                       {itemCompt?.type_result != undefined && <th width="100px">{itemCompt?.type_result ? 'Количество' : 'Сумма'}</th>}
 
                       <th width="100%">Место</th>
@@ -185,9 +185,11 @@ const PlanTab = () => {
             &nbsp;Идет загрузка...
           </div>
         ) : dataEmployeeCompetitions?.length >= 1 ? (
-          dataEmployeeCompetitions?.map(
-            (itemEmpoyeComp) =>
-              activeCompetition === itemEmpoyeComp?.id_competition && (
+          dataEmployeeCompetitions?.map((itemEmpoyeComp) => {
+            if (activeCompetition === itemEmpoyeComp?.id_competition) {
+              const isUserPlan = itemEmpoyeComp?.mass_id?.filter((filterItem) => !filterItem?.name?.includes('undefined') && filterItem?.id_city === activeSubdiv && filterItem?.user_plan)?.length;
+              const isTradeUserPlan = itemEmpoyeComp?.mass_id?.filter((filterItem) => !filterItem?.name?.includes('undefined') && filterItem?.id_city === activeSubdiv && filterItem?.trade_user_plan)?.length;
+              return (
                 <table>
                   <tr class="table-plan-title">
                     <th colSpan={'6'}>Сотрудники в подразделении</th>
@@ -195,14 +197,16 @@ const PlanTab = () => {
                   <tr class="table-plan-head">
                     <th>Сотрудник</th>
                     <th>Факт сумма</th>
-                    <th>Личный план</th>
-                    <th>Процент выполнение</th>
+                    {isUserPlan && <th>Личный план</th>}
+                    {isTradeUserPlan && <th>Процент выполнение</th>}
+
                     <th>Количество</th>
                     <th>Место</th>
                   </tr>
                   {itemEmpoyeComp?.mass_id?.map(
                     (itemEmployMass) =>
-                      !itemEmployMass?.name?.includes('undefined') && (
+                      !itemEmployMass?.name?.includes('undefined') &&
+                      itemEmployMass?.id_city === activeSubdiv && (
                         <>
                           <tr
                             onClick={() => {
@@ -218,8 +222,9 @@ const PlanTab = () => {
                             class={`table-plan-row ${dataUser?.idService == itemEmployMass.id ? 'table-plan-row-current' : ''}`}>
                             <td>{itemEmployMass?.name}</td>
                             <td>{Math.ceil(itemEmployMass?.trade_sum) || '-'}</td>
-                            <td>{Math.ceil(itemEmployMass?.user_plan) ? itemEmployMass?.user_plan + '%' : '-'}</td>
-                            <td>{Math.ceil(itemEmployMass?.trade_user_plan) || '-'}</td>
+                            {isUserPlan && <td>{Math.ceil(itemEmployMass?.user_plan) ? itemEmployMass?.user_plan + '%' : '-'}</td>}
+                            {isTradeUserPlan && <td>{Math.ceil(itemEmployMass?.trade_user_plan) || '-'}</td>}
+
                             <td>{Math.ceil(itemEmployMass?.trade_quantity)}</td>
                             <td>{itemEmployMass?.place}</td>
                           </tr>
@@ -251,8 +256,9 @@ const PlanTab = () => {
                       ),
                   )}
                 </table>
-              ),
-          )
+              );
+            }
+          })
         ) : (
           <div style={{ color: '#FF0505' }}>Сотрудников не найдено</div>
         ))}
