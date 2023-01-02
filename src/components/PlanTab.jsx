@@ -140,26 +140,36 @@ const PlanTab = () => {
                   <table>
                     <tr class="table-plan-head">
                       <th width="170px">Подразделение</th>
-                      <th width="100px">Факт</th>
-                      <th width="100px">План</th>
+                      {itemCompt?.use_personal_plan && <th width="100px">Факт</th>}
+                      {itemCompt?.use_plan && <th width="100px">План</th>}
+
                       <th width="100px">Прогноз</th>
+                      {itemCompt?.type_result != undefined && <th width="100px">{itemCompt?.type_result ? 'Количество' : 'Сумма'}</th>}
+
                       <th width="100%">Место</th>
                     </tr>
-                    {itemCompt?.mass_city?.map((massItem) => (
-                      <tr
-                        class={`table-plan-row ${massItem?.id_city == activeSubdiv ? 'table-plan-row-current' : ''}`}
-                        onClick={() => {
-                          if (massItem?.id_city == activeSubdiv) {
-                            setSelectedSubdiv(true);
-                          }
-                        }}>
-                        <td>{massItem?.name_city || '-'}</td>
-                        <td>{massItem?.trade_city_sum}</td>
-                        <td>{massItem?.plan_city ? massItem?.plan_city : '-'}</td>
-                        <td>{massItem?.trade_city_percent + '%'}</td>
-                        <td>{massItem?.place_city}</td>
-                      </tr>
-                    ))}
+                    {itemCompt?.mass_city?.map(
+                      (massItem) =>
+                        massItem?.name_city && (
+                          <tr
+                            class={`table-plan-row ${massItem?.id_city == activeSubdiv ? 'table-plan-row-current' : ''}`}
+                            onClick={() => {
+                              if (massItem?.id_city == activeSubdiv) {
+                                setSelectedSubdiv(true);
+                              }
+                            }}>
+                            <td>{massItem?.name_city || '-'}</td>
+
+                            {itemCompt?.use_personal_plan && <td>{Math.ceil(massItem?.trade_city_sum)}</td>}
+                            {itemCompt?.use_plan && <td>{massItem?.plan_city ? Math.ceil(massItem?.plan_city) : '-'}</td>}
+
+                            <td>{Math.ceil(massItem?.trade_city_percent) + '%'}</td>
+                            {itemCompt?.type_result != undefined && <td>{Math.ceil(massItem?.trade_city_quantity)}</td>}
+
+                            <td>{massItem?.place_city}</td>
+                          </tr>
+                        ),
+                    )}
                   </table>
                 </div>
               ),
@@ -184,59 +194,62 @@ const PlanTab = () => {
                   </tr>
                   <tr class="table-plan-head">
                     <th>Сотрудник</th>
-                    <th>Факт</th>
-                    <th>План</th>
-                    <th>Прогноз</th>
-                    <th>Оборот</th>
+                    <th>Факт сумма</th>
+                    <th>Личный план</th>
+                    <th>Процент выполнение</th>
+                    <th>Количество</th>
                     <th>Место</th>
                   </tr>
-                  {itemEmpoyeComp?.mass_id?.map((itemEmployMass) => (
-                    <>
-                      <tr
-                        onClick={() => {
-                          const isShowEmpl = isManager || dataUser?.idService == itemEmployMass.id;
-                          if (isShowEmpl) {
-                            if (activeEmployee) {
-                              setActiveEmployee(null);
-                            } else {
-                              setActiveEmployee(itemEmployMass?.id);
-                            }
-                          }
-                        }}
-                        class={`table-plan-row ${dataUser?.idService == itemEmployMass.id ? 'table-plan-row-current' : ''}`}>
-                        <td>{itemEmployMass?.name}</td>
-                        <td>{itemEmployMass?.trade_sum}</td>
-                        <td>{itemEmployMass?.trade_plan || '-'}</td>
-                        <td>{itemEmployMass?.user_plan ? itemEmployMass?.user_plan + '%' : '-'}</td>
-                        <td>{itemEmployMass?.trade_user_plan || '-'}</td>
-                        <td>{itemEmployMass?.place}</td>
-                      </tr>
-                      {itemEmployMass.id === activeEmployee && (
-                        <tr>
-                          <td colSpan={6} style={{ padding: 0, background: '#F9F9F9' }}>
-                            {loadingCompetitionProducts ? (
-                              <div className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
-                                &nbsp;Идет загрузка...
-                              </div>
-                            ) : dataCompetitionProducts?.length >= 1 ? (
-                              <table style={{ marginTop: '0px' }}>
-                                {dataCompetitionProducts?.map((itemProd) => (
-                                  <tr class="table-plan-row">
-                                    <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
-                                    <td style={{ width: '89.96px' }}>{itemProd?.trade_quantity}</td>
+                  {itemEmpoyeComp?.mass_id?.map(
+                    (itemEmployMass) =>
+                      !itemEmployMass?.name?.includes('undefined') && (
+                        <>
+                          <tr
+                            onClick={() => {
+                              const isShowEmpl = isManager || dataUser?.idService == itemEmployMass.id;
+                              if (isShowEmpl) {
+                                if (activeEmployee) {
+                                  setActiveEmployee(null);
+                                } else {
+                                  setActiveEmployee(itemEmployMass?.id);
+                                }
+                              }
+                            }}
+                            class={`table-plan-row ${dataUser?.idService == itemEmployMass.id ? 'table-plan-row-current' : ''}`}>
+                            <td>{itemEmployMass?.name}</td>
+                            <td>{Math.ceil(itemEmployMass?.trade_sum) || '-'}</td>
+                            <td>{Math.ceil(itemEmployMass?.user_plan) ? itemEmployMass?.user_plan + '%' : '-'}</td>
+                            <td>{Math.ceil(itemEmployMass?.trade_user_plan) || '-'}</td>
+                            <td>{Math.ceil(itemEmployMass?.trade_quantity)}</td>
+                            <td>{itemEmployMass?.place}</td>
+                          </tr>
+                          {itemEmployMass.id === activeEmployee && (
+                            <tr>
+                              <td colSpan={6} style={{ padding: 0, background: '#F9F9F9' }}>
+                                {loadingCompetitionProducts ? (
+                                  <div className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
+                                    &nbsp;Идет загрузка...
+                                  </div>
+                                ) : dataCompetitionProducts?.length >= 1 ? (
+                                  <table style={{ marginTop: '0px' }}>
+                                    {dataCompetitionProducts?.map((itemProd) => (
+                                      <tr class="table-plan-row">
+                                        <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
+                                        <td style={{ width: '89.96px' }}>{itemProd?.trade_quantity}</td>
 
-                                    <td style={{ width: '79.72px' }}>{itemProd?.trade_sum}</td>
-                                  </tr>
-                                ))}
-                              </table>
-                            ) : (
-                              <div style={{ fontWeight: '600', color: '#FF0505', padding: '15px 20px' }}>Товаров не найдено</div>
-                            )}
-                          </td>
-                        </tr>
-                      )}
-                    </>
-                  ))}
+                                        <td style={{ width: '79.72px' }}>{itemProd?.trade_sum}</td>
+                                      </tr>
+                                    ))}
+                                  </table>
+                                ) : (
+                                  <div style={{ fontWeight: '600', color: '#FF0505', padding: '15px 20px' }}>Товаров не найдено</div>
+                                )}
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      ),
+                  )}
                 </table>
               ),
           )
