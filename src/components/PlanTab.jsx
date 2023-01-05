@@ -197,8 +197,8 @@ const PlanTab = () => {
                   <tr class="table-plan-head">
                     <th>Сотрудник</th>
                     <th>Факт сумма</th>
-                    {isUserPlan && <th>Личный план</th>}
-                    {isTradeUserPlan && <th>Процент выполнение</th>}
+                    {!!isUserPlan && <th>Личный план</th>}
+                    {!!isTradeUserPlan && <th>Процент выполнение</th>}
 
                     <th>Количество</th>
                     <th>Место</th>
@@ -222,8 +222,8 @@ const PlanTab = () => {
                             class={`table-plan-row ${dataUser?.idService == itemEmployMass.id ? 'table-plan-row-current' : ''}`}>
                             <td>{itemEmployMass?.name}</td>
                             <td>{Math.ceil(itemEmployMass?.trade_sum) || '-'}</td>
-                            {isUserPlan && <td>{Math.ceil(itemEmployMass?.user_plan) ? itemEmployMass?.user_plan + '%' : '-'}</td>}
-                            {isTradeUserPlan && <td>{Math.ceil(itemEmployMass?.trade_user_plan) || '-'}</td>}
+                            {!!isUserPlan && <td>{Math.ceil(itemEmployMass?.user_plan) ? itemEmployMass?.user_plan + '%' : '-'}</td>}
+                            {!!isTradeUserPlan && <td>{Math.ceil(itemEmployMass?.trade_user_plan) || '-'}</td>}
 
                             <td>{Math.ceil(itemEmployMass?.trade_quantity)}</td>
                             <td>{itemEmployMass?.place}</td>
