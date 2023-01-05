@@ -18,6 +18,9 @@ import WorkCalendarFullRow from './calendarFull/WorkCalendarFullRow';
 import TimeTableFull from './TimeTableFull';
 const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   const {
+    auth: { role, editorWorkTable },
+  } = useSelector((state) => state.app);
+  const {
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -137,7 +140,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     };
   }, []);
   const isAccessEditCalendar = () => {
-    return dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1;
+    return editorWorkTable || dataUser?.postSubdivision?.postId === 1;
   };
   const dispatch = useDispatch();
   const countMinTimeWorkers = (val, day, prop) => {

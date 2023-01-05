@@ -9,10 +9,12 @@ import { initStateGetCompetitions, reducerGetCompetitions } from '../actions/emp
 import { initStateGetEmployee, reducerGetEmployee } from '../actions/employee/getEmployee.action';
 import { initStateGetEmployeeCompetitions, reducerGetEmployeeCompetitions } from '../actions/employee/getEmployeeCompetitions.action';
 import { initStateGetEmployees, reducerGetEmployees } from '../actions/employee/getEmployees.action';
+import { initStateGetEmployeeAccess, reducerGetEmployeeAccess } from '../actions/employee/getEmployeesAccess.action';
 import { initStateGetEmployeeUser, reducerGetEmployeeUser } from '../actions/employee/getEmployeeUser.action';
 import { initStateLoginEmployee, reducerLoginEmployee } from '../actions/employee/login.action';
 import { initStateSync1C, reducerSync1C } from '../actions/employee/sync1C.action';
 import { initStateUpdateEmployee, reducerUpdateEmployee } from '../actions/employee/updateEmployee.action';
+import { initStateUpdateEmployeeAccess, reducerUpdateEmployeeAccess } from '../actions/employee/updateEmployeesAccess.action';
 import { initStateUploadAvatar, reducerUploadAvatar } from '../actions/employee/uploadAvatar.action';
 
 export const initialState = {
@@ -31,6 +33,9 @@ export const initialState = {
   ...initStateGetCompetitions,
   ...initStateGetEmployeeCompetitions,
   ...initStateGetCompetitionProducts,
+
+  ...initStateGetEmployeeAccess,
+  ...initStateUpdateEmployeeAccess,
 };
 
 export const employeeSlice = createSlice({
@@ -39,6 +44,9 @@ export const employeeSlice = createSlice({
   reducers: {
     resetGetEmployees(state) {
       state.getEmployees = initStateGetEmployees.getEmployees;
+    },
+    resetUpdateEmployeeAccess(state) {
+      state.updateEmployeeAccess = initStateUpdateEmployeeAccess.updateEmployeeAccess;
     },
     resetGetEmployee(state) {
       state.getEmployee = initStateGetEmployee.getEmployee;
@@ -72,7 +80,9 @@ export const employeeSlice = createSlice({
     ...reducerGetCompetitions,
     ...reducerGetEmployeeCompetitions,
     ...reducerGetCompetitionProducts,
+    ...reducerGetEmployeeAccess,
+    ...reducerUpdateEmployeeAccess,
   },
 });
-export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount } = employeeSlice.actions;
+export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount, resetUpdateEmployeeAccess } = employeeSlice.actions;
 export const employeeReducer = employeeSlice.reducer;

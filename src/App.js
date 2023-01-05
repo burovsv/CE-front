@@ -22,6 +22,7 @@ import { resetLoginEmployee } from './redux/slices/employee.slice';
 import AdminReportsPage from './components/pages/AdminReports';
 import NewsResultPage from './components/pages/NewsResultPage';
 import AccountPage from './components/pages/AccountPage';
+import AdminAccessPage from './components/pages/AdminAccess';
 function App() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -85,10 +86,11 @@ function App() {
     { path: '/study/', element: <StudyPage /> },
     { path: '/testing', element: <TestingPage /> },
     { path: '/account', element: <AccountPage /> },
-    { path: '/admin/news', element: auth?.role === 'admin' ? <AdminNewsPage /> : <Navigate to="/" /> },
-    { path: '/admin/training', element: auth?.role === 'admin' ? <AdminTestingPage /> : <Navigate to="/" /> },
+    { path: '/admin/news', element: auth?.role === 'admin' || auth?.editorContent ? <AdminNewsPage /> : <Navigate to="/" /> },
+    { path: '/admin/training', element: auth?.role === 'admin' || auth?.editorContent ? <AdminTestingPage /> : <Navigate to="/" /> },
     { path: '/admin/users', element: auth?.role === 'admin' ? <AdminEmployeePage /> : <Navigate to="/" /> },
     { path: '/admin/reports', element: auth?.role === 'admin' ? <AdminReportsPage /> : <Navigate to="/" /> },
+    { path: '/admin/access', element: auth?.role === 'admin' ? <AdminAccessPage /> : <Navigate to="/" /> },
   ]);
   return (
     <>

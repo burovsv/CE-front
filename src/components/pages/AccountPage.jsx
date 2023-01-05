@@ -31,6 +31,9 @@ const AccountPage = () => {
     setError,
     clearErrors,
   } = useForm({ defaultValues });
+   const {
+     auth: { role, editorWorkTable },
+   } = useSelector((state) => state.app);
   const {
     getAccount: { data: dataAccount, loading: loadingAccount, error: errorAccount },
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
@@ -98,7 +101,7 @@ const AccountPage = () => {
     }
   }, [showFullCalendar]);
   const isAccessEditCalendar = () => {
-    return dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1;
+    return editorWorkTable || dataUser?.postSubdivision?.postId === 1;
   };
   useEffect(() => {
     dispatch(getEmployeeHistory());
