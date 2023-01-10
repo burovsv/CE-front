@@ -139,7 +139,16 @@ const AdminNewsPage = () => {
           dispatch(deleteNews({ newsId: val?.id }));
         }}
       />
-      {activeModal === 'modal-news' && <ModalNews />}
+      {activeModal === 'modal-news' && (
+        <>
+          <ModalNews />
+          <style>{`
+          .page {
+            overflow: hidden;
+            }`}</style>
+        </>
+      )}
+
       {(createNewsLoading || updateNewsLoading || deleteNewsLoading) && <Loading overlay />}
     </div>
   );
