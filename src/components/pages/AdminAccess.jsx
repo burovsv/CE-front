@@ -38,7 +38,9 @@ const AdminAccessPage = () => {
     getSubdivisions: { data: subdivisions, loading: subdivisionsLoading },
   } = useSelector((state) => state.subdivision);
   useEffect(() => {
-    dispatch(getEmployees(paramsData));
+    if ((selectedType === 'workTable' && paramsData.subdivision == 0) || selectedType !== 'workTable') {
+      dispatch(getEmployees(paramsData));
+    }
   }, [paramsData]);
   useEffect(() => {
     if (subdivisions?.length !== 0 && !subdivisionsLoading) {
@@ -73,13 +75,15 @@ const AdminAccessPage = () => {
 
   useEffect(() => {
     dispatch(getSubdivisions());
-    dispatch(getEmployeeAccess(selectedType));
+    // dispatch(getEmployeeAccess(selectedType));
     return () => {
       dispatch(resetGetEmployees());
       dispatch(resetGetSubdivisions());
     };
   }, []);
   useEffect(() => {
+    setParamsData({ page: 0, search: '', subdivision: 0 });
+
     dispatch(getEmployeeAccess(selectedType));
     setSelectedEmployee('');
     setEmployeeAddedAccess([]);
@@ -87,16 +91,18 @@ const AdminAccessPage = () => {
   }, [selectedType]);
 
   const handleSave = () => {
-    const addedIds = employeeAddedAccess?.map((addedItem) => addedItem?.id);
-    const removedIds = employeeRemoveAccess?.map((removedItem) => removedItem?.id);
+    const employeeAddedWithoutDeleted = employeeAddedAccess?.filter((itemAccess) => !employeeRemoveAccess?.find((itemRemove) => itemRemove?.id == itemAccess?.id && itemRemove?.subdivision == itemAccess?.subdivision));
     dispatch(
       updateEmployeeAccess({
-        added: addedIds,
-        removed: removedIds,
+        added: employeeAddedWithoutDeleted,
+        removed: employeeRemoveAccess,
         type: selectedType,
       }),
     );
   };
+  console.log('REMOVE', employeeRemoveAccess);
+  console.log('ADDED', employeeAddedAccess);
+  console.log('CURENT', employeesAccess);
   return (
     <div style={{}}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -120,7 +126,13 @@ const AdminAccessPage = () => {
         </div>
       </div>
       <div className="modal__select" style={{ width: '300px' }}>
-        <select onChange={(val) => setParamsData({ page: 0, search: '', subdivision: val.target.value })} placeholder="Должность" disabled={loading || updateEmployeeLoading}>
+        <select
+          onChange={(val) => {
+            setParamsData({ page: 0, search: '', subdivision: val.target.value });
+          }}
+          value={paramsData?.subdivision}
+          placeholder="Должность"
+          disabled={loading || updateEmployeeLoading}>
           {viewSubdivisions?.map((item) => (
             <option value={item?.value}>{item?.label}</option>
           ))}
@@ -139,9 +151,15 @@ const AdminAccessPage = () => {
             disabled={loading || updateEmployeeLoading}>
             <option value={''}>{`Выберите сотрудника`}</option>;
             {employees?.map((item, itemIndex) => {
-              const findInAccess = employeesAccess?.find((accessItem) => accessItem?.id == item?.id);
-              const findInAddedAccess = employeeAddedAccess?.find((accessItem) => accessItem?.id == item?.id);
-              const findInRemoveAccess = employeeRemoveAccess?.find((accessItem) => accessItem?.id == item?.id);
+              let findInAccess = false;
+              let findInAddedAccess = false;
+              let findInRemoveAccess = true;
+              if (selectedType == 'content') {
+                findInAccess = employeesAccess?.find((accessItem) => accessItem?.id == item?.id);
+                findInAddedAccess = employeeAddedAccess?.find((accessItem) => accessItem?.id == item?.id);
+                findInRemoveAccess = employeeRemoveAccess?.find((accessItem) => accessItem?.id == item?.id);
+              } else {
+              }
 
               if (((!findInAccess && !findInAddedAccess) || findInRemoveAccess) && item?.id !== 1) {
                 return <option value={item?.id}>{`${item?.firstName} ${item?.lastName}`}</option>;
@@ -150,10 +168,19 @@ const AdminAccessPage = () => {
           </select>
         </div>
         <button
-          disabled={updateEmployeeLoading}
+          disabled={updateEmployeeLoading || (selectedType == 'workTable' ? !selectedEmployee || !paramsData.subdivision : !selectedEmployee)}
           onClick={() => {
-            if (selectedEmployee) {
-              setEmployeeAddedAccess([...employeeAddedAccess, selectedEmployee]);
+            if (selectedEmployee?.id) {
+              const findExist = [...employeesAccess, ...employeeAddedAccess].find((existEmpl) => existEmpl?.id == selectedEmployee?.id && existEmpl.subdivision == paramsData.subdivision);
+              const findInRemove = employeeRemoveAccess?.findIndex((filterRemoveItem) => filterRemoveItem?.id == selectedEmployee?.id && filterRemoveItem.subdivision == paramsData.subdivision);
+
+              if (findInRemove !== -1) {
+                setEmployeeRemoveAccess([...employeeRemoveAccess.slice(0, findInRemove)]);
+              }
+              if (!findExist) {
+                setEmployeeAddedAccess([...employeeAddedAccess, { id: parseInt(selectedEmployee.id), subdivision: parseInt(paramsData.subdivision) }]);
+              } else {
+              }
             }
           }}
           className="report__btn"
@@ -183,24 +210,30 @@ const AdminAccessPage = () => {
         <div class="table__head">Ответственный</div>
         <div class="table__head">Должность</div>
         <div class="table__head"></div>
-        {viewAllEmployees?.map((employeeItem) => {
-          const findInAccess = employeesAccess?.find((accessItem) => accessItem?.id == employeeItem?.id);
-          const findInAddedAccess = employeeAddedAccess?.find((accessItem) => accessItem?.id == employeeItem?.id);
-          const findInRemoveAccess = employeeRemoveAccess?.find((accessItem) => accessItem?.id == employeeItem?.id);
-          if ((findInAccess || findInAddedAccess) && !findInRemoveAccess) {
+        {[...employeesAccess, ...employeeAddedAccess]?.map((employeeItem) => {
+          let findInAddedAccess;
+          const findInAccess = viewAllEmployees?.find((accessItem) => accessItem?.id == employeeItem?.id);
+          const findAccessSubdivision = viewSubdivisions?.find((accessSubdiv) => accessSubdiv?.value == employeeItem?.subdivision);
+          // findInAddedAccess = employeeAddedAccess?.find((accessItem) => accessItem?.id == employeeItem?.id);
+
+          // findInAddedAccess = employeeAddedAccess?.filter((accessItem) => accessItem?.id == employeeItem?.id);
+
+          const findInRemoveAccess = employeeRemoveAccess?.find((accessItem) => accessItem?.id == employeeItem?.id && accessItem.subdivision == employeeItem?.subdivision);
+          console.log(findInAccess && !findInRemoveAccess);
+          if (findInAccess && !findInRemoveAccess) {
             return (
               <>
-                <div class="table__col">{employeeItem.subdivision}</div>
-                <div class="table__col"> {`${employeeItem.firstName} ${employeeItem.lastName}`}</div>
-                <div class="table__col">{employeeItem.post}</div>
+                <div class="table__col">{findAccessSubdivision?.label}</div>
+                <div class="table__col"> {`${findInAccess.firstName} ${findInAccess.lastName}`}</div>
+                <div class="table__col">{findInAccess.post}</div>
                 <button
                   disabled={updateEmployeeLoading}
                   class="table__col table__icon"
                   onClick={() => {
-                    const filterRemoveEmployee = employeeRemoveAccess?.filter((filterRemoveItem) => filterRemoveItem?.id !== employeeItem?.id);
-                    const filterAddedEmployee = employeeAddedAccess?.filter((filterRemoveItem) => filterRemoveItem?.id !== employeeItem?.id);
-                    setEmployeeAddedAccess(filterAddedEmployee);
-                    setEmployeeRemoveAccess([...filterRemoveEmployee, { id: employeeItem?.id }]);
+                    // const filterRemoveEmployee = employeeRemoveAccess?.filter((filterRemoveItem) => filterRemoveItem?.id !== findInAccess?.id && filterRemoveItem?.subdivision !== employeeItem?.subdivision);
+                    // const filterAddedEmployee = employeeAddedAccess?.filter((filterRemoveItem) => filterRemoveItem?.id != findInAccess?.id && filterRemoveItem?.subdivision != employeeItem?.subdivision);
+                    // setEmployeeAddedAccess(filterAddedEmployee);
+                    setEmployeeRemoveAccess([...employeeRemoveAccess, { id: parseInt(findInAccess?.id), subdivision: parseInt(employeeItem?.subdivision) }]);
                   }}>
                   <img src="/img/table/delete.svg" />
                 </button>

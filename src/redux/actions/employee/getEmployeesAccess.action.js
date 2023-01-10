@@ -18,7 +18,7 @@ export const getEmployeeAccess = createAsyncThunk('employee/getEmployeeAccess', 
 
 export const reducerGetEmployeeAccess = {
   [getEmployeeAccess.pending]: (state) => {
-    state.getEmployeeAccess.data = null;
+    state.getEmployeeAccess.data = [];
     state.getEmployeeAccess.loading = true;
   },
   [getEmployeeAccess.fulfilled]: (state, action) => {

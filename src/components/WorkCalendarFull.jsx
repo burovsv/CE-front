@@ -140,7 +140,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     };
   }, []);
   const isAccessEditCalendar = () => {
-    return editorWorkTable || dataUser?.postSubdivision?.postId === 1;
+    return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
   };
   const dispatch = useDispatch();
   const countMinTimeWorkers = (val, day, prop) => {
