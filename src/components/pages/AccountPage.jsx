@@ -17,6 +17,7 @@ import ModalAcceptTable from '../modals/ModalAcceptTable';
 import { getWorkCalendarMonth } from '../../redux/actions/workCalendar/getWorkCalendarMonth.slice';
 import { getEmployeeHistory } from '../../redux/actions/employeeHistory/getEmployeeHistory.action';
 import { setActiveCalendarSubdivision } from '../../redux/slices/employeeHistory.slice';
+import PlanTab from '../PlanTab';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -30,6 +31,9 @@ const AccountPage = () => {
     setError,
     clearErrors,
   } = useForm({ defaultValues });
+  const {
+    auth: { role, editorWorkTable },
+  } = useSelector((state) => state.app);
   const {
     getAccount: { data: dataAccount, loading: loadingAccount, error: errorAccount },
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
@@ -97,7 +101,7 @@ const AccountPage = () => {
     }
   }, [showFullCalendar]);
   const isAccessEditCalendar = () => {
-    return (dataUser?.postSubdivision?.postId == process.env.REACT_APP_MANAGER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId === 1) && dataUser?.postSubdivision?.subdivisionId == activeCalendarSubdivision?.id;
+    return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
   };
   useEffect(() => {
     dispatch(getEmployeeHistory());
@@ -113,6 +117,15 @@ const AccountPage = () => {
             }}
             class={`filter__item tablinks ${activeTab === 'balance-tab' && 'active'}`}>
             Баланс
+          </button>
+        </div>
+        <div class="tab">
+          <button
+            onClick={() => {
+              setActiveTab('plan-tab');
+            }}
+            class={`filter__item tablinks ${activeTab === 'plan-tab' && 'active'}`}>
+            Конкурсы
           </button>
         </div>
         <div class="tab">
@@ -245,6 +258,8 @@ const AccountPage = () => {
             )}
           </div>
         </div>
+      ) : activeTab == 'plan-tab' ? (
+        <PlanTab />
       ) : (
         <div class="tabcontent">
           {
@@ -256,7 +271,12 @@ const AccountPage = () => {
                     onChange={(event) => {
                       if (event.target.value) {
                         const findCurrentSubdiv = employeeHistory?.find((historyItem) => historyItem?.id == event.target.value);
-                        dispatch(setActiveCalendarSubdivision(findCurrentSubdiv));
+                        const findAccessSubdiv = dataUser?.subdivisions?.find((accessSubdiv) => accessSubdiv?.id == event.target.value);
+                        if (findCurrentSubdiv) {
+                          dispatch(setActiveCalendarSubdivision(findCurrentSubdiv));
+                        } else if (findAccessSubdiv) {
+                          dispatch(setActiveCalendarSubdivision({ id: findAccessSubdiv?.id, name: findAccessSubdiv?.name }));
+                        }
                       }
                     }}>
                     {employeeHistory.map((value) => {
@@ -265,6 +285,16 @@ const AccountPage = () => {
                           {value?.name}
                         </option>
                       );
+                    })}
+                    {dataUser?.subdivisions?.map((itemSubdiv) => {
+                      const findRepeat = employeeHistory?.find((emplHist) => emplHist.id == itemSubdiv?.id);
+                      if (!findRepeat) {
+                        return (
+                          <option selected={itemSubdiv?.id === activeCalendarSubdivision?.id} value={itemSubdiv?.id}>
+                            {itemSubdiv?.name}
+                          </option>
+                        );
+                      }
                     })}
                   </select>
                 </div>

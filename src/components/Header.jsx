@@ -7,7 +7,7 @@ import { setSearchTerm } from '../redux/slices/search.slice';
 import { globalSearch } from '../redux/actions/search/globalSearch.action';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
-import { adminMenu, userMenu } from './Menu';
+
 import { setActiveModal } from '../redux/slices/app.slice';
 import { resetGetAccount } from '../redux/slices/employee.slice';
 const Header = () => {
@@ -22,8 +22,23 @@ const Header = () => {
     dispatch(resetGetAccount());
   };
   const {
-    auth: { role },
+    auth: { role, editorContent },
   } = useSelector((state) => state.app);
+  const userMenu = [
+    { name: 'Главная', path: '/', icon: '/img/nav/main.png' },
+    { name: 'Обучения', path: '/study', icon: '/img/nav/training.png' },
+    { name: 'Тестирование', path: '/testing', icon: '/img/nav/testing.png' },
+  ];
+  let adminMenu = [
+    { name: 'Новости', path: '/admin/news', icon: '/img/nav/main.png' },
+    { name: 'Обучение', path: '/admin/news/?study=true', icon: '/img/nav/main.png' },
+    { name: 'Тестирование', path: '/admin/training', icon: '/img/nav/training.png' },
+  ];
+  if (role === 'admin') {
+    adminMenu.push({ name: 'Отчеты', path: '/admin/reports', icon: '/img/list.svg' });
+    adminMenu.push({ name: 'Пользователи', path: '/admin/users', icon: '/img/nav/testing.png' });
+    adminMenu.push({ name: 'Доступ', path: '/admin/access', icon: '/img/list.svg' });
+  }
   useEffect(() => {
     if (searchParams.get('term')) {
       dispatch(globalSearch({ term: searchParams.get('term') }));
@@ -132,7 +147,7 @@ const Header = () => {
               }}>
               Выход
             </a>
-            {role === 'admin' ? (
+            {role === 'admin' || editorContent ? (
               pathname.substring(0, 6) !== '/admin' ? (
                 <Link to="/admin/news" style={{ color: '#ff0d0d' }} onClick={() => setMenuActive(false)}>
                   Админ

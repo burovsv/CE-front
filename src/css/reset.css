@@ -35,7 +35,9 @@ button {
   background-color: #feed01;
   padding: 15px;
 }
-
+.report__btn:disabled {
+  opacity: 0.5;
+}
 .report__btn:hover {
   background-color: yellow;
 }
