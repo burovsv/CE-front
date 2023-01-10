@@ -116,7 +116,15 @@ const AdminTestingPage = () => {
         }}
         onDelete={(val) => dispatch(deleteTesting({ testingId: val?.id }))}
       />
-      {activeModal === 'modal-testing' && <ModalTesting />}
+      {activeModal === 'modal-testing' && (
+        <>
+          <ModalTesting />
+          <style>{`
+          .page {
+            overflow: hidden;
+            }`}</style>
+        </>
+      )}
       {(createTestingLoading || deleteTestingLoading || updateTestingLoading) && <Loading overlay />}
     </div>
   );
