@@ -1,10 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { initStateCreateCategory, reducerCreateCategory } from '../actions/category/createCategory';
+import { initStateGetCategories, reducerGetCategories } from '../actions/category/getCategories';
 import { initStategetCatsByPostAndSubdiv, reducergetCatsByPostAndSubdiv } from '../actions/category/getCatsByPostAndSubdiv';
 
 export const initialState = {
   ...initStategetCatsByPostAndSubdiv,
   ...initStateCreateCategory,
+  ...initStateGetCategories,
 };
 
 export const categorySlice = createSlice({
@@ -21,6 +23,7 @@ export const categorySlice = createSlice({
   extraReducers: {
     ...reducergetCatsByPostAndSubdiv,
     ...reducerCreateCategory,
+    ...reducerGetCategories,
   },
 });
 export const { resetGetCatsByPostAndSubdiv, resetCreateCategory } = categorySlice.actions;

@@ -28,6 +28,7 @@ import { useSearchParams } from 'react-router-dom';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import CustomToolbar from '../CustomToolbar';
+import { getCategories } from '../../redux/actions/category/getCategories';
 const ModalNews = () => {
   const [isInitCats, setIsInitCats] = useState(true);
   const [viewCats, setViewCats] = useState([]);
@@ -70,6 +71,9 @@ const ModalNews = () => {
   const {
     getPosts: { data: posts, loading: postsLoading },
   } = useSelector((state) => state.post);
+  const {
+    getCategories: { data: categoryList, loading: categoryListLoading },
+  } = useSelector((state) => state.category);
   const {
     getNewsTypes: { data: newsTypes, loading: newsTypesLoading },
   } = useSelector((state) => state.newsType);
@@ -166,6 +170,7 @@ const ModalNews = () => {
     dispatch(getNewsTypes());
     dispatch(getNewsFilters());
     dispatch(getPosts());
+    dispatch(getCategories());
     register('desc');
     register('image');
     return () => {
@@ -194,7 +199,7 @@ const ModalNews = () => {
       if (name?.includes('posts') && value?.posts) {
         const selectedPosts = value?.posts.filter((postId) => postId);
 
-        dispatch(getSubdivisionsByPosts(selectedPosts));
+        // dispatch(getSubdivisionsByPosts(selectedPosts));
       }
       if (value?.newsTypeId == 1) {
         if (!value?.image && !singleNews?.image) {
@@ -285,32 +290,32 @@ const ModalNews = () => {
     }
   }, [singleNews, postCheckboxView, newsFilters]);
 
-  useEffect(() => {
-    if (subdivisionByPosts?.length !== 0 && subdivisionByPosts) {
-      let viewCatsArr = [];
-      let lastCatsVal = getValues('catIds')?.filter((val) => val);
-      let updateCatsVal = [];
-      subdivisionByPosts.map((subdivPost) => {
-        subdivPost?.categories.map((subdivCat) => {
-          viewCatsArr.push({ label: subdivCat?.name, value: subdivCat?.id });
-          updateCatsVal.push(lastCatsVal?.find((val) => val == subdivCat?.id) ? subdivCat?.id.toString() : false);
-        });
-      });
-      setViewCats(viewCatsArr);
+  // useEffect(() => {
+  //   if (subdivisionByPosts?.length !== 0 && subdivisionByPosts) {
+  //     let viewCatsArr = [];
+  //     let lastCatsVal = getValues('catIds')?.filter((val) => val);
+  //     let updateCatsVal = [];
+  //     subdivisionByPosts.map((subdivPost) => {
+  //       subdivPost?.categories.map((subdivCat) => {
+  //         viewCatsArr.push({ label: subdivCat?.name, value: subdivCat?.id });
+  //         updateCatsVal.push(lastCatsVal?.find((val) => val == subdivCat?.id) ? subdivCat?.id.toString() : false);
+  //       });
+  //     });
+  //     setViewCats(viewCatsArr);
 
-      setValue('catIds', updateCatsVal);
-    } else {
-      setViewCats([]);
-    }
-  }, [subdivisionByPosts, singleNews]);
+  //     setValue('catIds', updateCatsVal);
+  //   } else {
+  //     setViewCats([]);
+  //   }
+  // }, [subdivisionByPosts, singleNews]);
   useEffect(() => {
-    if (viewCats?.length !== 0 && singleNews && isInitCats) {
-      const activeCats = viewCats.map((viewCat) => (singleNews?.categories?.find((catActive) => catActive?.id == viewCat?.value && catActive?.newsCategory?.active === '1') ? viewCat?.value.toString() : false));
+    if (categoryList && singleNews) {
+      const activeCats = categoryList.map((viewCat) => (singleNews?.categories?.find((catActive) => catActive?.id == viewCat?.id) ? viewCat?.id.toString() : false));
 
       setValue('catIds', activeCats);
       setIsInitCats(false);
     }
-  }, [viewCats]);
+  }, [categoryList, singleNews]);
 
   const [text, setText] = useState('');
 
@@ -521,7 +526,7 @@ const ModalNews = () => {
               </div>
               {newsTypeId == '2' && (
                 <div className="" style={{ marginTop: '20px' }}>
-                  <CheckboxGroup control={control} disabled={subdivisionByPostsLoading} name="catIds" list={viewCats} register={register} />
+                  <CheckboxGroup control={control} disabled={categoryListLoading} name="catIds" list={categoryList?.map((itemCat) => ({ label: itemCat?.name, value: itemCat?.id }))} register={register} />
                 </div>
               )}
               <div
