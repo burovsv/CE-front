@@ -18,6 +18,7 @@ import { getWorkCalendarMonth } from '../../redux/actions/workCalendar/getWorkCa
 import { getEmployeeHistory } from '../../redux/actions/employeeHistory/getEmployeeHistory.action';
 import { setActiveCalendarSubdivision } from '../../redux/slices/employeeHistory.slice';
 import PlanTab from '../PlanTab';
+import { getAccountList } from '../../redux/actions/employee/getAccountList.action';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -36,9 +37,12 @@ const AccountPage = () => {
   } = useSelector((state) => state.app);
   const {
     getAccount: { data: dataAccount, loading: loadingAccount, error: errorAccount },
+    getAccountList: { data: dataAccountList, loading: loadingAccountList, error: errorAccountList },
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
   } = useSelector((state) => state.employee);
+
+  const [isManager, setIsManager] = useState(false);
 
   const {
     activeMonthYear,
@@ -69,12 +73,18 @@ const AccountPage = () => {
   };
   const dispatch = useDispatch();
   const [showAccept, setShowAccept] = useState(false);
+  const [selectedEmployeeAccount, setSelectedEmployeeAccount] = useState(null);
   const {
     getEmployeeUser: { data: employee },
   } = useSelector((state) => state.employee);
+  useEffect(() => {
+    if (dataUser) {
+      setIsManager(dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID);
+    }
+  }, [dataUser]);
 
   const onSubmit = (data) => {
-    dispatch(getAccount({ idService: employee?.idService, date: moment(data?.date).format('YYYY-MM-DD') }));
+    dispatch(getAccount({ idService: isManager ? selectedEmployeeAccount : employee?.idService, date: moment(data?.date).format('YYYY-MM-DD') }));
   };
   useEffect(() => {
     if (employeeHistory && dataUser) {
@@ -106,6 +116,17 @@ const AccountPage = () => {
   useEffect(() => {
     dispatch(getEmployeeHistory());
   }, []);
+  useEffect(() => {
+    if (isManager) {
+      dispatch(getAccountList());
+    }
+  }, [isManager]);
+
+  useEffect(() => {
+    if (isManager && selectedEmployeeAccount) {
+      dispatch(getAccount({ idService: selectedEmployeeAccount, date: moment().format('YYYY-MM-DD') }));
+    }
+  }, [selectedEmployeeAccount]);
 
   return (
     <>
@@ -140,123 +161,151 @@ const AccountPage = () => {
       </div>
       {activeTab == 'balance-tab' ? (
         <div class="tabcontent">
-          <div class="wrap__day">
-            <div className="table__common">
-              <div className="table__common-item">
-                <div className="table_common-left">Баланс:&nbsp;</div>
-                <div className="table_common-right">{dataAccount?.balance || 0}</div>
-              </div>
-              <div className="table__common-item">
-                <div className="table_common-left">Часы :&nbsp;</div>
-                <div className="table_common-right">{dataAccount?.hours || 0}</div>
-              </div>
-              <div className="table__common-item">
-                <div className="table_common-left">С начала месяца :&nbsp;</div>
-                <div className="table_common-right">{dataAccount?.earned || 0}</div>
-              </div>
-            </div>
-            <div class="blocks__item report " style={{ marginBottom: 0 }}>
-              <div className="date" style={{ gridGap: '0px', gridTemplateColumns: 'auto auto auto' }}>
-                <div className="date__wrap" style={{ marginRight: '20px', position: 'relative' }}>
-                  {/* <Controller
-                  control={control}
-                  name={'date'}
-                  rules={{
-                    required: true,
-                  }}
-                  render={({ field: { onChange, name, value } }) => (
-                    <NumberFormat
-                      style={{ marginBottom: 0, width: '100px' }}
-                      format="##.##.####"
-                      mask="_"
-                      name={name}
-                      value={moment(value).format('DD.MM.YYYY')}
-                      placeholder={'01.01.2022'}
-                      onValueChange={() => {}}
-                      onClick={() => {
-                        setShowDateFilter(!showDateFilter);
-                      }}
-                      onChange={() => {}}
-                      autoComplete="off"
-                    />
-                  )}
-                /> */}
-                  <input
-                    type="text"
-                    style={{ marginBottom: 0, width: '100px', userSelect: 'none', caretColor: 'transparent', cursor: 'pointer' }}
-                    value={moment(dateWatch).format('DD.MM.YYYY')}
-                    onClick={() => {
-                      if (showDateFilter) {
-                        setShowDateFilter(false);
-                      } else {
-                        setShowDateFilter(true);
-                      }
-                    }}
-                  />
-                  {/* <NumberFormat
-                  style={{ marginBottom: 0, width: '100px', userSelect: 'none' }}
-                  format="##.##.####"
-                  mask="_"
-                  // name={name}
-                  value={moment(dateWatch).format('DD.MM.YYYY')}
-                  placeholder={'01.01.2022'}
-                  onValueChange={() => {
-                    setValue(moment(dateWatch).format('DD.MM.YYYY'));
-                  }}
-                 
-                  onChange={() => {
-                    setValue(moment(dateWatch).format('DD.MM.YYYY'));
-                  }}
-                  autoComplete="off"
-                /> */}
-                  {showDateFilter && (
-                    <CalendarFilter
-                      setDate={(dateNews) => {
-                        setValue('date', dateNews);
-                      }}
-                      date={dateWatch}
-                      onClose={() => setShowDateFilter(false)}
-                    />
-                  )}
-                </div>{' '}
-                {loadingAccount ? (
-                  <div className="loading-account">Идет загрузка...</div>
-                ) : (
-                  <>
-                    <button class="report__btn" onClick={handleSubmit(onSubmit)}>
-                      Сформировать отчет о личном
-                    </button>
-
-                    {dataAccount?.table && dataAccount?.table?.length > 0 && (
-                      <div class="report__total">
-                        Итого: <b>{dataAccount?.table?.map((row) => (parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)).reduce((partialSum, a) => (parseFloat(partialSum) + parseFloat(a)).toFixed(2), 0)}</b>
+          {!selectedEmployeeAccount && isManager ? (
+            <>
+              {dataAccountList && dataAccountList?.length > 0 && !loadingAccountList ? (
+                <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto' }}>
+                  <div className="table-common__head">Сотрудник</div>
+                  <div className="table-common__head">С начала месяца</div>
+                  <div className="table-common__head">Часы</div>
+                  <div className="table-common__head">Баланс</div>
+                  {dataAccountList?.map((row) => (
+                    <>
+                      <div
+                        onClick={() => {
+                          setSelectedEmployeeAccount(row?.id);
+                        }}
+                        className="table-common__cell"
+                        style={{ cursor: 'pointer' }}>
+                        {row?.name}
                       </div>
+                      <div
+                        onClick={() => {
+                          setSelectedEmployeeAccount(row?.id);
+                        }}
+                        className="table-common__cell"
+                        style={{ textAlign: 'center', cursor: 'pointer' }}>
+                        {row?.earned}
+                      </div>
+                      <div
+                        onClick={() => {
+                          setSelectedEmployeeAccount(row?.id);
+                        }}
+                        className="table-common__cell"
+                        style={{ cursor: 'pointer' }}>
+                        {row?.hours}
+                      </div>
+                      <div
+                        onClick={() => {
+                          setSelectedEmployeeAccount(row?.id);
+                        }}
+                        className="table-common__cell"
+                        style={{ cursor: 'pointer' }}>
+                        {row?.balance}
+                      </div>
+                    </>
+                  ))}
+                </div>
+              ) : (!dataAccountList || dataAccountList?.length === 0) && !loadingAccountList ? (
+                <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>Работников не найдено</div>
+              ) : (
+                <></>
+              )}
+            </>
+          ) : isManager === false || selectedEmployeeAccount ? (
+            <>
+              {isManager && (
+                <button
+                  onClick={() => {
+                    setSelectedEmployeeAccount(null);
+                  }}
+                  style={{ height: '48px', marginLeft: '10px', marginBottom: '10px', color: '#377BFF', fontWeight: '700' }}>
+                  Вернутся
+                </button>
+              )}
+              <div class="wrap__day">
+                <div className="table__common">
+                  <div className="table__common-item">
+                    <div className="table_common-left">Баланс:&nbsp;</div>
+                    <div className="table_common-right">{dataAccount?.balance || 0}</div>
+                  </div>
+                  <div className="table__common-item">
+                    <div className="table_common-left">Часы :&nbsp;</div>
+                    <div className="table_common-right">{dataAccount?.hours || 0}</div>
+                  </div>
+                  <div className="table__common-item">
+                    <div className="table_common-left">С начала месяца :&nbsp;</div>
+                    <div className="table_common-right">{dataAccount?.earned || 0}</div>
+                  </div>
+                </div>
+                <div class="blocks__item report " style={{ marginBottom: 0 }}>
+                  <div className="date" style={{ gridGap: '0px', gridTemplateColumns: 'auto auto auto' }}>
+                    <div className="date__wrap" style={{ marginRight: '20px', position: 'relative' }}>
+                      <input
+                        type="text"
+                        style={{ marginBottom: 0, width: '100px', userSelect: 'none', caretColor: 'transparent', cursor: 'pointer' }}
+                        value={moment(dateWatch).format('DD.MM.YYYY')}
+                        onClick={() => {
+                          if (showDateFilter) {
+                            setShowDateFilter(false);
+                          } else {
+                            setShowDateFilter(true);
+                          }
+                        }}
+                      />
+
+                      {showDateFilter && (
+                        <CalendarFilter
+                          setDate={(dateNews) => {
+                            setValue('date', dateNews);
+                          }}
+                          date={dateWatch}
+                          onClose={() => setShowDateFilter(false)}
+                        />
+                      )}
+                    </div>{' '}
+                    {loadingAccount ? (
+                      <div className="loading-account">Идет загрузка...</div>
+                    ) : (
+                      <>
+                        <button class="report__btn" onClick={handleSubmit(onSubmit)}>
+                          Сформировать отчет о личном
+                        </button>
+
+                        {dataAccount?.table && dataAccount?.table?.length > 0 && (
+                          <div class="report__total">
+                            Итого: <b>{dataAccount?.table?.map((row) => (parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)).reduce((partialSum, a) => (parseFloat(partialSum) + parseFloat(a)).toFixed(2), 0)}</b>
+                          </div>
+                        )}
+                      </>
                     )}
-                  </>
+                  </div>
+                </div>
+                {dataAccount?.table && dataAccount?.table?.length > 0 && !loadingAccount ? (
+                  <div className="table-common">
+                    <div className="table-common__head">Дата</div>
+                    <div className="table-common__head">Наименование</div>
+                    <div className="table-common__head">Кол-во</div>
+                    <div className="table-common__head">Бонус</div>
+                    {dataAccount?.table?.map((row) => (
+                      <>
+                        <div className="table-common__cell">{moment(row?.date_sale).format('DD.MM.YYYY')}</div>
+                        <div className="table-common__cell">{row?.product}</div>
+                        <div className="table-common__cell">{row?.quantity}</div>
+                        <div className="table-common__cell">{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)}</div>
+                      </>
+                    ))}
+                  </div>
+                ) : (!dataAccount?.table || dataAccount?.table?.length === 0) && !loadingAccount ? (
+                  <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>На выбраную дату продаж нет. Попробуйте выбрать рабочий день, где были продажи</div>
+                ) : (
+                  <></>
                 )}
               </div>
-            </div>
-            {dataAccount?.table && dataAccount?.table?.length > 0 && !loadingAccount ? (
-              <div className="table-common">
-                <div className="table-common__head">Дата</div>
-                <div className="table-common__head">Наименование</div>
-                <div className="table-common__head">Кол-во</div>
-                <div className="table-common__head">Бонус</div>
-                {dataAccount?.table?.map((row) => (
-                  <>
-                    <div className="table-common__cell">{moment(row?.date_sale).format('DD.MM.YYYY')}</div>
-                    <div className="table-common__cell">{row?.product}</div>
-                    <div className="table-common__cell">{row?.quantity}</div>
-                    <div className="table-common__cell">{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)}</div>
-                  </>
-                ))}
-              </div>
-            ) : (!dataAccount?.table || dataAccount?.table?.length === 0) && !loadingAccount ? (
-              <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>На выбраную дату продаж нет. Попробуйте выбрать рабочий день, где были продажи</div>
-            ) : (
-              <></>
-            )}
-          </div>
+            </>
+          ) : (
+            <></>
+          )}
         </div>
       ) : activeTab == 'plan-tab' ? (
         <PlanTab />

@@ -36,7 +36,7 @@ const Info = () => {
     // dispatch(getAccount());
   }, []);
   useEffect(() => {
-    if (employee?.idService) {
+    if (employee?.idService && employee?.postSubdivision?.postId != process.env.REACT_APP_SELLER_ID) {
       dispatch(getAccount({ idService: employee?.idService, date: moment().format('YYYY-MM-DD') }));
     }
   }, [employee]);
@@ -122,8 +122,8 @@ const Info = () => {
           <div class="personal__city">{employee?.subdivision}</div>
           {pathname !== '/account' && (
             <>
-              {(dataAccount || loadingAccount) && (
-                <Link style={{ pointerEvents: !loadingAccount ? 'auto' : 'none' }} class="personal__btn" to={'/account'}>
+              {(dataAccount || loadingAccount || employee?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID) && (
+                <Link style={{ pointerEvents: !loadingAccount || employee?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID ? 'auto' : 'none' }} class="personal__btn" to={'/account'}>
                   {loadingAccount ? <div className="loading-account">Идет загрузка...</div> : 'Личный кабинет'}
                 </Link>
               )}
