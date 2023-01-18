@@ -119,7 +119,9 @@ const Info = () => {
           </div>
           <div class="personal__name">{`${employee?.firstName} ${employee?.lastName}`}</div>
           <div class="personal__post">{employee?.post}</div>
-          <div class="personal__city">{employee?.subdivision}</div>
+          <div class="personal__city" style={{ textAlign: 'center' }}>
+            {employee?.subdivision}
+          </div>
           {pathname !== '/account' && (
             <>
               {(dataAccount || loadingAccount || employee?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID) && (

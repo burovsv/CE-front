@@ -140,7 +140,7 @@ const AccountPage = () => {
             Баланс
           </button>
         </div>
-        <div class="tab">
+        {/* <div class="tab">
           <button
             onClick={() => {
               setActiveTab('plan-tab');
@@ -148,7 +148,7 @@ const AccountPage = () => {
             class={`filter__item tablinks ${activeTab === 'plan-tab' && 'active'}`}>
             Конкурсы
           </button>
-        </div>
+        </div> */}
         <div class="tab">
           <button
             onClick={() => {
@@ -162,56 +162,60 @@ const AccountPage = () => {
       {activeTab == 'balance-tab' ? (
         <div class="tabcontent">
           {!selectedEmployeeAccount && isManager ? (
-            <>
-              {dataAccountList && dataAccountList?.length > 0 && !loadingAccountList ? (
-                <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto' }}>
-                  <div className="table-common__head">Сотрудник</div>
-                  <div className="table-common__head">С начала месяца</div>
-                  <div className="table-common__head">Часы</div>
-                  <div className="table-common__head">Баланс</div>
-                  {dataAccountList?.map((row) => (
-                    <>
-                      <div
-                        onClick={() => {
-                          setSelectedEmployeeAccount(row?.id);
-                        }}
-                        className="table-common__cell"
-                        style={{ cursor: 'pointer' }}>
-                        {row?.name}
-                      </div>
-                      <div
-                        onClick={() => {
-                          setSelectedEmployeeAccount(row?.id);
-                        }}
-                        className="table-common__cell"
-                        style={{ textAlign: 'center', cursor: 'pointer' }}>
-                        {row?.earned}
-                      </div>
-                      <div
-                        onClick={() => {
-                          setSelectedEmployeeAccount(row?.id);
-                        }}
-                        className="table-common__cell"
-                        style={{ cursor: 'pointer' }}>
-                        {row?.hours}
-                      </div>
-                      <div
-                        onClick={() => {
-                          setSelectedEmployeeAccount(row?.id);
-                        }}
-                        className="table-common__cell"
-                        style={{ cursor: 'pointer' }}>
-                        {row?.balance}
-                      </div>
-                    </>
-                  ))}
-                </div>
-              ) : (!dataAccountList || dataAccountList?.length === 0) && !loadingAccountList ? (
-                <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>Работников не найдено</div>
-              ) : (
-                <></>
-              )}
-            </>
+            !loadingAccountList ? (
+              <>
+                {dataAccountList && dataAccountList?.length > 0 ? (
+                  <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto' }}>
+                    <div className="table-common__head">Сотрудник</div>
+                    <div className="table-common__head">С начала месяца</div>
+                    <div className="table-common__head">Часы</div>
+                    <div className="table-common__head">Баланс</div>
+                    {dataAccountList?.map((row) => (
+                      <>
+                        <div
+                          onClick={() => {
+                            setSelectedEmployeeAccount(row?.id);
+                          }}
+                          className="table-common__cell"
+                          style={{ cursor: 'pointer' }}>
+                          {row?.name}
+                        </div>
+                        <div
+                          onClick={() => {
+                            setSelectedEmployeeAccount(row?.id);
+                          }}
+                          className="table-common__cell"
+                          style={{ textAlign: 'center', cursor: 'pointer' }}>
+                          {row?.earned}
+                        </div>
+                        <div
+                          onClick={() => {
+                            setSelectedEmployeeAccount(row?.id);
+                          }}
+                          className="table-common__cell"
+                          style={{ cursor: 'pointer' }}>
+                          {row?.hours}
+                        </div>
+                        <div
+                          onClick={() => {
+                            setSelectedEmployeeAccount(row?.id);
+                          }}
+                          className="table-common__cell"
+                          style={{ cursor: 'pointer' }}>
+                          {row?.balance}
+                        </div>
+                      </>
+                    ))}
+                  </div>
+                ) : (!dataAccountList || dataAccountList?.length === 0) && !loadingAccountList ? (
+                  <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>Работников не найдено</div>
+                ) : (
+                  <></>
+                )}
+              </>
+            ) : (
+              <div className="loading-account">Идет загрузка...</div>
+            )
           ) : isManager === false || selectedEmployeeAccount ? (
             <>
               {isManager && (
@@ -220,7 +224,7 @@ const AccountPage = () => {
                     setSelectedEmployeeAccount(null);
                   }}
                   style={{ height: '48px', marginLeft: '10px', marginBottom: '10px', color: '#377BFF', fontWeight: '700' }}>
-                  Вернутся
+                  Вернуться
                 </button>
               )}
               <div class="wrap__day">
