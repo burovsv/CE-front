@@ -38,7 +38,7 @@ const AdminAccessPage = () => {
     getSubdivisions: { data: subdivisions, loading: subdivisionsLoading },
   } = useSelector((state) => state.subdivision);
   useEffect(() => {
-    if ((selectedType === 'workTable' && paramsData.subdivision == 0) || selectedType !== 'workTable') {
+    if (((selectedType === 'workTable' || selectedType === 'balance') && paramsData.subdivision == 0) || selectedType == 'content') {
       dispatch(getEmployees(paramsData));
     }
   }, [paramsData]);
@@ -100,9 +100,7 @@ const AdminAccessPage = () => {
       }),
     );
   };
-  console.log('REMOVE', employeeRemoveAccess);
-  console.log('ADDED', employeeAddedAccess);
-  console.log('CURENT', employeesAccess);
+
   return (
     <div style={{}}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -122,6 +120,15 @@ const AdminAccessPage = () => {
             }}
             class={`filter__item tablinks ${selectedType === 'workTable' && 'active'}`}>
             График
+          </button>
+        </div>
+        <div class="tab">
+          <button
+            onClick={() => {
+              setSelectedType('balance');
+            }}
+            class={`filter__item tablinks ${selectedType === 'balance' && 'active'}`}>
+            Управляющий
           </button>
         </div>
       </div>
@@ -168,7 +175,7 @@ const AdminAccessPage = () => {
           </select>
         </div>
         <button
-          disabled={updateEmployeeLoading || (selectedType == 'workTable' ? !selectedEmployee || !paramsData.subdivision : !selectedEmployee)}
+          disabled={updateEmployeeLoading || (selectedType == 'workTable' || selectedType == 'balance' ? !selectedEmployee || !paramsData.subdivision : !selectedEmployee)}
           onClick={() => {
             if (selectedEmployee?.id) {
               const findExist = [...employeesAccess, ...employeeAddedAccess].find((existEmpl) => existEmpl?.id == selectedEmployee?.id && existEmpl.subdivision == paramsData.subdivision);

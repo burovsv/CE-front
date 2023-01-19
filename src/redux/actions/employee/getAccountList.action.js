@@ -7,7 +7,7 @@ export const initStateGetAccountList = {
 
 export const getAccountList = createAsyncThunk('employee/getAccountList', async (data, { rejectWithValue, fulfillWithValue }) => {
   return await axios
-    .get(`${process.env.REACT_APP_SERVER_API}/account-list`)
+    .get(`${process.env.REACT_APP_SERVER_API}/account-list`, { params: { subdivisionId: data } })
     .then((res) => {
       return fulfillWithValue(res.data);
     })

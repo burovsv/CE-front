@@ -19,6 +19,7 @@ import { getEmployeeHistory } from '../../redux/actions/employeeHistory/getEmplo
 import { setActiveCalendarSubdivision } from '../../redux/slices/employeeHistory.slice';
 import PlanTab from '../PlanTab';
 import { getAccountList } from '../../redux/actions/employee/getAccountList.action';
+import { getEmployeeAccess } from '../../redux/actions/employee/getEmployeesAccess.action';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -43,7 +44,8 @@ const AccountPage = () => {
   } = useSelector((state) => state.employee);
 
   const [isManager, setIsManager] = useState(false);
-
+  const [selectedAccessSubdivision, setSelectedAccessSubdivision] = useState(null);
+  const [listAccessSubdivision, setListAccessSubdivision] = useState([]);
   const {
     activeMonthYear,
     getWorkCalendarMonth: { data: workCalendarData, loading: workCalendarMonthLoading },
@@ -54,15 +56,18 @@ const AccountPage = () => {
     getEmployeeHistory: { data: employeeHistory },
     activeCalendarSubdivision,
   } = useSelector((state) => state.employeeHistory);
+  const [clickEditWorkTable, setClickEditWorkTable] = useState(false);
   const handleClickOpenFullCalendar = () => {
     const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: activeMonthYear };
     dispatch(getEmployees(paramsEmployees));
+    setClickEditWorkTable(true);
   };
   useEffect(() => {
-    if (employees?.length >= 1) {
+    if (employees?.length >= 1 && clickEditWorkTable) {
       dispatch(setShowFullCalendar(true));
+      setClickEditWorkTable(false);
     }
-  }, [employees]);
+  }, [employees, clickEditWorkTable]);
 
   const dateWatch = watch('date');
   const onBlurDate = () => {
@@ -78,8 +83,18 @@ const AccountPage = () => {
     getEmployeeUser: { data: employee },
   } = useSelector((state) => state.employee);
   useEffect(() => {
-    if (dataUser) {
+    if (dataUser && listAccessSubdivision?.length == 0) {
       setIsManager(dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID);
+      const selfSubdivision = { value: dataUser?.postSubdivision?.subdivisionId, label: dataUser?.subdivision };
+      let listSubdivisionData = [selfSubdivision];
+
+      dataUser?.accessBalance?.map((itemAccess) => {
+        if (itemAccess?.subdivisionId != selfSubdivision?.value) {
+          listSubdivisionData.push({ label: itemAccess?.name, value: itemAccess?.subdivisionId });
+        }
+      });
+      setListAccessSubdivision(listSubdivisionData);
+      setSelectedAccessSubdivision(selfSubdivision);
     }
   }, [dataUser]);
 
@@ -103,6 +118,13 @@ const AccountPage = () => {
   // const [showFullCalendar, setShowFullCalendar] = useState(false);
   const [activeTab, setActiveTab] = useState('balance-tab');
   const [showDateFilter, setShowDateFilter] = useState(false);
+
+  // useEffect(() => {
+  //   if (activeTab == 'balance-tab') {
+  //     dispatch(getEmployeeAccess('balance'));
+  //   }
+  // }, [activeTab]);
+
   useEffect(() => {
     if (showFullCalendar) {
       document.body.style.overflow = 'hidden';
@@ -117,10 +139,10 @@ const AccountPage = () => {
     dispatch(getEmployeeHistory());
   }, []);
   useEffect(() => {
-    if (isManager) {
-      dispatch(getAccountList());
+    if (isManager && listAccessSubdivision?.length >= 1 && selectedAccessSubdivision) {
+      dispatch(getAccountList(selectedAccessSubdivision?.value));
     }
-  }, [isManager]);
+  }, [isManager, selectedAccessSubdivision, listAccessSubdivision]);
 
   useEffect(() => {
     if (isManager && selectedEmployeeAccount) {
@@ -164,6 +186,20 @@ const AccountPage = () => {
           {!selectedEmployeeAccount && isManager ? (
             !loadingAccountList ? (
               <>
+                <div className="modal__select" style={{ width: '300px' }}>
+                  <select
+                    onChange={(val) => {
+                      if (val.target.value) {
+                        setSelectedAccessSubdivision({ id: val.target.value });
+                      }
+                    }}
+                    value={selectedAccessSubdivision?.value || ''}
+                    placeholder="Должность">
+                    {listAccessSubdivision?.map((item, itemIndex) => {
+                      return <option value={item?.value}>{item?.label}</option>;
+                    })}
+                  </select>
+                </div>
                 {dataAccountList && dataAccountList?.length > 0 ? (
                   <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto' }}>
                     <div className="table-common__head">Сотрудник</div>
