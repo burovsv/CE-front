@@ -17,7 +17,9 @@
   background-color: #fdec31;
   /* margin: 10px; */
 }
-
+.table-common__cell-odd {
+  background-color: #f9f9f9 !important;
+}
 .table__more {
   font-family: 'Roboto', sans-serif;
   margin-top: 20px;

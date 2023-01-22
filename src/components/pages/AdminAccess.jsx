@@ -217,7 +217,7 @@ const AdminAccessPage = () => {
         <div class="table__head">Ответственный</div>
         <div class="table__head">Должность</div>
         <div class="table__head"></div>
-        {[...employeesAccess, ...employeeAddedAccess]?.map((employeeItem) => {
+        {[...employeesAccess, ...employeeAddedAccess]?.map((employeeItem, indexItem) => {
           let findInAddedAccess;
           const findInAccess = viewAllEmployees?.find((accessItem) => accessItem?.id == employeeItem?.id);
           const findAccessSubdivision = viewSubdivisions?.find((accessSubdiv) => accessSubdiv?.value == employeeItem?.subdivision);
@@ -230,12 +230,12 @@ const AdminAccessPage = () => {
           if (findInAccess && !findInRemoveAccess) {
             return (
               <>
-                <div class="table__col">{findAccessSubdivision?.label}</div>
-                <div class="table__col"> {`${findInAccess.firstName} ${findInAccess.lastName}`}</div>
-                <div class="table__col">{findInAccess.post}</div>
+                <div className={`table__col ${indexItem % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{findAccessSubdivision?.label}</div>
+                <div className={`table__col ${indexItem % 2 !== 0 ? 'table-common__cell-odd' : ''}`}> {`${findInAccess.firstName} ${findInAccess.lastName}`}</div>
+                <div className={`table__col ${indexItem % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{findInAccess.post}</div>
                 <button
                   disabled={updateEmployeeLoading}
-                  class="table__col table__icon"
+                  className={`table__col table__icon ${indexItem % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
                   onClick={() => {
                     // const filterRemoveEmployee = employeeRemoveAccess?.filter((filterRemoveItem) => filterRemoveItem?.id !== findInAccess?.id && filterRemoveItem?.subdivision !== employeeItem?.subdivision);
                     // const filterAddedEmployee = employeeAddedAccess?.filter((filterRemoveItem) => filterRemoveItem?.id != findInAccess?.id && filterRemoveItem?.subdivision != employeeItem?.subdivision);

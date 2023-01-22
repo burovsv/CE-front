@@ -190,7 +190,7 @@ const AccountPage = () => {
                   <select
                     onChange={(val) => {
                       if (val.target.value) {
-                        setSelectedAccessSubdivision({ id: val.target.value });
+                        setSelectedAccessSubdivision({ value: val.target.value });
                       }
                     }}
                     value={selectedAccessSubdivision?.value || ''}
@@ -201,18 +201,19 @@ const AccountPage = () => {
                   </select>
                 </div>
                 {dataAccountList && dataAccountList?.length > 0 ? (
-                  <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto' }}>
+                  <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto auto' }}>
                     <div className="table-common__head">Сотрудник</div>
+                    <div className="table-common__head">Должность</div>
                     <div className="table-common__head">С начала месяца</div>
                     <div className="table-common__head">Часы</div>
                     <div className="table-common__head">Баланс</div>
-                    {dataAccountList?.map((row) => (
+                    {dataAccountList?.map((row, indexRow) => (
                       <>
                         <div
                           onClick={() => {
                             setSelectedEmployeeAccount(row?.id);
                           }}
-                          className="table-common__cell"
+                          className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
                           style={{ cursor: 'pointer' }}>
                           {row?.name}
                         </div>
@@ -220,7 +221,15 @@ const AccountPage = () => {
                           onClick={() => {
                             setSelectedEmployeeAccount(row?.id);
                           }}
-                          className="table-common__cell"
+                          className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                          style={{ cursor: 'pointer' }}>
+                          {row?.post || '-'}
+                        </div>
+                        <div
+                          onClick={() => {
+                            setSelectedEmployeeAccount(row?.id);
+                          }}
+                          className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
                           style={{ textAlign: 'center', cursor: 'pointer' }}>
                           {row?.earned}
                         </div>
@@ -228,7 +237,7 @@ const AccountPage = () => {
                           onClick={() => {
                             setSelectedEmployeeAccount(row?.id);
                           }}
-                          className="table-common__cell"
+                          className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
                           style={{ cursor: 'pointer' }}>
                           {row?.hours}
                         </div>
@@ -236,7 +245,7 @@ const AccountPage = () => {
                           onClick={() => {
                             setSelectedEmployeeAccount(row?.id);
                           }}
-                          className="table-common__cell"
+                          className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
                           style={{ cursor: 'pointer' }}>
                           {row?.balance}
                         </div>
@@ -244,7 +253,7 @@ const AccountPage = () => {
                     ))}
                   </div>
                 ) : (!dataAccountList || dataAccountList?.length === 0) && !loadingAccountList ? (
-                  <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>Работников не найдено</div>
+                  <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>Сотрудников не найдено</div>
                 ) : (
                   <></>
                 )}
@@ -327,12 +336,12 @@ const AccountPage = () => {
                     <div className="table-common__head">Наименование</div>
                     <div className="table-common__head">Кол-во</div>
                     <div className="table-common__head">Бонус</div>
-                    {dataAccount?.table?.map((row) => (
+                    {dataAccount?.table?.map((row, indexRow) => (
                       <>
-                        <div className="table-common__cell">{moment(row?.date_sale).format('DD.MM.YYYY')}</div>
-                        <div className="table-common__cell">{row?.product}</div>
-                        <div className="table-common__cell">{row?.quantity}</div>
-                        <div className="table-common__cell">{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)}</div>
+                        <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{moment(row?.date_sale).format('DD.MM.YYYY')}</div>
+                        <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.product}</div>
+                        <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.quantity}</div>
+                        <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)}</div>
                       </>
                     ))}
                   </div>
