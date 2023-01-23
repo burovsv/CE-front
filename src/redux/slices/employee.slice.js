@@ -12,7 +12,9 @@ import { initStateGetEmployeeCompetitions, reducerGetEmployeeCompetitions } from
 import { initStateGetEmployees, reducerGetEmployees } from '../actions/employee/getEmployees.action';
 import { initStateGetEmployeeAccess, reducerGetEmployeeAccess } from '../actions/employee/getEmployeesAccess.action';
 import { initStateGetEmployeeUser, reducerGetEmployeeUser } from '../actions/employee/getEmployeeUser.action';
+import { initStateGetPrePayment, reducerGetPrePayment } from '../actions/employee/getPrePayment.action';
 import { initStateLoginEmployee, reducerLoginEmployee } from '../actions/employee/login.action';
+import { initStatePrePaymentCreate, reducerPrePaymentCreate } from '../actions/employee/prePaymentCreate.action';
 import { initStateSync1C, reducerSync1C } from '../actions/employee/sync1C.action';
 import { initStateUpdateEmployee, reducerUpdateEmployee } from '../actions/employee/updateEmployee.action';
 import { initStateUpdateEmployeeAccess, reducerUpdateEmployeeAccess } from '../actions/employee/updateEmployeesAccess.action';
@@ -37,6 +39,8 @@ export const initialState = {
   ...initStateGetAccountList,
   ...initStateGetEmployeeAccess,
   ...initStateUpdateEmployeeAccess,
+  ...initStatePrePaymentCreate,
+  ...initStateGetPrePayment,
 };
 
 export const employeeSlice = createSlice({
@@ -46,11 +50,17 @@ export const employeeSlice = createSlice({
     resetGetEmployees(state) {
       state.getEmployees = initStateGetEmployees.getEmployees;
     },
+    resetPrePaymentCreate(state) {
+      state.prePaymentCreate = initStatePrePaymentCreate.prePaymentCreate;
+    },
     resetUpdateEmployeeAccess(state) {
       state.updateEmployeeAccess = initStateUpdateEmployeeAccess.updateEmployeeAccess;
     },
     resetGetEmployee(state) {
       state.getEmployee = initStateGetEmployee.getEmployee;
+    },
+    resetGetPrePayment(state) {
+      state.getPrePayment = initStateGetPrePayment.getPrePayment;
     },
     resetGetAccount(state) {
       state.getAccount = initStateGetAccount.getAccount;
@@ -84,7 +94,9 @@ export const employeeSlice = createSlice({
     ...reducerGetEmployeeAccess,
     ...reducerUpdateEmployeeAccess,
     ...reducerGetAccountList,
+    ...reducerPrePaymentCreate,
+    ...reducerGetPrePayment,
   },
 });
-export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount, resetUpdateEmployeeAccess } = employeeSlice.actions;
+export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount, resetUpdateEmployeeAccess, resetPrePaymentCreate, resetGetPrePayment } = employeeSlice.actions;
 export const employeeReducer = employeeSlice.reducer;
