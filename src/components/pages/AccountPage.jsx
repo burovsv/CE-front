@@ -48,7 +48,7 @@ const AccountPage = () => {
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
     prePaymentCreate: { data: prePaymentCreateData, loading: prePaymentLoading, error: prePaymentCreateError },
   } = useSelector((state) => state.employee);
-
+  const [childActiveTab, setChildActiveTab] = useState('balance-list-tab');
   const [isManager, setIsManager] = useState(false);
   const [selectedAccessSubdivision, setSelectedAccessSubdivision] = useState(null);
   const [listAccessSubdivision, setListAccessSubdivision] = useState([]);
@@ -190,17 +190,6 @@ const AccountPage = () => {
             Баланс
           </button>
         </div>{' '}
-        {isManager && (
-          <div class="tab">
-            <button
-              onClick={() => {
-                setActiveTab('history-tab');
-              }}
-              class={`filter__item tablinks ${activeTab === 'history-tab' && 'active'}`}>
-              История баланса
-            </button>
-          </div>
-        )}
         {/* <div class="tab">
           <button
             onClick={() => {
@@ -221,252 +210,279 @@ const AccountPage = () => {
         </div>
       </div>
       {activeTab == 'balance-tab' ? (
-        <div class="tabcontent">
-          {!selectedEmployeeAccount && isManager ? (
-            !loadingAccountList ? (
-              <>
-                <div className="modal__select" style={{ width: '300px' }}>
-                  <select
-                    onChange={(val) => {
-                      if (val.target.value) {
-                        setSelectedAccessSubdivision({ value: val.target.value });
-                      }
-                    }}
-                    value={selectedAccessSubdivision?.value || ''}
-                    placeholder="Должность">
-                    {listAccessSubdivision?.map((item, itemIndex) => {
-                      return <option value={item?.value}>{item?.label}</option>;
-                    })}
-                  </select>
-                </div>
-                {dataAccountList && dataAccountList?.length > 0 ? (
-                  <>
-                    <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto auto auto' }}>
-                      <div className="table-common__head">Сотрудник</div>
-                      <div className="table-common__head">Должность</div>
-                      <div className="table-common__head">С начала месяца</div>
-                      <div className="table-common__head">Часы</div>
-                      <div className="table-common__head">Баланс</div>
-                      <div className="table-common__head"></div>
-                      {dataAccountList?.map((row, indexRow) => (
-                        <>
-                          <div
-                            onClick={() => {
-                              setSelectedEmployeeAccount(row?.id);
-                            }}
-                            className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                            style={{ cursor: 'pointer' }}>
-                            {row?.name}
-                          </div>
-                          <div
-                            onClick={() => {
-                              setSelectedEmployeeAccount(row?.id);
-                            }}
-                            className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                            style={{ cursor: 'pointer' }}>
-                            {row?.post || '-'}
-                          </div>
-                          <div
-                            onClick={() => {
-                              setSelectedEmployeeAccount(row?.id);
-                            }}
-                            className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                            style={{ textAlign: 'center', cursor: 'pointer' }}>
-                            {row?.earned}
-                          </div>
-                          <div
-                            onClick={() => {
-                              setSelectedEmployeeAccount(row?.id);
-                            }}
-                            className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                            style={{ cursor: 'pointer' }}>
-                            {row?.hours}
-                          </div>
-                          <div
-                            onClick={() => {
-                              setSelectedEmployeeAccount(row?.id);
-                            }}
-                            className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                            style={{ cursor: 'pointer' }}>
-                            {row?.balance}
-                          </div>
-                          <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`} style={{ padding: '5px 14px', display: 'flex', alignItems: 'center' }}>
-                            <input
-                              defaultValue={prePaymentEmployee[row?.userId]?.sum ?? '0'}
-                              value={prePaymentEmployee[row?.userId]?.sum ?? '0'}
-                              onChange={(event) => {
-                                let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                let valInt = parseInt(event.target.value);
-                                let val = event.target.value;
-                                if (val == '' || val == '-') {
-                                  valInt = val;
-                                } else if (isNaN(valInt)) {
-                                  valInt = 0;
-                                }
-                                updatePrePaymentEmployee[row?.userId] = { sum: valInt, name: row?.name };
-
-                                setPrePaymentEmployee(updatePrePaymentEmployee);
-                              }}
-                              onBlur={(event) => {
-                                if (event.target.value == '-' || !event.target.value) {
-                                  let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                  updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
-                                  setPrePaymentEmployee(updatePrePaymentEmployee);
-                                } else if (parseInt(row?.balance) > 0) {
-                                  const val = parseInt(event.target.value);
-                                  const percentNumber = parseInt((parseInt(row?.balance) / 100) * 50);
-
-                                  if (val > percentNumber && val > 0) {
-                                    let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                    updatePrePaymentEmployee[row?.userId] = { sum: percentNumber, name: row?.name };
-                                    setPrePaymentEmployee(updatePrePaymentEmployee);
-                                  }
-                                }
-                              }}
-                              type="text"
-                              style={{ height: '35px', width: '65px', border: '0.2px solid #C6C6C6', outline: 'none', padding: '10px', boxSizing: 'border-box', fontFamily: 'inherit' }}
-                            />
-                          </div>
-                        </>
-                      ))}
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-                      <div
-                        onClick={() => {
-                          const isActive =
-                            Object.keys(prePaymentEmployee)
-                              .map((keyPre) => prePaymentEmployee[keyPre].sum)
-                              .filter((filterPre) => filterPre).length >= 1;
-                          if (isActive) {
-                            setShowPrePayment(true);
-                          }
-                        }}
-                        class="filter__item"
-                        style={{
-                          background:
-                            Object.keys(prePaymentEmployee)
-                              .map((keyPre) => prePaymentEmployee[keyPre].sum)
-                              .filter((filterPre) => filterPre).length >= 1
-                              ? '#FF0000'
-                              : '#BAB8B8',
-                          color: '#Fff',
-                          width: 'min-content',
-                          height: '45px',
-                        }}>
-                        Выдать
-                      </div>
-                      <div>Доступно с 4 по 25</div>
-                    </div>
-                  </>
-                ) : (!dataAccountList || dataAccountList?.length === 0) && !loadingAccountList ? (
-                  <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>Сотрудников не найдено</div>
-                ) : (
-                  <></>
-                )}
-              </>
-            ) : (
-              <div className="loading-account">Идет загрузка...</div>
-            )
-          ) : isManager === false || selectedEmployeeAccount ? (
-            <>
-              {isManager && (
+        <>
+          {isManager && (
+            <div style={{ display: 'flex', alignItems: 'center', marginTop: '-20px' }}>
+              <div class="tab">
                 <button
                   onClick={() => {
-                    setSelectedEmployeeAccount(null);
+                    setChildActiveTab('balance-list-tab');
                   }}
-                  style={{ height: '48px', marginLeft: '10px', marginBottom: '10px', color: '#377BFF', fontWeight: '700' }}>
-                  Вернуться
+                  class={`filter__item tablinks ${childActiveTab === 'balance-list-tab' && 'active'}`}>
+                  Сотрудники
                 </button>
-              )}
-              <div class="wrap__day">
-                <div className="table__common">
-                  <div className="table__common-item">
-                    <div className="table_common-left">Баланс:&nbsp;</div>
-                    <div className="table_common-right">{dataAccount?.balance || 0}</div>
-                  </div>
-                  <div className="table__common-item">
-                    <div className="table_common-left">Часы :&nbsp;</div>
-                    <div className="table_common-right">{dataAccount?.hours || 0}</div>
-                  </div>
-                  <div className="table__common-item">
-                    <div className="table_common-left">С начала месяца :&nbsp;</div>
-                    <div className="table_common-right">{dataAccount?.earned || 0}</div>
-                  </div>
-                </div>
-                <div class="blocks__item report " style={{ marginBottom: 0 }}>
-                  <div className="date" style={{ gridGap: '0px', gridTemplateColumns: 'auto auto auto' }}>
-                    <div className="date__wrap" style={{ marginRight: '20px', position: 'relative' }}>
-                      <input
-                        type="text"
-                        style={{ marginBottom: 0, width: '100px', userSelect: 'none', caretColor: 'transparent', cursor: 'pointer' }}
-                        value={moment(dateWatch).format('DD.MM.YYYY')}
-                        onClick={() => {
-                          if (showDateFilter) {
-                            setShowDateFilter(false);
-                          } else {
-                            setShowDateFilter(true);
+              </div>
+
+              <div class="tab">
+                <button
+                  onClick={() => {
+                    setChildActiveTab('balance-history-tab');
+                  }}
+                  class={`filter__item tablinks ${childActiveTab === 'balance-history-tab' && 'active'}`}>
+                  История
+                </button>
+              </div>
+            </div>
+          )}
+          {childActiveTab === 'balance-list-tab' && (
+            <div class="tabcontent">
+              {!selectedEmployeeAccount && isManager ? (
+                !loadingAccountList ? (
+                  <>
+                    <div className="modal__select" style={{ width: '300px' }}>
+                      <select
+                        onChange={(val) => {
+                          if (val.target.value) {
+                            setSelectedAccessSubdivision({ value: val.target.value });
                           }
                         }}
-                      />
-
-                      {showDateFilter && (
-                        <CalendarFilter
-                          setDate={(dateNews) => {
-                            setValue('date', dateNews);
-                          }}
-                          date={dateWatch}
-                          onClose={() => setShowDateFilter(false)}
-                        />
-                      )}
-                    </div>{' '}
-                    {loadingAccount ? (
-                      <div className="loading-account">Идет загрузка...</div>
-                    ) : (
+                        value={selectedAccessSubdivision?.value || ''}
+                        placeholder="Должность">
+                        {listAccessSubdivision?.map((item, itemIndex) => {
+                          return <option value={item?.value}>{item?.label}</option>;
+                        })}
+                      </select>
+                    </div>
+                    {dataAccountList && dataAccountList?.length > 0 ? (
                       <>
-                        <button class="report__btn" onClick={handleSubmit(onSubmit)}>
-                          Сформировать отчет о личном
-                        </button>
+                        <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto auto auto' }}>
+                          <div className="table-common__head">Сотрудник</div>
+                          <div className="table-common__head">Должность</div>
+                          <div className="table-common__head">С начала месяца</div>
+                          <div className="table-common__head">Часы</div>
+                          <div className="table-common__head">Баланс</div>
+                          <div className="table-common__head"></div>
+                          {dataAccountList?.map((row, indexRow) => (
+                            <>
+                              <div
+                                onClick={() => {
+                                  setSelectedEmployeeAccount(row?.id);
+                                }}
+                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                style={{ cursor: 'pointer' }}>
+                                {row?.name}
+                              </div>
+                              <div
+                                onClick={() => {
+                                  setSelectedEmployeeAccount(row?.id);
+                                }}
+                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                style={{ cursor: 'pointer' }}>
+                                {row?.post || '-'}
+                              </div>
+                              <div
+                                onClick={() => {
+                                  setSelectedEmployeeAccount(row?.id);
+                                }}
+                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                style={{ textAlign: 'center', cursor: 'pointer' }}>
+                                {row?.earned}
+                              </div>
+                              <div
+                                onClick={() => {
+                                  setSelectedEmployeeAccount(row?.id);
+                                }}
+                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                style={{ cursor: 'pointer' }}>
+                                {row?.hours}
+                              </div>
+                              <div
+                                onClick={() => {
+                                  setSelectedEmployeeAccount(row?.id);
+                                }}
+                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                style={{ cursor: 'pointer' }}>
+                                {row?.balance}
+                              </div>
+                              <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`} style={{ padding: '5px 14px', display: 'flex', alignItems: 'center' }}>
+                                <input
+                                  defaultValue={prePaymentEmployee[row?.userId]?.sum ?? '0'}
+                                  value={prePaymentEmployee[row?.userId]?.sum ?? '0'}
+                                  onChange={(event) => {
+                                    let updatePrePaymentEmployee = { ...prePaymentEmployee };
+                                    let valInt = parseInt(event.target.value);
+                                    let val = event.target.value;
+                                    if (val == '' || val == '-') {
+                                      valInt = val;
+                                    } else if (isNaN(valInt)) {
+                                      valInt = 0;
+                                    }
+                                    updatePrePaymentEmployee[row?.userId] = { sum: valInt, name: row?.name };
 
-                        {dataAccount?.table && dataAccount?.table?.length > 0 && (
-                          <div class="report__total">
-                            Итого: <b>{dataAccount?.table?.map((row) => (parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)).reduce((partialSum, a) => (parseFloat(partialSum) + parseFloat(a)).toFixed(2), 0)}</b>
+                                    setPrePaymentEmployee(updatePrePaymentEmployee);
+                                  }}
+                                  onBlur={(event) => {
+                                    if (event.target.value == '-' || !event.target.value) {
+                                      let updatePrePaymentEmployee = { ...prePaymentEmployee };
+                                      updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
+                                      setPrePaymentEmployee(updatePrePaymentEmployee);
+                                    } else if (parseInt(row?.balance) > 0) {
+                                      const val = parseInt(event.target.value);
+                                      const percentNumber = parseInt((parseInt(row?.balance) / 100) * 50);
+
+                                      if (val > percentNumber && val > 0) {
+                                        let updatePrePaymentEmployee = { ...prePaymentEmployee };
+                                        updatePrePaymentEmployee[row?.userId] = { sum: percentNumber, name: row?.name };
+                                        setPrePaymentEmployee(updatePrePaymentEmployee);
+                                      }
+                                    }
+                                  }}
+                                  disabled={parseInt(row?.balance) <= 0}
+                                  type="text"
+                                  style={{ height: '35px', width: '65px', border: '0.2px solid #C6C6C6', outline: 'none', padding: '10px', boxSizing: 'border-box', fontFamily: 'inherit', ...(parseInt(row?.balance) <= 0 && { background: '#F2F2F2' }) }}
+                                />
+                              </div>
+                            </>
+                          ))}
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+                          <div
+                            onClick={() => {
+                              const isActive =
+                                Object.keys(prePaymentEmployee)
+                                  .map((keyPre) => prePaymentEmployee[keyPre].sum)
+                                  .filter((filterPre) => filterPre).length >= 1;
+                              if (isActive) {
+                                setShowPrePayment(true);
+                              }
+                            }}
+                            class="filter__item"
+                            style={{
+                              background:
+                                Object.keys(prePaymentEmployee)
+                                  .map((keyPre) => prePaymentEmployee[keyPre].sum)
+                                  .filter((filterPre) => filterPre).length >= 1
+                                  ? '#FF0000'
+                                  : '#BAB8B8',
+                              color: '#Fff',
+                              width: 'min-content',
+                              height: '45px',
+                            }}>
+                            Выдать
                           </div>
-                        )}
+                          <div>Доступно с 4 по 20 не более 50% от баланса</div>
+                        </div>
                       </>
+                    ) : (!dataAccountList || dataAccountList?.length === 0) && !loadingAccountList ? (
+                      <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>Сотрудников не найдено</div>
+                    ) : (
+                      <></>
+                    )}
+                  </>
+                ) : (
+                  <div className="loading-account">Идет загрузка...</div>
+                )
+              ) : isManager === false || selectedEmployeeAccount ? (
+                <>
+                  {isManager && (
+                    <button
+                      onClick={() => {
+                        setSelectedEmployeeAccount(null);
+                      }}
+                      style={{ height: '48px', marginLeft: '10px', marginBottom: '10px', color: '#377BFF', fontWeight: '700' }}>
+                      Вернуться
+                    </button>
+                  )}
+                  <div class="wrap__day">
+                    <div className="table__common">
+                      <div className="table__common-item">
+                        <div className="table_common-left">Баланс:&nbsp;</div>
+                        <div className="table_common-right">{dataAccount?.balance || 0}</div>
+                      </div>
+                      <div className="table__common-item">
+                        <div className="table_common-left">Часы :&nbsp;</div>
+                        <div className="table_common-right">{dataAccount?.hours || 0}</div>
+                      </div>
+                      <div className="table__common-item">
+                        <div className="table_common-left">С начала месяца :&nbsp;</div>
+                        <div className="table_common-right">{dataAccount?.earned || 0}</div>
+                      </div>
+                    </div>
+                    <div class="blocks__item report " style={{ marginBottom: 0 }}>
+                      <div className="date" style={{ gridGap: '0px', gridTemplateColumns: 'auto auto auto' }}>
+                        <div className="date__wrap" style={{ marginRight: '20px', position: 'relative' }}>
+                          <input
+                            type="text"
+                            style={{ marginBottom: 0, width: '100px', userSelect: 'none', caretColor: 'transparent', cursor: 'pointer' }}
+                            value={moment(dateWatch).format('DD.MM.YYYY')}
+                            onClick={() => {
+                              if (showDateFilter) {
+                                setShowDateFilter(false);
+                              } else {
+                                setShowDateFilter(true);
+                              }
+                            }}
+                          />
+
+                          {showDateFilter && (
+                            <CalendarFilter
+                              setDate={(dateNews) => {
+                                setValue('date', dateNews);
+                              }}
+                              date={dateWatch}
+                              onClose={() => setShowDateFilter(false)}
+                            />
+                          )}
+                        </div>{' '}
+                        {loadingAccount ? (
+                          <div className="loading-account">Идет загрузка...</div>
+                        ) : (
+                          <>
+                            <button class="report__btn" onClick={handleSubmit(onSubmit)}>
+                              Сформировать отчет о личном
+                            </button>
+
+                            {dataAccount?.table && dataAccount?.table?.length > 0 && (
+                              <div class="report__total">
+                                Итого: <b>{dataAccount?.table?.map((row) => (parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)).reduce((partialSum, a) => (parseFloat(partialSum) + parseFloat(a)).toFixed(2), 0)}</b>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    {dataAccount?.table && dataAccount?.table?.length > 0 && !loadingAccount ? (
+                      <div className="table-common">
+                        <div className="table-common__head">Дата</div>
+                        <div className="table-common__head">Наименование</div>
+                        <div className="table-common__head">Кол-во</div>
+                        <div className="table-common__head">Бонус</div>
+                        {dataAccount?.table?.map((row, indexRow) => (
+                          <>
+                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{moment(row?.date_sale).format('DD.MM.YYYY')}</div>
+                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.product}</div>
+                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.quantity}</div>
+                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)}</div>
+                          </>
+                        ))}
+                      </div>
+                    ) : (!dataAccount?.table || dataAccount?.table?.length === 0) && !loadingAccount ? (
+                      <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>На выбраную дату продаж нет. Попробуйте выбрать рабочий день, где были продажи</div>
+                    ) : (
+                      <></>
                     )}
                   </div>
-                </div>
-                {dataAccount?.table && dataAccount?.table?.length > 0 && !loadingAccount ? (
-                  <div className="table-common">
-                    <div className="table-common__head">Дата</div>
-                    <div className="table-common__head">Наименование</div>
-                    <div className="table-common__head">Кол-во</div>
-                    <div className="table-common__head">Бонус</div>
-                    {dataAccount?.table?.map((row, indexRow) => (
-                      <>
-                        <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{moment(row?.date_sale).format('DD.MM.YYYY')}</div>
-                        <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.product}</div>
-                        <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.quantity}</div>
-                        <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)}</div>
-                      </>
-                    ))}
-                  </div>
-                ) : (!dataAccount?.table || dataAccount?.table?.length === 0) && !loadingAccount ? (
-                  <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>На выбраную дату продаж нет. Попробуйте выбрать рабочий день, где были продажи</div>
-                ) : (
-                  <></>
-                )}
-              </div>
-            </>
-          ) : (
-            <></>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
           )}
-        </div>
+          {childActiveTab === 'balance-history-tab' && isManager && <PrePaymentList list={listAccessSubdivision} />}
+        </>
       ) : activeTab == 'plan-tab' ? (
         <PlanTab />
-      ) : activeTab == 'history-tab' ? (
-        <PrePaymentList list={listAccessSubdivision} />
       ) : (
         <div class="tabcontent">
           {

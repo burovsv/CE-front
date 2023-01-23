@@ -44,19 +44,19 @@ const PrePaymentList = ({ list }) => {
     {
       title: 'Дата',
       onChange: (val) => {
-        return moment(val.prePaymentEmployee.date).format('DD.MM.YYYY');
+        return moment(val.date).format('DD.MM.YYYY');
       },
     },
     {
       title: 'Сотрудник',
       onChange: (val) => {
-        return ` ${val?.firstName} ${val?.lastName}`;
+        return val.fullName;
       },
     },
     {
       title: 'Аванс',
       onChange: (val) => {
-        return val.prePaymentEmployee.sum;
+        return val.sum;
       },
     },
   ];
@@ -67,8 +67,9 @@ const PrePaymentList = ({ list }) => {
   }, []);
 
   return (
-    <div>
+    <div style={{ marginTop: '-40px' }}>
       <Table
+        transparent
         isReport
         list={list}
         onChangeList={(val) => {
