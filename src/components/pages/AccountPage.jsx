@@ -190,7 +190,7 @@ const AccountPage = () => {
             Баланс
           </button>
         </div>{' '}
-        {/* <div class="tab">
+        <div class="tab">
           <button
             onClick={() => {
               setActiveTab('plan-tab');
@@ -198,7 +198,7 @@ const AccountPage = () => {
             class={`filter__item tablinks ${activeTab === 'plan-tab' && 'active'}`}>
             Конкурсы
           </button>
-        </div> */}
+        </div>
         <div class="tab">
           <button
             onClick={() => {

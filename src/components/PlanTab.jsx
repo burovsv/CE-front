@@ -23,7 +23,7 @@ const PlanTab = () => {
   const [activeTab, setActiveTab] = useState('one-tab');
   const [activeCompetition, setActiveCompetition] = useState(null);
   const [selectedSubdiv, setSelectedSubdiv] = useState(!isManager);
-  const [activeSubdiv, setActiveSubdiv] = useState(employeeHistory[0].idService);
+  const [activeSubdiv, setActiveSubdiv] = useState(employeeHistory?.[0]?.idService);
   const [activeEmployee, setActiveEmployee] = useState(null);
   const [activeDate, setActiveDate] = useState(moment().subtract(1, 'days').toDate());
 
@@ -36,7 +36,7 @@ const PlanTab = () => {
 
   useEffect(() => {
     if (activeSubdiv && activeDate && selectedSubdiv) {
-      dispatch(getEmployeeCompetitions({ date: activeDate, subdiv: selectedSubdiv }));
+      dispatch(getEmployeeCompetitions({ date: activeDate, subdiv: activeSubdiv }));
     }
   }, [activeDate, activeSubdiv, selectedSubdiv]);
 
