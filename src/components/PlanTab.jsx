@@ -230,25 +230,23 @@ const PlanTab = () => {
                             <td>{Math.ceil(itemEmployMass?.trade_quantity)}</td>
                             <td>{itemEmployMass?.place}</td>
                           </tr>
-                          {itemEmployMass.id === activeEmployee && (
-                            <tr style={{ padding: 0, background: '#F9F9F9' }}>
-                              {loadingCompetitionProducts ? (
-                                <div className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
-                                  &nbsp;Идет загрузка...
-                                </div>
-                              ) : dataCompetitionProducts?.length >= 1 ? (
-                                dataCompetitionProducts?.map((itemProd) => (
-                                  <tr class="table-plan-row">
-                                    <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
-                                    <td>{itemProd?.trade_sum}</td>
-                                    <td>{itemProd?.trade_quantity}</td>
-                                    <td></td>
-                                  </tr>
-                                ))
-                              ) : (
-                                <div style={{ fontWeight: '600', color: '#FF0505', padding: '15px 20px' }}>Товаров не найдено</div>
-                              )}
+                          {itemEmployMass.id === activeEmployee && loadingCompetitionProducts ? (
+                            <tr colSpan={4} style={{ padding: 0, background: '#F9F9F9' }}>
+                              <div className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
+                                &nbsp;Идет загрузка...
+                              </div>
                             </tr>
+                          ) : dataCompetitionProducts?.length >= 1 ? (
+                            dataCompetitionProducts?.map((itemProd) => (
+                              <tr class="table-plan-row" style={{ background: '#f2f2f2' }}>
+                                <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
+                                <td>{itemProd?.trade_sum}</td>
+                                <td>{itemProd?.trade_quantity}</td>
+                                <td></td>
+                              </tr>
+                            ))
+                          ) : (
+                            <div style={{ fontWeight: '600', color: '#FF0505', padding: '15px 20px' }}>Товаров не найдено</div>
                           )}
                         </>
                       ),
