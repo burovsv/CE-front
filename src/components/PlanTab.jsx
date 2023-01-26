@@ -143,7 +143,8 @@ const PlanTab = () => {
                       {itemCompt?.use_personal_plan && <th width="100px">Факт</th>}
                       {itemCompt?.use_plan && <th width="100px">План</th>}
 
-                      <th width="100px">Процент выполнение</th>
+                      {itemCompt?.use_personal_plan && <th width="100px">Процент выполнение</th>}
+
                       {itemCompt?.type_result != undefined && <th width="100px">{itemCompt?.type_result ? 'Количество' : 'Сумма'}</th>}
 
                       <th width="100%">Место</th>
@@ -163,8 +164,9 @@ const PlanTab = () => {
                             {itemCompt?.use_personal_plan && <td>{Math.ceil(massItem?.trade_city_sum)}</td>}
                             {itemCompt?.use_plan && <td>{massItem?.plan_city ? Math.ceil(massItem?.plan_city) : '-'}</td>}
 
-                            <td>{Math.ceil(massItem?.trade_city_percent) + '%'}</td>
-                            {itemCompt?.type_result != undefined && <td>{Math.ceil(massItem?.trade_city_quantity)}</td>}
+                            {itemCompt?.use_personal_plan && <td>{Math.ceil(massItem?.trade_city_percent) + '%'}</td>}
+
+                            {itemCompt?.type_result != undefined && <td>{itemCompt?.type_result ? Math.ceil(massItem?.trade_city_quantity) : Math.ceil(massItem?.trade_city_sum)}</td>}
 
                             <td>{massItem?.place_city}</td>
                           </tr>
@@ -236,16 +238,14 @@ const PlanTab = () => {
                                     &nbsp;Идет загрузка...
                                   </div>
                                 ) : dataCompetitionProducts?.length >= 1 ? (
-                                  <table style={{ marginTop: '0px' }}>
-                                    {dataCompetitionProducts?.map((itemProd) => (
-                                      <tr class="table-plan-row">
-                                        <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
-                                        <td style={{ width: '89.96px' }}>{itemProd?.trade_quantity}</td>
-
-                                        <td style={{ width: '79.72px' }}>{itemProd?.trade_sum}</td>
-                                      </tr>
-                                    ))}
-                                  </table>
+                                  dataCompetitionProducts?.map((itemProd) => (
+                                    <tr class="table-plan-row">
+                                      <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
+                                      <td>{itemProd?.trade_sum}</td>
+                                      <td>{itemProd?.trade_quantity}</td>
+                                      <td></td>
+                                    </tr>
+                                  ))
                                 ) : (
                                   <div style={{ fontWeight: '600', color: '#FF0505', padding: '15px 20px' }}>Товаров не найдено</div>
                                 )}
