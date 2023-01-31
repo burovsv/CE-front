@@ -113,12 +113,12 @@ const AccountPage = () => {
   useEffect(() => {
     if (dataUser && listAccessSubdivision?.length == 0) {
       setIsManager(dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID);
-      const selfSubdivision = { value: dataUser?.postSubdivision?.subdivisionId, label: dataUser?.subdivision };
+      const selfSubdivision = { value: dataUser?.postSubdivision?.subdivisionId, label: dataUser?.subdivision, id: dataUser?.subdivisionIdService };
       let listSubdivisionData = [selfSubdivision];
 
       dataUser?.accessBalance?.map((itemAccess) => {
         if (itemAccess?.subdivisionId != selfSubdivision?.value) {
-          listSubdivisionData.push({ label: itemAccess?.name, value: itemAccess?.subdivisionId });
+          listSubdivisionData.push({ label: itemAccess?.name, value: itemAccess?.subdivisionId, id: itemAccess?.idService });
         }
       });
       setListAccessSubdivision(listSubdivisionData);
@@ -482,7 +482,7 @@ const AccountPage = () => {
           {childActiveTab === 'balance-history-tab' && isManager && <PrePaymentList list={listAccessSubdivision} />}
         </>
       ) : activeTab == 'plan-tab' ? (
-        <PlanTab />
+        <PlanTab list={listAccessSubdivision} />
       ) : (
         <div class="tabcontent">
           {

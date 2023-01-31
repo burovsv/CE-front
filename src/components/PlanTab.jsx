@@ -6,7 +6,7 @@ import { getCompetitionProducts } from '../redux/actions/employee/getCompetition
 import { getCompetitions } from '../redux/actions/employee/getCompetitions.action';
 import { getEmployeeCompetitions } from '../redux/actions/employee/getEmployeeCompetitions.action';
 import CalendarFilter from './CalendarFilter';
-const PlanTab = () => {
+const PlanTab = ({ list }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
     getCompetitions: { data: dataCompetitions, loading: loadingCompetitions },
@@ -96,6 +96,17 @@ const PlanTab = () => {
                   {value?.name}
                 </option>
               );
+            })}
+            {list?.map((listItem) => {
+              const findEmployeeHistory = employeeHistory?.find((employeeHistoryItem) => employeeHistoryItem.idService == listItem.id);
+              console.log(listItem);
+              if (!findEmployeeHistory) {
+                return (
+                  <option selected={listItem?.id === activeCalendarSubdivision?.idService} value={listItem?.id}>
+                    {listItem?.label}
+                  </option>
+                );
+              }
             })}
           </select>
         </div>
@@ -233,10 +244,10 @@ const PlanTab = () => {
                           {itemEmployMass.id === activeEmployee && (
                             <>
                               {loadingCompetitionProducts ? (
-                                <tr colSpan={4} style={{ padding: 0, background: '#F9F9F9' }}>
-                                  <div className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
+                                <tr style={{ padding: 0, background: '#F9F9F9' }}>
+                                  <td colSpan={4} className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
                                     &nbsp;Идет загрузка...
-                                  </div>
+                                  </td>
                                 </tr>
                               ) : dataCompetitionProducts?.length >= 1 ? (
                                 dataCompetitionProducts?.map((itemProd) => (
