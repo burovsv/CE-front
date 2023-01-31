@@ -11,11 +11,11 @@ export const markSlice = createSlice({
     name: 'mark',
     initialState,
     reducers: {
-    //   resetGetAdminTestingSingle(state) {
-    //     state.getAdminTestingSingle = initStateGetAdminTestingSingle.getAdminTestingSingle;
-    //   },
       resetGetMarks(state) {
         state.getMarks = initStateGetMarks.getMarks;
+      },
+      resetCreateMark(state) {
+        state.createMark = initStateCreateMark.createMark;
       },
     //   resetCreateTesting(state) {
     //     state.createTesting = initStateCreateTesting.createTesting;
