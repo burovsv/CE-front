@@ -355,24 +355,19 @@ const AccountPage = () => {
                                   .map((keyPre) => prePaymentEmployee[keyPre].sum)
                                   .filter((filterPre) => filterPre).length >= 1;
                               if (isActive) {
-                                setShowPrePayment(true);
+                                // setShowPrePayment(true);
                               }
                             }}
                             class="filter__item"
                             style={{
-                              background:
-                                Object.keys(prePaymentEmployee)
-                                  .map((keyPre) => prePaymentEmployee[keyPre].sum)
-                                  .filter((filterPre) => filterPre).length >= 1
-                                  ? '#FF0000'
-                                  : '#BAB8B8',
+                              background: '#BAB8B8',
                               color: '#Fff',
                               width: 'min-content',
                               height: '45px',
                             }}>
                             Выдать
                           </div>
-                          <div>Доступно с 4 по 20 не более 50% от баланса</div>
+                          <div>Доступно с 20 по 4 не более 50% от баланса</div>
                         </div>
                       </>
                     ) : (!dataAccountList || dataAccountList?.length === 0) && !loadingAccountList ? (
