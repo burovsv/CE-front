@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import moment from 'moment';
 import OutsideClickHandler from 'react-outside-click-handler';
 import NumberFormat from 'react-number-format';
-const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {}, isAccessEdit }) => {
+const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {}, isAccessEdit, timeTableItem }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -46,21 +46,23 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
         {item?.type == 'work' ? (
           <div className="work-calendar-full-cell-day-work">
             {editStartTime ? (
-              <NumberFormat
-                autoFocus="autofocus"
-                onBlur={onSaveStartTime}
-                style={{ padding: 0, textAlign: 'center', width: '41px', height: '19px', paddingTop: '1px', marginTop: '8px', border: '1px solid #fff', outline: 'none' }}
-                format="##:##"
-                mask="_"
-                value={moment(item?.startTime).format('HH:mm')}
-                placeholder={'Начало'}
-                autoComplete="off"
-                onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
-                    onSaveStartTime(event);
-                  }
-                }}
-              />
+              <div>
+                <NumberFormat
+                  autoFocus="autofocus"
+                  onBlur={onSaveStartTime}
+                  style={{ padding: 0, textAlign: 'center', width: '25.5px', height: '12px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px' }}
+                  format="##:##"
+                  mask="_"
+                  value={moment(item?.startTime).format('HH:mm')}
+                  placeholder={'Начало'}
+                  autoComplete="off"
+                  onKeyPress={(event) => {
+                    if (event.key === 'Enter') {
+                      onSaveStartTime(event);
+                    }
+                  }}
+                />
+              </div>
             ) : (
               <div
                 onClick={() => {
@@ -72,21 +74,23 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
               </div>
             )}
             {editEndTime ? (
-              <NumberFormat
-                autoFocus="autofocus"
-                onBlur={onSaveEndTime}
-                style={{ padding: 0, textAlign: 'center', width: '41px', height: '19px', paddingTop: '1px', marginTop: '8px', border: '1px solid #fff', outline: 'none' }}
-                format="##:##"
-                mask="_"
-                value={moment(item?.endTime).format('HH:mm')}
-                placeholder={'Конец'}
-                autoComplete="off"
-                onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
-                    onSaveEndTime(event);
-                  }
-                }}
-              />
+              <div>
+                <NumberFormat
+                  autoFocus="autofocus"
+                  onBlur={onSaveEndTime}
+                  style={{ padding: 0, textAlign: 'center', width: '25px', height: '12px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px' }}
+                  format="##:##"
+                  mask="_"
+                  value={moment(item?.endTime).format('HH:mm')}
+                  placeholder={'Конец'}
+                  autoComplete="off"
+                  onKeyPress={(event) => {
+                    if (event.key === 'Enter') {
+                      onSaveEndTime(event);
+                    }
+                  }}
+                />
+              </div>
             ) : (
               <div
                 onClick={() => {
@@ -97,18 +101,20 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                 {moment(item?.endTime).format('HH:mm')}
               </div>
             )}
-            <div>{moment.utc(moment(item?.endTime).set('seconds', 0).diff(moment(item?.startTime).set('seconds', 0))).format('H:mm')}</div>
+            <div>{moment.utc(moment(item?.endTime).set('seconds', 0).diff(moment(item?.startTime).set('seconds', 0))).format('H')}</div>
+            <div></div>
+            {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
           </div>
         ) : item?.type == 'vacation' ? (
-          <div className="work-calendar-full-cell-day-vacation">отп</div>
+          <div className="work-calendar-full-cell-day-vacation">отп {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
         ) : item?.type == 'sick' ? (
-          <div className="work-calendar-full-cell-day-sick">блн</div>
+          <div className="work-calendar-full-cell-day-sick">блн {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
         ) : item?.type == 'day-off' ? (
-          <div className="work-calendar-full-cell-day-off">вых</div>
+          <div className="work-calendar-full-cell-day-off">вых {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
         ) : item?.type == 'hours' ? (
-          <div className="work-calendar-full-cell-day-off">{item?.hours}</div>
+          <div className="work-calendar-full-cell-day-off">{timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
         ) : (
-          <></>
+          <> {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</>
         )}
         {showMenu && (
           <div style={{ position: 'absolute', top: '50%', left: '50%', border: '1px solid #000', display: 'flex', flexDirection: 'column', width: '100px', userSelect: 'none', cursor: 'pointer', zIndex: '2' }}>
@@ -156,7 +162,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
             </OutsideClickHandler>
           </div>
         )}
-      </div>
+      </div>{' '}
     </td>
   );
 };

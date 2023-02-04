@@ -10,10 +10,10 @@ export const convertMinsToHrsMins = (minutes) => {
     var m = minutes % 60;
     h = h < 10 ? '0' + h : h;
     m = m < 10 ? '0' + m : m;
-    return h + ':' + m;
+    return h;
   } else return 0;
 };
-const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit }) => {
+const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit, timeTableRow }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -46,16 +46,17 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
 
   return (
     <tr>
-      <td width="150" className="work-calendar-full-cell-wrap ">
+      <td width="150" className="work-calendar-full-cell-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
         {item?.firstName} <br />
         {item?.lastName}
       </td>
-      <td width="150" className="work-calendar-full-cell-wrap ">
+      <td width="150" className="work-calendar-full-cell-wrap " style={{ position: 'sticky', left: '100px', zIndex: 2, backgroundColor: '#fff' }}>
         {item?.post}
       </td>
       {fields?.map((dayItem, indexItem) => {
         return (
           <WorkCalendarFullItem
+            timeTableItem={timeTableRow?.[indexItem]}
             isAccessEdit={isAccessEdit}
             onChangeStartTime={(newStartTime) => {
               if (isAccessEdit) {
@@ -124,25 +125,37 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
         );
       })}
 
-      <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold">
-        {isTimeTable
-          ? parseFloat(
-              fields
-                ?.map((item1) => {
-                  return item1?.hours || 0;
-                })
-                .reduce((partialSum, a) => partialSum + a, 0),
-            ).toFixed(2)
-          : convertMinsToHrsMins(
+      <td className="work-calendar-full-cell-wrap  sticky-right-td" style={{ position: 'sticky', right: '225px', zIndex: 2, background: '#Fff' }}>
+        <div style={{ display: 'grid', gridTemplateRows: '22px 22px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {convertMinsToHrsMins(
               fields
                 ?.map((item1) => {
                   return moment(item1?.endTime).set('seconds', 0).diff(moment(item1?.startTime).set('seconds', 0), 'minutes');
                 })
                 .reduce((partialSum, a) => partialSum + a, 0),
             )}
+          </div>
+          <div style={{ background: '#e4e4e4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {parseFloat(
+              timeTableRow
+                ?.map((item1) => {
+                  return item1?.hours || 0;
+                })
+                .reduce((partialSum, a) => partialSum + a, 0),
+            ).toFixed(2)}
+          </div>
+        </div>
       </td>
-      <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold">{fields?.filter((item3) => item3?.type === 'day-off')?.length}</td>
-      <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold">{fields?.filter((item3) => item3?.type === 'vacation')?.length}</td>
+      <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', right: '150px', zIndex: 2, background: '#Fff' }}>
+        {fields?.filter((item3) => item3?.type === 'day-off')?.length}
+      </td>
+      <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', right: '75px', zIndex: 2, background: '#Fff' }}>
+        {fields?.filter((item3) => item3?.type === 'vacation')?.length}
+      </td>
+      <td className="work-calendar-full-cell-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', right: '0px', zIndex: 2, background: '#Fff' }}>
+        {fields?.filter((item3) => item3?.type === 'sick')?.length}
+      </td>
     </tr>
   );
 };

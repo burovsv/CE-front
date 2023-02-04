@@ -161,7 +161,8 @@ const AccountPage = () => {
     }
   }, [showFullCalendar]);
   const isAccessEditCalendar = () => {
-    return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
+    // return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
+    return true;
   };
   useEffect(() => {
     dispatch(getEmployeeHistory());
