@@ -43,7 +43,29 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
   };
 
   const { activeMonthYear } = useSelector((state) => state.workCalendar);
+  const [start, setStart] = useState(-1);
+  const [end, setEnd] = useState(-1);
+  const [selecting, setSelecting] = useState(false);
 
+  let beginSelection = (i) => {
+    setSelecting(true);
+    setStart(i);
+    updateSelection(i);
+  };
+
+  let endSelection = (i = end) => {
+    setSelecting(false);
+
+    updateSelection(i);
+  };
+
+  let updateSelection = (i) => {
+    if (selecting) {
+      setEnd(i);
+    }
+  };
+  console.log(start);
+  console.log(end);
   return (
     <tr>
       <td width="150" className="work-calendar-full-cell-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
@@ -56,6 +78,22 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
       {fields?.map((dayItem, indexItem) => {
         return (
           <WorkCalendarFullItem
+            resetSelection={() => {
+              // setStart(-1);
+              // setEnd(-1);
+            }}
+            className={(end <= indexItem && indexItem <= start) || (start <= indexItem && indexItem <= end) ? 'cell-selected' : ''}
+            onMouseDown={(e) => {
+              if (e.nativeEvent.button === 2) {
+                beginSelection(indexItem);
+              }
+            }}
+            onMouseUp={(e) => {
+              if (e.nativeEvent.button === 2) {
+                endSelection(indexItem);
+              }
+            }}
+            onMouseMove={() => updateSelection(indexItem)}
             timeTableItem={timeTableRow?.[indexItem]}
             isAccessEdit={isAccessEdit}
             onChangeStartTime={(newStartTime) => {
@@ -85,38 +123,48 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
               }
             }}
             onClickMenu={(type) => {
-              console.log(isAccessEdit);
               if (isAccessEdit) {
-                let updateCell = { type };
-                if (type) {
-                  if (type === 'work' && (!dayItem?.startTime || !dayItem?.endTime)) {
-                    updateCell.startTime = moment(activeMonthYear)
-                      .set('date', indexItem + 1)
-                      .set('hours', 8)
-                      .set('minutes', 0)
-                      .set('seconds', 0)
-                      .toDate();
-                    updateCell.endTime = moment(activeMonthYear)
-                      .set('date', indexItem + 1)
-                      .set('hours', 23)
-                      .set('minutes', 0)
-                      .set('seconds', 0)
-                      .toDate();
-                  }
-                  update(indexItem, {
-                    ...dayItem,
-                    date: moment(activeMonthYear)
-                      .set('date', indexItem + 1)
-                      .set('hours', 0)
-                      .set('minutes', 0)
-                      .set('seconds', 0)
-                      .toDate(),
-                    ...updateCell,
-                  });
-                } else {
-                  update(indexItem, {});
+                let startIndex = start;
+                let endIndex = end;
+                if (start > end) {
+                  startIndex = end;
+                  endIndex = start;
                 }
+                for (let indexCell = startIndex; indexCell <= endIndex; indexCell++) {
+                  let updateCell = { type };
+                  if (type) {
+                    if (type === 'work' && (!dayItem?.startTime || !dayItem?.endTime)) {
+                      updateCell.startTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', 8)
+                        .set('minutes', 0)
+                        .set('seconds', 0)
+                        .toDate();
+                      updateCell.endTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', 23)
+                        .set('minutes', 0)
+                        .set('seconds', 0)
+                        .toDate();
+                    }
+                    update(indexCell, {
+                      ...dayItem,
+                      date: moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', 0)
+                        .set('minutes', 0)
+                        .set('seconds', 0)
+                        .toDate(),
+                      ...updateCell,
+                    });
+                  } else {
+                    update(indexCell, {});
+                  }
+                }
+
                 setIsEdited(true);
+                setStart(-1);
+                setEnd(-1);
               }
             }}
             style={{ position: 'relative' }}

@@ -15,6 +15,7 @@ const Table = ({ isReport, data, loading, title, onEdit, onDelete, onSearch, onA
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
+
   return (
     <>
       {/* {data?.length !== 0 || !loading ? ( */}

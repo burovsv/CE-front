@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import moment from 'moment';
 import OutsideClickHandler from 'react-outside-click-handler';
 import NumberFormat from 'react-number-format';
-const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {}, isAccessEdit, timeTableItem }) => {
+const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {}, isAccessEdit, timeTableItem, onMouseDown, onMouseUp, onMouseMove, className = '', resetSelection }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -41,8 +41,11 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
   const [editStartTime, setEditStartTime] = useState(false);
   const [editEndTime, setEditEndTime] = useState(false);
   return (
-    <td onContextMenu={handleContextMenu} className="work-calendar-full-cell-wrap " style={style}>
-      <div>
+    <td onContextMenu={handleContextMenu} className={clsx('work-calendar-full-cell-wrap', className)} style={style} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove}>
+      <OutsideClickHandler
+        onOutsideClick={() => {
+          // resetSelection();
+        }}>
         {item?.type == 'work' ? (
           <div className="work-calendar-full-cell-day-work">
             {editStartTime ? (
@@ -118,7 +121,14 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
         )}
         {showMenu && (
           <div style={{ position: 'absolute', top: '50%', left: '50%', border: '1px solid #000', display: 'flex', flexDirection: 'column', width: '100px', userSelect: 'none', cursor: 'pointer', zIndex: '2' }}>
-            <OutsideClickHandler onOutsideClick={onClose}>
+            <OutsideClickHandler
+              onOutsideClick={() => {
+                if (showMenu) {
+                  resetSelection();
+                }
+                //
+                onClose();
+              }}>
               <div
                 onClick={() => {
                   onClickMenu('');
@@ -140,7 +150,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                   onClickMenu('vacation');
                   onClose();
                 }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#54ccff' }}>
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#fdec31' }}>
                 Отпуск
               </div>
               <div
@@ -148,7 +158,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                   onClickMenu('sick');
                   onClose();
                 }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#ffaa7b' }}>
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#54ccff' }}>
                 Больничный
               </div>
               <div
@@ -156,13 +166,13 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                   onClickMenu('day-off');
                   onClose();
                 }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#ffffff' }}>
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#fc0000', color: '#fff' }}>
                 Выходной
               </div>
             </OutsideClickHandler>
           </div>
         )}
-      </div>{' '}
+      </OutsideClickHandler>
     </td>
   );
 };

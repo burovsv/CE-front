@@ -2,12 +2,16 @@
   table-layout: fixed;
   /* height: min-content; */
   border-collapse: separate;
+
   overflow: scroll;
   /* max-height: 300px; */
   /* height: 300px; */
   /* display: grid; */
   /* grid-template-columns: repeat(auto-fit, minmax(0, auto)); */
   /* width: 300%; */
+}
+.work-calendar-full-grid div {
+  user-select: none;
 }
 .work-calendar-full-grid tr:first-child td {
   border-top: 0.2px solid #b7b7b7;
@@ -70,6 +74,7 @@
   /* max-height: 300px; */
   /* height: 300px; */
   width: calc(100vw - 100px);
+  min-width: 1170px;
   overflow: scroll;
   position: relative;
 }
@@ -266,4 +271,5 @@
   position: absolute;
   bottom: 0;
   right: 0;
+  color: #000 !important;
 }
