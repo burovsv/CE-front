@@ -88,7 +88,7 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
             }}
             className={(end <= indexItem && indexItem <= start) || (start <= indexItem && indexItem <= end) ? 'cell-selected' : ''}
             onMouseDown={(e) => {
-              if (e.nativeEvent.button === 2) {
+              if (e.nativeEvent.button === 2 && isAccessEdit) {
                 beginSelection(indexItem);
               }
             }}

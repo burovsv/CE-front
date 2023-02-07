@@ -167,8 +167,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     };
   }, []);
   const isAccessEditCalendar = () => {
-    // return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
-    return true;
+    return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
   };
   const dispatch = useDispatch();
   const countMinTimeWorkers = (val, day, prop) => {
@@ -301,72 +300,77 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         {upsertWorkCalendarError && <span style={{ color: 'red' }}>&nbsp;Ошибка!</span>}
         {isEdited && <span style={{ color: 'red' }}>&nbsp;был изменен, сохраните!</span>}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-        <div>Рабочий день 1 смена:</div>
-        <NumberFormat
-          onBlur={(e) => {
-            onChangeStartTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
-          }}
-          style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-          format="##:##"
-          mask="_"
-          value={workTimeTemplate?.workTimeStart1}
-          autoComplete="off"
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') {
-              // onSaveStartTime(event);
-            }
-          }}
-        />
-        <NumberFormat
-          onBlur={(e) => {
-            onChangeEndTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
-          }}
-          style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-          format="##:##"
-          mask="_"
-          value={workTimeTemplate?.workTimeEnd1}
-          autoComplete="off"
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') {
-              // onSaveStartTime(event);
-            }
-          }}
-        />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-        <div>Рабочий день 2 смена:</div>
-        <NumberFormat
-          onBlur={(e) => {
-            onChangeStartTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
-          }}
-          style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-          format="##:##"
-          mask="_"
-          value={workTimeTemplate?.workTimeStart2}
-          autoComplete="off"
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') {
-              // onSaveStartTime(event);
-            }
-          }}
-        />
-        <NumberFormat
-          onBlur={(e) => {
-            onChangeEndTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
-          }}
-          style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-          format="##:##"
-          mask="_"
-          value={workTimeTemplate?.workTimeEnd2}
-          autoComplete="off"
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') {
-              // onSaveStartTime(event);
-            }
-          }}
-        />
-      </div>
+      {isAccessEditCalendar() && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <div>Рабочий день 1 смена:</div>
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeStartTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
+              }}
+              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeStart1}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeEndTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
+              }}
+              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeEnd1}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <div>Рабочий день 2 смена:</div>
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeStartTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
+              }}
+              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeStart2}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeEndTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
+              }}
+              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeEnd2}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+          </div>
+        </>
+      )}
+
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '50px' }}>
         {isAccessEditCalendar() && (
           <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '0px' }} disabled={upsertWorkCalendarLoading || loadingEmployees}>
