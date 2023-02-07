@@ -1,13 +1,15 @@
 import { current } from '@reduxjs/toolkit';
 import clsx from 'clsx';
 import moment from 'moment';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import NumberFormat from 'react-number-format';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
 import { getEmployees } from '../redux/actions/employee/getEmployees.action';
 import { upsertWorkCalendarFull } from '../redux/actions/workCalendar/upsertWorkCalendarFull.slice';
 import { setActiveCalendarDates } from '../redux/slices/news.slice';
+import { setWorkTimeTemplate } from '../redux/slices/subdivision.slice';
 import { resetUpsertWorkCalendarFull, setActiveMonthYear } from '../redux/slices/workCalendar.slice';
 import { getDayOfWeek } from '../utils/getDayofWeek';
 import { getDaysInMonth } from '../utils/getDaysInMouth';
@@ -25,6 +27,10 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
   const {
+    getSubdivisionWorkTimeTemplates: { data: workTimeTemplates },
+    workTimeTemplate,
+  } = useSelector((state) => state.subdivision);
+  const {
     getEmployeeHistory: { data: employeeHistory },
     activeCalendarSubdivision,
   } = useSelector((state) => state.employeeHistory);
@@ -36,6 +42,27 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     getWorkCalendarMonth: { loading: workCalendarMonthLoading },
     upsertWorkCalendarFull: { data: upsertWorkCalendarData, loading: upsertWorkCalendarLoading, error: upsertWorkCalendarError },
   } = useSelector((state) => state.workCalendar);
+  console.log(workTimeTemplates);
+  useEffect(() => {
+    if (workTimeTemplates) {
+      let existWorkTimeTemplate = {};
+      if (workTimeTemplates?.timeStart1 && validateTime(workTimeTemplates?.timeStart1)) {
+        existWorkTimeTemplate.workTimeStart1 = workTimeTemplates?.timeStart1;
+      }
+      if (workTimeTemplates?.timeStart2 && validateTime(workTimeTemplates?.timeStart2)) {
+        existWorkTimeTemplate.workTimeStart2 = workTimeTemplates?.timeStart2;
+      }
+      if (workTimeTemplates?.timeEnd2 && validateTime(workTimeTemplates?.timeEnd2)) {
+        existWorkTimeTemplate.workTimeEnd2 = workTimeTemplates?.timeEnd2;
+      }
+      if (workTimeTemplates?.timeEnd1 && validateTime(workTimeTemplates?.timeEnd1)) {
+        existWorkTimeTemplate.workTimeEnd1 = workTimeTemplates?.timeEnd1;
+      }
+      console.log('THISS', existWorkTimeTemplate);
+      dispatch(setWorkTimeTemplate({ ...workTimeTemplate, ...existWorkTimeTemplate }));
+    }
+  }, [workTimeTemplates]);
+
   const exampleCalendar = [
     {
       date: moment('10.11.2022'),
@@ -79,7 +106,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   }, [activeMonthYear]);
   const onSubmit = (data) => {
     setIsEdited(false);
-    dispatch(upsertWorkCalendarFull({ calendar: data?.calendar, monthYear: activeMonthYear, subdivision: activeCalendarSubdivision?.id }));
+    dispatch(upsertWorkCalendarFull({ calendar: data?.calendar, monthYear: activeMonthYear, subdivision: activeCalendarSubdivision?.id, workTimeTemplate }));
   };
   useEffect(() => {
     if (employees?.length >= 1) {
@@ -179,7 +206,50 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       }, 3000);
     }
   }, [upsertWorkCalendarData]);
-
+  const validateTime = (time) => {
+    if (!time) {
+      return false;
+    }
+    const splitTime = time?.split(':');
+    if (!splitTime) {
+      return false;
+    }
+    if (isNaN(parseInt(splitTime[1])) || isNaN(parseInt(splitTime[0]))) {
+      return false;
+    }
+    const dateWithUpdatTime = moment().set('hours', splitTime[0]).set('minutes', splitTime[1]);
+    if (dateWithUpdatTime.isValid()) {
+      return dateWithUpdatTime;
+    }
+  };
+  const onChangeEndTime = (newStartTime, startName, endName) => {
+    const resultTime = validateTime(newStartTime);
+    const currentStartTime = validateTime(workTimeTemplate?.[startName]);
+    const minEndTime = moment().set('hours', 23).set('minutes', 0);
+    if (resultTime) {
+      if (!resultTime.isAfter(minEndTime) && !resultTime.isSameOrBefore(currentStartTime)) {
+        dispatch(setWorkTimeTemplate({ ...workTimeTemplate, [endName]: resultTime.format('HH:mm') }));
+      } else {
+        dispatch(setWorkTimeTemplate({ ...workTimeTemplate, [endName]: minEndTime.format('HH:mm') }));
+      }
+    } else {
+      dispatch(setWorkTimeTemplate({ ...workTimeTemplate, [endName]: minEndTime.format('HH:mm') }));
+    }
+  };
+  const onChangeStartTime = (newStartTime, startName, endName) => {
+    const resultTime = validateTime(newStartTime);
+    const currentEndTime = validateTime(workTimeTemplate?.[endName]);
+    const minStartTime = moment().set('hours', 8).set('minutes', 0);
+    if (resultTime) {
+      if (!resultTime.isBefore(minStartTime) && !resultTime.isSameOrAfter(currentEndTime)) {
+        dispatch(setWorkTimeTemplate({ ...workTimeTemplate, [startName]: resultTime.format('HH:mm') }));
+      } else {
+        dispatch(setWorkTimeTemplate({ ...workTimeTemplate, [startName]: minStartTime.format('HH:mm') }));
+      }
+    } else {
+      dispatch(setWorkTimeTemplate({ ...workTimeTemplate, [startName]: minStartTime.format('HH:mm') }));
+    }
+  };
   React.useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       let totalWorkers1 = [];
@@ -196,6 +266,30 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     });
     return () => subscription.unsubscribe();
   }, [watch, allDays]);
+  const [isDown, setIsDown] = useState(false);
+  const [startX, setStartX] = useState();
+  const [scrollLeft, setScrollLeft] = useState();
+  const refTableWrap = useRef(null);
+  const touchMouseDown = (e) => {
+    if (e.nativeEvent.button === 0) {
+      setIsDown(true);
+      setStartX(e.pageX - refTableWrap.current.offsetLeft);
+      setScrollLeft(refTableWrap.current.scrollLeft);
+    }
+  };
+  const touchMouseLeave = (e) => {
+    setIsDown(false);
+  };
+  const touchMouseUp = (e) => {
+    setIsDown(false);
+  };
+  const touchMouseMove = (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - refTableWrap.current.offsetLeft;
+    const walk = x - startX;
+    refTableWrap.current.scrollLeft = scrollLeft - walk;
+  };
   return (
     <div class="work-calendar-full">
       {/* <button onClick={() => onClose(isEdited)} className="work-calendar-full-close"></button> */}
@@ -206,6 +300,72 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         {showSaved && <span style={{ color: 'green' }}>&nbsp;Сохранено!</span>}
         {upsertWorkCalendarError && <span style={{ color: 'red' }}>&nbsp;Ошибка!</span>}
         {isEdited && <span style={{ color: 'red' }}>&nbsp;был изменен, сохраните!</span>}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+        <div>Рабочий день 1 смена:</div>
+        <NumberFormat
+          onBlur={(e) => {
+            onChangeStartTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
+          }}
+          style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+          format="##:##"
+          mask="_"
+          value={workTimeTemplate?.workTimeStart1}
+          autoComplete="off"
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') {
+              // onSaveStartTime(event);
+            }
+          }}
+        />
+        <NumberFormat
+          onBlur={(e) => {
+            onChangeEndTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
+          }}
+          style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+          format="##:##"
+          mask="_"
+          value={workTimeTemplate?.workTimeEnd1}
+          autoComplete="off"
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') {
+              // onSaveStartTime(event);
+            }
+          }}
+        />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+        <div>Рабочий день 2 смена:</div>
+        <NumberFormat
+          onBlur={(e) => {
+            onChangeStartTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
+          }}
+          style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+          format="##:##"
+          mask="_"
+          value={workTimeTemplate?.workTimeStart2}
+          autoComplete="off"
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') {
+              // onSaveStartTime(event);
+            }
+          }}
+        />
+        <NumberFormat
+          onBlur={(e) => {
+            onChangeEndTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
+          }}
+          style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+          format="##:##"
+          mask="_"
+          value={workTimeTemplate?.workTimeEnd2}
+          autoComplete="off"
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') {
+              // onSaveStartTime(event);
+            }
+          }}
+        />
       </div>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '50px' }}>
         {isAccessEditCalendar() && (
@@ -218,7 +378,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         </button>
         {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', maxWidth: '310px', marginLeft: '20px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
       </div>
-      <div class={clsx((upsertWorkCalendarLoading || loadingEmployees) && 'work-calendar-full-grid-loading', 'work-calendar-full-wrap')}>
+      <div onMouseMove={touchMouseMove} onMouseUp={touchMouseUp} onMouseLeave={touchMouseLeave} ref={refTableWrap} onMouseDown={touchMouseDown} class={clsx((upsertWorkCalendarLoading || loadingEmployees) && 'work-calendar-full-grid-loading', 'work-calendar-full-wrap')}>
         <table className={clsx('work-calendar-full-grid')}>
           <tr>
             <td colSpan="2" width="200" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2 }}>

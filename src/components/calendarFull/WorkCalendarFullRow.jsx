@@ -17,6 +17,7 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
+  const { workTimeTemplate } = useSelector((state) => state.subdivision);
   const {
     getEmployeeHistory: { data: employeeHistory },
     activeCalendarSubdivision,
@@ -64,8 +65,7 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
       setEnd(i);
     }
   };
-  console.log(start);
-  console.log(end);
+
   return (
     <tr>
       <td width="150" className="work-calendar-full-cell-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
@@ -79,8 +79,12 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
         return (
           <WorkCalendarFullItem
             resetSelection={() => {
-              // setStart(-1);
-              // setEnd(-1);
+              console.log(start);
+              console.log(end);
+              if (!selecting) {
+                setStart(-1);
+                setEnd(-1);
+              }
             }}
             className={(end <= indexItem && indexItem <= start) || (start <= indexItem && indexItem <= end) ? 'cell-selected' : ''}
             onMouseDown={(e) => {
@@ -132,6 +136,9 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
                 }
                 for (let indexCell = startIndex; indexCell <= endIndex; indexCell++) {
                   let updateCell = { type };
+                  if (type == 'work-1' || type == 'work-2') {
+                    updateCell.type = 'work';
+                  }
                   if (type) {
                     if (type === 'work' && (!dayItem?.startTime || !dayItem?.endTime)) {
                       updateCell.startTime = moment(activeMonthYear)
@@ -144,6 +151,38 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
                         .set('date', indexCell + 1)
                         .set('hours', 23)
                         .set('minutes', 0)
+                        .set('seconds', 0)
+                        .toDate();
+                    } else if (type === 'work-1') {
+                      const splitTimeWorkStart = workTimeTemplate?.workTimeStart1?.split(':');
+
+                      const splitTimeWorkEnd = workTimeTemplate?.workTimeEnd1?.split(':');
+                      updateCell.startTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', splitTimeWorkStart[0])
+                        .set('minutes', splitTimeWorkStart[1])
+                        .set('seconds', 0)
+                        .toDate();
+                      updateCell.endTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', splitTimeWorkEnd[0])
+                        .set('minutes', splitTimeWorkEnd[1])
+                        .set('seconds', 0)
+                        .toDate();
+                    } else if (type === 'work-2') {
+                      const splitTimeWorkStart = workTimeTemplate?.workTimeStart2?.split(':');
+
+                      const splitTimeWorkEnd = workTimeTemplate?.workTimeEnd2?.split(':');
+                      updateCell.startTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', splitTimeWorkStart[0])
+                        .set('minutes', splitTimeWorkStart[1])
+                        .set('seconds', 0)
+                        .toDate();
+                      updateCell.endTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', splitTimeWorkEnd[0])
+                        .set('minutes', splitTimeWorkEnd[1])
                         .set('seconds', 0)
                         .toDate();
                     }

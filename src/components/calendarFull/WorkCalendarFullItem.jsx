@@ -123,6 +123,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
           <div style={{ position: 'absolute', top: '50%', left: '50%', border: '1px solid #000', display: 'flex', flexDirection: 'column', width: '100px', userSelect: 'none', cursor: 'pointer', zIndex: '2' }}>
             <OutsideClickHandler
               onOutsideClick={() => {
+                console.log('show');
                 if (showMenu) {
                   resetSelection();
                 }
@@ -144,6 +145,22 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                 }}
                 style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
                 Рабочий
+              </div>
+              <div
+                onClick={() => {
+                  onClickMenu('work-1');
+                  onClose();
+                }}
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
+                Смена 1
+              </div>
+              <div
+                onClick={() => {
+                  onClickMenu('work-2');
+                  onClose();
+                }}
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
+                Смена 2
               </div>
               <div
                 onClick={() => {

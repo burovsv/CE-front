@@ -25,6 +25,8 @@ import { prePaymentCreate } from '../../redux/actions/employee/prePaymentCreate.
 import ModalThank from '../modals/ModalThank';
 import Modal from '../modals/Modal';
 import PrePaymentList from '../PrePaymentList';
+import { getSubdivisionWorkTimeTemplates } from '../../redux/actions/subdivision/getSubdivisionWorkTimeTemplates.action';
+import { resetGetSubdivisionWorkTimeTemplates } from '../../redux/slices/subdivision.slice';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -65,6 +67,7 @@ const AccountPage = () => {
   const [clickEditWorkTable, setClickEditWorkTable] = useState(false);
   const handleClickOpenFullCalendar = () => {
     const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: activeMonthYear };
+    dispatch(getSubdivisionWorkTimeTemplates(activeCalendarSubdivision?.id));
     dispatch(getEmployees(paramsEmployees));
     setClickEditWorkTable(true);
   };
@@ -548,6 +551,7 @@ const AccountPage = () => {
                     } else {
                       dispatch(setShowFullCalendar(false));
                       dispatch(resetGetEmployees());
+                      dispatch(resetGetSubdivisionWorkTimeTemplates());
                       dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), subdivision: activeCalendarSubdivision?.id }));
                     }
                   }}
