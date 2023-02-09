@@ -215,7 +215,6 @@ const ModalNews = () => {
         var endDate = moment('01.01.2025', 'DD.MM.YYYY');
         const isValidDate = dateEndFormat.isValid();
         const isBetweenDate = dateEndFormat.isBetween(startDate, endDate);
-        console.log();
         if (!isValidDate || !isBetweenDate) {
           setError('dateEnd', { type: 'invalidDate' });
         } else {

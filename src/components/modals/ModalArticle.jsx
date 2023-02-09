@@ -8,7 +8,10 @@ import { useForm, Controller } from 'react-hook-form';
 import NumberFormat from 'react-number-format';
 import CustomToolbar from '../CustomToolbar';
 
+import { createMark } from '../../redux/actions/knowledgeBase/createMark.action';
+
 import ReactQuill, { Quill } from 'react-quill';
+// import { create } from 'domain';
 
 const ModalArticle = () => {
     const [text, setText] = useState('');
@@ -22,6 +25,7 @@ const ModalArticle = () => {
     const [sectionGroupOptions, setSectionGroupOptions] = useState([]);
     const [sectionOptions, setSectionOptions] = useState([]);
     const [markOptions, setMarkOptions] = useState([]);
+
 
     // получить список групп, разделов, должностей, меток
     const {
@@ -54,6 +58,15 @@ const ModalArticle = () => {
 
         setSectionOptions(sectionOptionsList);
     }
+    const filterForm = useForm({
+        deafultValues: {
+          name: '',
+        },
+      });
+
+    const dispatch = useDispatch();
+
+
 
     useEffect(() => {
         let sectionGroupOptionsList = sectionGroups.map((item) => {
@@ -99,7 +112,9 @@ const ModalArticle = () => {
         setArticleSection(section);
     }
 
-
+    const onAddMark = (name) => {
+        dispatch(createMark({ name }));
+    }
     
     const handleChange = (html) => {
     //   setText(html);
@@ -186,7 +201,9 @@ const ModalArticle = () => {
                         </div>
                         <div className="modal__create">
                             <input type="text" placeholder="Добавить метку" autoComplete="off" />
-                            <button> 
+                            <button 
+                                onClick={filterForm.handleSubmit(onAddMark)}
+                            >  
                                 <img src="/img/modal/plus.svg" />
                             </button>
                         </div>
