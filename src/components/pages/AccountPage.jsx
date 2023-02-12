@@ -27,6 +27,7 @@ import Modal from '../modals/Modal';
 import PrePaymentList from '../PrePaymentList';
 import { getSubdivisionWorkTimeTemplates } from '../../redux/actions/subdivision/getSubdivisionWorkTimeTemplates.action';
 import { resetGetSubdivisionWorkTimeTemplates } from '../../redux/slices/subdivision.slice';
+import { getCashBoxList } from '../../redux/actions/employee/getCashBoxList.action';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -49,6 +50,7 @@ const AccountPage = () => {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
     prePaymentCreate: { data: prePaymentCreateData, loading: prePaymentLoading, error: prePaymentCreateError },
+    getCashBoxList: { data: getCashBoxListData },
   } = useSelector((state) => state.employee);
   const [childActiveTab, setChildActiveTab] = useState('balance-list-tab');
   const [isManager, setIsManager] = useState(false);
@@ -169,9 +171,12 @@ const AccountPage = () => {
   useEffect(() => {
     dispatch(getEmployeeHistory());
   }, []);
+  const [activeCashBox, setActiveCashBox] = useState(null);
   useEffect(() => {
     if (isManager && listAccessSubdivision?.length >= 1 && selectedAccessSubdivision) {
+      setActiveCashBox(null);
       dispatch(getAccountList(selectedAccessSubdivision?.value));
+      dispatch(getCashBoxList(selectedAccessSubdivision?.value));
     }
   }, [isManager, selectedAccessSubdivision, listAccessSubdivision]);
 
@@ -180,6 +185,12 @@ const AccountPage = () => {
       dispatch(getAccount({ idService: selectedEmployeeAccount, date: moment().format('YYYY-MM-DD') }));
     }
   }, [selectedEmployeeAccount]);
+
+  useEffect(() => {
+    if (getCashBoxListData && getCashBoxListData?.length !== 0) {
+      setActiveCashBox(getCashBoxListData[0]);
+    }
+  }, [getCashBoxListData]);
 
   return (
     <>
@@ -261,10 +272,16 @@ const AccountPage = () => {
                         <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto auto auto' }}>
                           <div className="table-common__head">Сотрудник</div>
                           <div className="table-common__head">Должность</div>
-                          <div className="table-common__head">С начала месяца</div>
                           <div className="table-common__head">Часы</div>
-                          <div className="table-common__head">Баланс</div>
-                          <div className="table-common__head"></div>
+                          <div className="table-common__head">
+                            С начала <br />
+                            этого <br /> месяца по <br /> вчерашний <br /> день
+                          </div>
+
+                          <div className="table-common__head">
+                            Итоговый <br /> баланс (с <br /> учетом <br /> начисление)
+                          </div>
+                          <div className="table-common__head">Аванс</div>
                           {dataAccountList?.map((row, indexRow) => (
                             <>
                               <div
@@ -288,17 +305,18 @@ const AccountPage = () => {
                                   setSelectedEmployeeAccount(row?.id);
                                 }}
                                 className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                style={{ textAlign: 'center', cursor: 'pointer' }}>
-                                {row?.earned}
+                                style={{ cursor: 'pointer' }}>
+                                {row?.hours}
                               </div>
                               <div
                                 onClick={() => {
                                   setSelectedEmployeeAccount(row?.id);
                                 }}
                                 className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                style={{ cursor: 'pointer' }}>
-                                {row?.hours}
+                                style={{ textAlign: 'center', cursor: 'pointer' }}>
+                                {row?.earned}
                               </div>
+
                               <div
                                 onClick={() => {
                                   setSelectedEmployeeAccount(row?.id);
@@ -350,19 +368,45 @@ const AccountPage = () => {
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+                          {getCashBoxListData && (
+                            <select
+                              style={{ width: '218px', marginBottom: '0', marginRight: '20px' }}
+                              onChange={(event) => {
+                                if (event.target.value) {
+                                  const findCurrentCashBox = getCashBoxListData?.find((itemCash) => itemCash?.id_cashbox == event.target.value);
+                                  if (findCurrentCashBox) {
+                                    setActiveCashBox(findCurrentCashBox);
+                                  }
+                                }
+                              }}>
+                              {getCashBoxListData.map((value) => {
+                                return (
+                                  <option selected={value?.id_cashbox == activeCashBox?.id_cashbox} value={value?.id_cashbox}>
+                                    {value?.name_cashbox}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          )}
+
                           <div
                             onClick={() => {
                               const isActive =
                                 Object.keys(prePaymentEmployee)
                                   .map((keyPre) => prePaymentEmployee[keyPre].sum)
                                   .filter((filterPre) => filterPre).length >= 1;
-                              if (isActive) {
-                                // setShowPrePayment(true);
+                              if (isActive && activeCashBox) {
+                                setShowPrePayment(true);
                               }
                             }}
                             class="filter__item"
                             style={{
-                              background: '#BAB8B8',
+                              background:
+                                Object.keys(prePaymentEmployee)
+                                  .map((keyPre) => prePaymentEmployee[keyPre].sum)
+                                  .filter((filterPre) => filterPre).length >= 1 && activeCashBox
+                                  ? '#FF0000'
+                                  : '#BAB8B8',
                               color: '#Fff',
                               width: 'min-content',
                               height: '45px',
@@ -598,7 +642,7 @@ const AccountPage = () => {
           list={prePaymentEmployee}
           onClose={() => {
             if (!prePaymentLoading) {
-              dispatch(prePaymentCreate({ list: prePaymentEmployee, subdivision: selectedAccessSubdivision?.value }));
+              dispatch(prePaymentCreate({ list: prePaymentEmployee, subdivision: selectedAccessSubdivision?.value, cashBox: activeCashBox }));
             }
           }}
           onSave={() => {

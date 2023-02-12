@@ -5,6 +5,7 @@ import { initStateDownloadEmployees, reducerDownloadEmployees } from '../actions
 import { initStateFeedbackEmployee, reducerFeedbackEmployee } from '../actions/employee/feedback.action';
 import { initStateGetAccount, reducerGetAccount } from '../actions/employee/getAccount.action';
 import { initStateGetAccountList, reducerGetAccountList } from '../actions/employee/getAccountList.action';
+import { initStateGetCashBoxList, reducerGetCashBoxList } from '../actions/employee/getCashBoxList.action';
 import { initStateGetCompetitionProducts, reducerGetCompetitionProducts } from '../actions/employee/getCompetitionProducts.action';
 import { initStateGetCompetitions, reducerGetCompetitions } from '../actions/employee/getCompetitions.action';
 import { initStateGetEmployee, reducerGetEmployee } from '../actions/employee/getEmployee.action';
@@ -41,6 +42,7 @@ export const initialState = {
   ...initStateUpdateEmployeeAccess,
   ...initStatePrePaymentCreate,
   ...initStateGetPrePayment,
+  ...initStateGetCashBoxList,
 };
 
 export const employeeSlice = createSlice({
@@ -49,6 +51,9 @@ export const employeeSlice = createSlice({
   reducers: {
     resetGetEmployees(state) {
       state.getEmployees = initStateGetEmployees.getEmployees;
+    },
+    resetGetCashBoxList(state) {
+      state.getCashBoxList = initStateGetCashBoxList.getCashBoxList;
     },
     resetPrePaymentCreate(state) {
       state.prePaymentCreate = initStatePrePaymentCreate.prePaymentCreate;
@@ -96,7 +101,8 @@ export const employeeSlice = createSlice({
     ...reducerGetAccountList,
     ...reducerPrePaymentCreate,
     ...reducerGetPrePayment,
+    ...reducerGetCashBoxList,
   },
 });
-export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount, resetUpdateEmployeeAccess, resetPrePaymentCreate, resetGetPrePayment } = employeeSlice.actions;
+export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount, resetUpdateEmployeeAccess, resetPrePaymentCreate, resetGetPrePayment, resetGetCashBoxList } = employeeSlice.actions;
 export const employeeReducer = employeeSlice.reducer;
