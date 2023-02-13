@@ -12,8 +12,12 @@ export const initialState = {
   workTimeTemplate: {
     workTimeEnd1: '23:00',
     workTimeEnd2: '23:00',
+    workTimeEnd3: '23:00',
+    workTimeEnd4: '23:00',
     workTimeStart1: '08:00',
     workTimeStart2: '08:00',
+    workTimeStart3: '08:00',
+    workTimeStart4: '08:00',
   },
 };
 

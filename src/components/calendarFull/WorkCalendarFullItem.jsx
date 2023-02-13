@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import moment from 'moment';
 import OutsideClickHandler from 'react-outside-click-handler';
 import NumberFormat from 'react-number-format';
-const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {}, isAccessEdit, timeTableItem, onMouseDown, onMouseUp, onMouseMove, className = '', resetSelection }) => {
+const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {}, isAccessEdit, timeTableItem, onMouseDown, onMouseUp, onMouseMove, className = '', resetSelection, selectedColumn }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -47,7 +47,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
           // resetSelection();
         }}>
         {item?.type == 'work' ? (
-          <div className="work-calendar-full-cell-day-work">
+          <div className={`work-calendar-full-cell-day-work ${parseInt(moment.utc(moment(item?.endTime).set('seconds', 0).diff(moment(item?.startTime).set('seconds', 0))).format('H')) > parseInt(timeTableItem?.hours) && timeTableItem?.hours ? 'error' : ''}`}>
             {editStartTime ? (
               <div>
                 <NumberFormat
@@ -116,6 +116,8 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
           <div className="work-calendar-full-cell-day-off">вых {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
         ) : item?.type == 'hours' ? (
           <div className="work-calendar-full-cell-day-off">{timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
+        ) : item?.type == 'comand' ? (
+          <div className="work-calendar-full-cell-comand">кмд{timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
         ) : (
           <> {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</>
         )}
@@ -164,6 +166,22 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
               </div>
               <div
                 onClick={() => {
+                  onClickMenu('work-3');
+                  onClose();
+                }}
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
+                Смена 3
+              </div>
+              <div
+                onClick={() => {
+                  onClickMenu('work-4');
+                  onClose();
+                }}
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
+                Смена магазина
+              </div>
+              <div
+                onClick={() => {
                   onClickMenu('vacation');
                   onClose();
                 }}
@@ -180,10 +198,18 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
               </div>
               <div
                 onClick={() => {
+                  onClickMenu('comand');
+                  onClose();
+                }}
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#BF40BF' }}>
+                Командировка
+              </div>
+              <div
+                onClick={() => {
                   onClickMenu('day-off');
                   onClose();
                 }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#fc0000', color: '#fff' }}>
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#e4e4e4' }}>
                 Выходной
               </div>
             </OutsideClickHandler>

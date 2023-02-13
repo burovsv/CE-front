@@ -97,6 +97,8 @@ const WorkCalendar = () => {
               return <div style={{ color: '#000' }}>БЛН</div>;
             } else if (findDate?.type == 'day-off') {
               return <div style={{ color: '#000' }}>ВЫХ</div>;
+            } else if (findDate?.type == 'comand') {
+              return <div style={{ color: '#000' }}>КМД</div>;
             }
           }
         }}

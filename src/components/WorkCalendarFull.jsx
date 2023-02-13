@@ -52,13 +52,25 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       if (workTimeTemplates?.timeStart2 && validateTime(workTimeTemplates?.timeStart2)) {
         existWorkTimeTemplate.workTimeStart2 = workTimeTemplates?.timeStart2;
       }
+      if (workTimeTemplates?.timeStart3 && validateTime(workTimeTemplates?.timeStart3)) {
+        existWorkTimeTemplate.workTimeStart3 = workTimeTemplates?.timeStart3;
+      }
+      if (workTimeTemplates?.timeStart4 && validateTime(workTimeTemplates?.timeStart4)) {
+        existWorkTimeTemplate.workTimeStart4 = workTimeTemplates?.timeStart4;
+      }
       if (workTimeTemplates?.timeEnd2 && validateTime(workTimeTemplates?.timeEnd2)) {
         existWorkTimeTemplate.workTimeEnd2 = workTimeTemplates?.timeEnd2;
       }
       if (workTimeTemplates?.timeEnd1 && validateTime(workTimeTemplates?.timeEnd1)) {
         existWorkTimeTemplate.workTimeEnd1 = workTimeTemplates?.timeEnd1;
       }
-      console.log('THISS', existWorkTimeTemplate);
+      if (workTimeTemplates?.timeEnd3 && validateTime(workTimeTemplates?.timeEnd3)) {
+        existWorkTimeTemplate.workTimeEnd3 = workTimeTemplates?.timeEnd3;
+      }
+      if (workTimeTemplates?.timeEnd4 && validateTime(workTimeTemplates?.timeEnd4)) {
+        existWorkTimeTemplate.workTimeEnd4 = workTimeTemplates?.timeEnd4;
+      }
+
       dispatch(setWorkTimeTemplate({ ...workTimeTemplate, ...existWorkTimeTemplate }));
     }
   }, [workTimeTemplates]);
@@ -116,6 +128,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       setAllDays(allDaysGenerate);
       const formatEmployees = employees?.map((employee) => {
         const formatCellCalendar = {
+          isLastPost: employee.isLastPost,
           userId: employee.id,
           firstName: employee.firstName,
           lastName: employee.lastName,
@@ -167,7 +180,8 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     };
   }, []);
   const isAccessEditCalendar = () => {
-    return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
+    // return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
+    return true;
   };
   const dispatch = useDispatch();
   const countMinTimeWorkers = (val, day, prop) => {
@@ -289,6 +303,8 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     const walk = x - startX;
     refTableWrap.current.scrollLeft = scrollLeft - walk;
   };
+  const [selectedColumn, setSelectedColumn] = useState(-1);
+
   return (
     <div class="work-calendar-full">
       {/* <button onClick={() => onClose(isEdited)} className="work-calendar-full-close"></button> */}
@@ -368,6 +384,72 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
               }}
             />
           </div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <div>Рабочий день 3 смена:</div>
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeStartTime(e.target.value, 'workTimeStart3', 'workTimeEnd3');
+              }}
+              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeStart3}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeEndTime(e.target.value, 'workTimeStart3', 'workTimeEnd3');
+              }}
+              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeEnd3}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <div>Рабочий день магазина:</div>
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeStartTime(e.target.value, 'workTimeStart4', 'workTimeEnd4');
+              }}
+              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeStart4}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeEndTime(e.target.value, 'workTimeStart4', 'workTimeEnd4');
+              }}
+              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeEnd4}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+          </div>
         </>
       )}
 
@@ -401,10 +483,16 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
                 />
               </div>
             </td>
-            {allDays?.map((day) => {
+            {allDays?.map((day, dayIndex) => {
               const numberDayOfWeek = day?.getDay();
               return (
-                <td width="75" style={{ width: '75px' }} className="work-calendar-full-cell-small-wrap ">
+                <td
+                  width="75"
+                  style={{ width: '75px' }}
+                  className="work-calendar-full-cell-small-wrap "
+                  onClick={() => {
+                    setSelectedColumn(dayIndex);
+                  }}>
                   <div className={`work-calendar-full-day-of-week ${(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red'}`}>{getDayOfWeek(numberDayOfWeek)}</div>
                 </td>
               );
@@ -420,10 +508,16 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             <td width="150" class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', left: '100px', zIndex: 2 }}>
               Должность
             </td>
-            {allDays?.map((day) => {
+            {allDays?.map((day, dayIndex) => {
               const numberDayOfWeek = day?.getDay();
               return (
-                <td width="75" style={{ width: '75px' }} className={`work-calendar-full-cell-small-wrap work-calendar-full-day-of-week `}>
+                <td
+                  width="75"
+                  style={{ width: '75px' }}
+                  className={`work-calendar-full-cell-small-wrap work-calendar-full-day-of-week `}
+                  onClick={() => {
+                    setSelectedColumn(dayIndex);
+                  }}>
                   <div class={(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red'}>{moment(day).format('D').toString()}</div>
                 </td>
               );
@@ -442,7 +536,21 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             </td>
           </tr>
           {fields?.map((item, index) => {
-            return <WorkCalendarFullRow timeTableRow={employees?.[index]?.timeTable} isAccessEdit={isAccessEditCalendar()} setIsEdited={setIsEdited} item={item} index={index} control={control} />;
+            return (
+              <WorkCalendarFullRow
+                lastPostRow={item.isLastPost}
+                resetSelectedColumn={() => {
+                  setSelectedColumn(-1);
+                }}
+                selectedColumn={selectedColumn}
+                timeTableRow={employees?.[index]?.timeTable}
+                isAccessEdit={isAccessEditCalendar()}
+                setIsEdited={setIsEdited}
+                item={item}
+                index={index}
+                control={control}
+              />
+            );
           })}
           <tr>
             <td colSpan="2" class="work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>

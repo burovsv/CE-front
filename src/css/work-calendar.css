@@ -9,7 +9,9 @@
 .work-calendar-loading .react-calendar__month-view {
   display: none;
 }
-
+.last-post-row td {
+  border-bottom: 4px solid #000 !important;
+}
 .cell-selected {
   box-shadow: 0 0 4px 2px rgb(84, 204, 255);
 }

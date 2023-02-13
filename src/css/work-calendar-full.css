@@ -205,14 +205,22 @@
   height: 44px;
   background-color: #54ccff;
 }
+.work-calendar-full-cell-comand {
+  text-align: left;
+  padding-top: 6px;
+  padding-left: 6px;
+  text-transform: uppercase;
+  height: 44px;
+  background: #bf40bf;
+}
 .work-calendar-full-cell-day-off {
   text-align: left;
   padding-top: 6px;
   padding-left: 6px;
   text-transform: uppercase;
   height: 44px;
-  background: #fc0000;
-  color: #fff;
+  background: #e4e4e4;
+  /* color: #fff; */
 }
 .work-calendar-full-cell-day-work div:nth-child(1) {
   grid-column: 1/2;
@@ -272,4 +280,7 @@
   bottom: 0;
   right: 0;
   color: #000 !important;
+}
+.work-calendar-full-cell-day-work.error div {
+  background: #fc0000 !important;
 }

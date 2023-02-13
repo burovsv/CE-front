@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useFieldArray } from 'react-hook-form';
@@ -13,7 +14,7 @@ export const convertMinsToHrsMins = (minutes) => {
     return h;
   } else return 0;
 };
-const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit, timeTableRow }) => {
+const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit, timeTableRow, selectedColumn, resetSelectedColumn, lastPostRow = false }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -67,7 +68,7 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
   };
 
   return (
-    <tr>
+    <tr className={clsx(lastPostRow && 'last-post-row')}>
       <td width="150" className="work-calendar-full-cell-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
         {item?.firstName} <br />
         {item?.lastName}
@@ -78,17 +79,18 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
       {fields?.map((dayItem, indexItem) => {
         return (
           <WorkCalendarFullItem
+            selectedColumn={selectedColumn}
             resetSelection={() => {
-              console.log(start);
-              console.log(end);
+              resetSelectedColumn();
               if (!selecting) {
                 setStart(-1);
                 setEnd(-1);
               }
             }}
-            className={(end <= indexItem && indexItem <= start) || (start <= indexItem && indexItem <= end) ? 'cell-selected' : ''}
+            className={(end <= indexItem && indexItem <= start) || (start <= indexItem && indexItem <= end) || indexItem == selectedColumn ? 'cell-selected' : ''}
             onMouseDown={(e) => {
               if (e.nativeEvent.button === 2 && isAccessEdit) {
+                resetSelectedColumn();
                 beginSelection(indexItem);
               }
             }}
@@ -136,7 +138,7 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
                 }
                 for (let indexCell = startIndex; indexCell <= endIndex; indexCell++) {
                   let updateCell = { type };
-                  if (type == 'work-1' || type == 'work-2') {
+                  if (type == 'work-1' || type == 'work-2' || type == 'work-3' || type == 'work-4') {
                     updateCell.type = 'work';
                   }
                   if (type) {
@@ -173,6 +175,38 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
                       const splitTimeWorkStart = workTimeTemplate?.workTimeStart2?.split(':');
 
                       const splitTimeWorkEnd = workTimeTemplate?.workTimeEnd2?.split(':');
+                      updateCell.startTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', splitTimeWorkStart[0])
+                        .set('minutes', splitTimeWorkStart[1])
+                        .set('seconds', 0)
+                        .toDate();
+                      updateCell.endTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', splitTimeWorkEnd[0])
+                        .set('minutes', splitTimeWorkEnd[1])
+                        .set('seconds', 0)
+                        .toDate();
+                    } else if (type === 'work-3') {
+                      const splitTimeWorkStart = workTimeTemplate?.workTimeStart3?.split(':');
+
+                      const splitTimeWorkEnd = workTimeTemplate?.workTimeEnd3?.split(':');
+                      updateCell.startTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', splitTimeWorkStart[0])
+                        .set('minutes', splitTimeWorkStart[1])
+                        .set('seconds', 0)
+                        .toDate();
+                      updateCell.endTime = moment(activeMonthYear)
+                        .set('date', indexCell + 1)
+                        .set('hours', splitTimeWorkEnd[0])
+                        .set('minutes', splitTimeWorkEnd[1])
+                        .set('seconds', 0)
+                        .toDate();
+                    } else if (type === 'work-4') {
+                      const splitTimeWorkStart = workTimeTemplate?.workTimeStart4?.split(':');
+
+                      const splitTimeWorkEnd = workTimeTemplate?.workTimeEnd4?.split(':');
                       updateCell.startTime = moment(activeMonthYear)
                         .set('date', indexCell + 1)
                         .set('hours', splitTimeWorkStart[0])
