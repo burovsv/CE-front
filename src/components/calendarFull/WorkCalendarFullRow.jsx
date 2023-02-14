@@ -14,7 +14,8 @@ export const convertMinsToHrsMins = (minutes) => {
     return h;
   } else return 0;
 };
-const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit, timeTableRow, selectedColumn, resetSelectedColumn, lastPostRow = false }) => {
+const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit, timeTableRow, selectedColumn, resetSelectedColumn, lastPostRow = false, lastIndex }) => {
+  console.log('ROW INDEx', index);
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -79,6 +80,8 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
       {fields?.map((dayItem, indexItem) => {
         return (
           <WorkCalendarFullItem
+            rowIndex={index}
+            lastRowIndex={lastIndex}
             selectedColumn={selectedColumn}
             resetSelection={() => {
               resetSelectedColumn();

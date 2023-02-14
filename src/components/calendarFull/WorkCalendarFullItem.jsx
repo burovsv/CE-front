@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
 import clsx from 'clsx';
 import moment from 'moment';
 import OutsideClickHandler from 'react-outside-click-handler';
 import NumberFormat from 'react-number-format';
-const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {}, isAccessEdit, timeTableItem, onMouseDown, onMouseUp, onMouseMove, className = '', resetSelection, selectedColumn }) => {
+const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChangeStartTime, item, style = {}, isAccessEdit, timeTableItem, onMouseDown, onMouseUp, onMouseMove, className = '', resetSelection, selectedColumn, lastRowIndex, rowIndex }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -13,7 +13,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
     getEmployeeHistory: { data: employeeHistory },
     activeCalendarSubdivision,
   } = useSelector((state) => state.employeeHistory);
-
+  const { workTimeTemplate } = useSelector((state) => state.subdivision);
   const [showMenu, setShowMenu] = useState(false);
   const handleContextMenu = (event) => {
     if (isAccessEdit) {
@@ -40,6 +40,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
 
   const [editStartTime, setEditStartTime] = useState(false);
   const [editEndTime, setEditEndTime] = useState(false);
+  const testRef = useRef(null);
   return (
     <td onContextMenu={handleContextMenu} className={clsx('work-calendar-full-cell-wrap', className)} style={style} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove}>
       <OutsideClickHandler
@@ -47,12 +48,15 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
           // resetSelection();
         }}>
         {item?.type == 'work' ? (
-          <div className={`work-calendar-full-cell-day-work ${parseInt(moment.utc(moment(item?.endTime).set('seconds', 0).diff(moment(item?.startTime).set('seconds', 0))).format('H')) > parseInt(timeTableItem?.hours) && timeTableItem?.hours ? 'error' : ''}`}>
+          <div className={`work-calendar-full-cell-day-work ${parseInt(moment.utc(moment(item?.endTime).set('seconds', 0).diff(moment(item?.startTime).set('seconds', 0))).format('H')) !== parseInt(timeTableItem?.hours) && timeTableItem?.hours ? 'error' : ''}`}>
             {editStartTime ? (
               <div>
                 <NumberFormat
+                  ref={testRef}
                   autoFocus="autofocus"
-                  onBlur={onSaveStartTime}
+                  onBlur={(ev) => {
+                    onSaveStartTime(ev);
+                  }}
                   style={{ padding: 0, textAlign: 'center', width: '25.5px', height: '12px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px' }}
                   format="##:##"
                   mask="_"
@@ -122,7 +126,19 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
           <> {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</>
         )}
         {showMenu && (
-          <div style={{ position: 'absolute', top: '50%', left: '50%', border: '1px solid #000', display: 'flex', flexDirection: 'column', width: '100px', userSelect: 'none', cursor: 'pointer', zIndex: '2' }}>
+          <div
+            style={{
+              position: 'absolute',
+              top: rowIndex == lastRowIndex - 1 ? '-400%' : rowIndex == lastRowIndex - 2 ? '-300%' : rowIndex == lastRowIndex - 3 ? '-200%' : rowIndex == lastRowIndex - 4 ? '-100%' : '50%',
+              left: '50%',
+              border: '1px solid #000',
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100px',
+              userSelect: 'none',
+              cursor: 'pointer',
+              zIndex: '2',
+            }}>
             <OutsideClickHandler
               onOutsideClick={() => {
                 console.log('show');
@@ -140,46 +156,55 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                 style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#ffffff' }}>
                 Пустой
               </div>
-              <div
+              {/* <div
                 onClick={() => {
                   onClickMenu('work');
                   onClose();
                 }}
                 style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
                 Рабочий
-              </div>
-              <div
-                onClick={() => {
-                  onClickMenu('work-1');
-                  onClose();
-                }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
-                Смена 1
-              </div>
-              <div
-                onClick={() => {
-                  onClickMenu('work-2');
-                  onClose();
-                }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
-                Смена 2
-              </div>
-              <div
-                onClick={() => {
-                  onClickMenu('work-3');
-                  onClose();
-                }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
-                Смена 3
-              </div>
-              <div
-                onClick={() => {
-                  onClickMenu('work-4');
-                  onClose();
-                }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
-                Смена магазина
-              </div>
+              </div> */}
+              {workTimeTemplate?.active1 && (
+                <div
+                  onClick={() => {
+                    onClickMenu('work-1');
+                    onClose();
+                  }}
+                  style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
+                  Смена 1
+                </div>
+              )}
+              {workTimeTemplate?.active2 && (
+                <div
+                  onClick={() => {
+                    onClickMenu('work-2');
+                    onClose();
+                  }}
+                  style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
+                  Смена 2
+                </div>
+              )}
+              {workTimeTemplate?.active3 && (
+                <div
+                  onClick={() => {
+                    onClickMenu('work-3');
+                    onClose();
+                  }}
+                  style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
+                  Смена 3
+                </div>
+              )}
+              {workTimeTemplate?.active4 && (
+                <div
+                  onClick={() => {
+                    onClickMenu('work-4');
+                    onClose();
+                  }}
+                  style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#c9ffcb' }}>
+                  Смена магазина
+                </div>
+              )}
+
               <div
                 onClick={() => {
                   onClickMenu('vacation');

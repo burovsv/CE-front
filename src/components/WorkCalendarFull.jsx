@@ -180,8 +180,8 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     };
   }, []);
   const isAccessEditCalendar = () => {
-    // return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
-    return true;
+    return dataUser?.subdivisions?.find((subdivFind) => subdivFind?.id == activeCalendarSubdivision?.id) || dataUser?.postSubdivision?.postId === 1;
+    // return true;
   };
   const dispatch = useDispatch();
   const countMinTimeWorkers = (val, day, prop) => {
@@ -319,6 +319,16 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       {isAccessEditCalendar() && (
         <>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <label>
+              <input
+                defaultChecked={workTimeTemplate.active1}
+                type="checkbox"
+                onChange={(event) => {
+                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active1: event.target.checked }));
+                }}
+              />
+              <span></span>
+            </label>
             <div>Рабочий день 1 смена:</div>
             <NumberFormat
               onBlur={(e) => {
@@ -352,6 +362,16 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <label>
+              <input
+                defaultChecked={workTimeTemplate.active2}
+                type="checkbox"
+                onChange={(event) => {
+                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active2: event.target.checked }));
+                }}
+              />
+              <span></span>
+            </label>
             <div>Рабочий день 2 смена:</div>
             <NumberFormat
               onBlur={(e) => {
@@ -385,6 +405,16 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <label>
+              <input
+                defaultChecked={workTimeTemplate.active3}
+                type="checkbox"
+                onChange={(event) => {
+                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active3: event.target.checked }));
+                }}
+              />
+              <span></span>
+            </label>
             <div>Рабочий день 3 смена:</div>
             <NumberFormat
               onBlur={(e) => {
@@ -418,6 +448,16 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+            <label>
+              <input
+                defaultChecked={workTimeTemplate.active4}
+                type="checkbox"
+                onChange={(event) => {
+                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active4: event.target.checked }));
+                }}
+              />
+              <span></span>
+            </label>
             <div>Рабочий день магазина:</div>
             <NumberFormat
               onBlur={(e) => {
@@ -452,7 +492,6 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           </div>
         </>
       )}
-
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '50px' }}>
         {isAccessEditCalendar() && (
           <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '0px' }} disabled={upsertWorkCalendarLoading || loadingEmployees}>
@@ -538,6 +577,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           {fields?.map((item, index) => {
             return (
               <WorkCalendarFullRow
+                lastIndex={fields?.length}
                 lastPostRow={item.isLastPost}
                 resetSelectedColumn={() => {
                   setSelectedColumn(-1);
