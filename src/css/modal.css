@@ -207,7 +207,23 @@ input[type='checkbox'] {
   display: flex;
   width: 70%;
 }
-
+/* 
 .moadal__article__select-group div {
   width: 50%;
+} */
+
+
+.modal__select, .modal__create {
+  width: 50%;
+}
+
+.modal__select .ant-select {
+  width: 100%;
+  height: 100%;
+  padding-bottom: 20px;
+}
+
+.modal__select .ant-select-selector {
+  border-radius: 0;
+  height: 100%;
 }
