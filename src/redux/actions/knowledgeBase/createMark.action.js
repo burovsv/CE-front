@@ -5,7 +5,7 @@ export const initStateCreateMark = {
     createMark: { data: null, loading: false, error: null },
 };
 
-export const createMark = createAsyncThunk('/mark/create', async ({ name }, { rejectWithValue, fulfillWithValue }) => {
+export const createMark = createAsyncThunk('mark/create', async ({ name }, { rejectWithValue, fulfillWithValue }) => {
     return await axios
         .post(`${process.env.REACT_APP_SERVER_API}/mark/create`, { name })
         .then((res) => {
