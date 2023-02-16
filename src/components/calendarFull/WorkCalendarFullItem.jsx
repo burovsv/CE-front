@@ -113,15 +113,25 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
             {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
           </div>
         ) : item?.type == 'vacation' ? (
-          <div className="work-calendar-full-cell-day-vacation">отп {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
+          <div className="work-calendar-full-cell-day-vacation" style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }}>
+            отп {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
+          </div>
         ) : item?.type == 'sick' ? (
-          <div className="work-calendar-full-cell-day-sick">блн {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
+          <div style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }} className="work-calendar-full-cell-day-sick">
+            блн {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
+          </div>
         ) : item?.type == 'day-off' ? (
-          <div className="work-calendar-full-cell-day-off">вых {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
+          <div style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }} className="work-calendar-full-cell-day-off">
+            вых {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
+          </div>
         ) : item?.type == 'hours' ? (
-          <div className="work-calendar-full-cell-day-off">{timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
+          <div style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }} className="work-calendar-full-cell-day-off">
+            {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
+          </div>
         ) : item?.type == 'comand' ? (
-          <div className="work-calendar-full-cell-comand">кмд{timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</div>
+          <div style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }} className="work-calendar-full-cell-comand">
+            кмд{timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
+          </div>
         ) : (
           <> {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}</>
         )}

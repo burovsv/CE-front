@@ -235,3 +235,19 @@
   font-weight: 600;
   padding: 20px;
 }
+.table-common-balance .table-common__cell {
+  padding: 20px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+.table-common-balance .table-common__head {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+.personal__btn {
+  margin-bottom: 0;
+  margin-top: 0;
+}

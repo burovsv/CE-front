@@ -270,10 +270,13 @@ const AccountPage = () => {
                     </div>
                     {dataAccountList && dataAccountList?.length > 0 ? (
                       <>
-                        <div className="table-common" style={{ gridTemplateColumns: '1fr auto auto auto auto auto' }}>
+                        <div className="table-common table-common-balance" style={{ gridTemplateColumns: '1fr auto auto auto auto auto auto' }}>
                           <div className="table-common__head">Сотрудник</div>
                           <div className="table-common__head">Должность</div>
                           <div className="table-common__head">Часы</div>
+                          <div className="table-common__head">
+                            Текущий <br /> баланс (без <br /> начисление <br /> за текущий <br /> месяц)
+                          </div>
                           <div className="table-common__head">
                             С начала <br />
                             этого <br /> месяца по <br /> вчерашний <br /> день
@@ -314,7 +317,26 @@ const AccountPage = () => {
                                   setSelectedEmployeeAccount(row?.id);
                                 }}
                                 className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                style={{ textAlign: 'center', cursor: 'pointer' }}>
+                                style={{ textAlign: 'left', cursor: 'pointer', padding: '10px' }}>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    height: '35px',
+                                    width: '65px',
+                                    padding: '10px',
+                                    background: '#feed01',
+                                  }}>
+                                  {' '}
+                                  {parseInt(row?.balance) - parseInt(row?.earned)}
+                                </div>
+                              </div>
+                              <div
+                                onClick={() => {
+                                  setSelectedEmployeeAccount(row?.id);
+                                }}
+                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                style={{ textAlign: 'left', cursor: 'pointer' }}>
                                 {row?.earned}
                               </div>
 
@@ -324,7 +346,7 @@ const AccountPage = () => {
                                 }}
                                 className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
                                 style={{ cursor: 'pointer' }}>
-                                {row?.balance}
+                                {parseInt(row?.balance)}
                               </div>
                               <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`} style={{ padding: '5px 14px', display: 'flex', alignItems: 'center' }}>
                                 <input
@@ -395,7 +417,9 @@ const AccountPage = () => {
                               const isActive =
                                 Object.keys(prePaymentEmployee)
                                   .map((keyPre) => prePaymentEmployee[keyPre].sum)
-                                  .filter((filterPre) => filterPre).length >= 1;
+                                  .filter((filterPre) => filterPre).length >= 1 &&
+                                moment().set('day', 20).isSameOrBefore(moment()) &&
+                                moment().set('day', 4).isSameOrAfter(moment());
                               if (isActive && activeCashBox) {
                                 setShowPrePayment(true);
                               }
@@ -405,7 +429,10 @@ const AccountPage = () => {
                               background:
                                 Object.keys(prePaymentEmployee)
                                   .map((keyPre) => prePaymentEmployee[keyPre].sum)
-                                  .filter((filterPre) => filterPre).length >= 1 && activeCashBox
+                                  .filter((filterPre) => filterPre).length >= 1 &&
+                                activeCashBox &&
+                                moment().set('day', 20).isSameOrBefore(moment()) &&
+                                moment().set('day', 4).isSameOrAfter(moment())
                                   ? '#FF0000'
                                   : '#BAB8B8',
                               color: '#Fff',
