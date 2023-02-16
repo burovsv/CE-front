@@ -20,17 +20,12 @@ const KnowledgeBasePage = () => {
     let [sectionGroupsElement, setSectionGroupsElement] = useState([]);
     let [initHierarchicalList, setInitHierarchicalList] = useState([]);
 
-
-
     const onSectionGroupClick = (e, group) => {
         let hierarchicalList = _.cloneDeep(initHierarchicalList);
         let foundGroup = _.find(hierarchicalList, { id: group.id });
         let isCollapsed = !foundGroup?.isCollapsed
         foundGroup.isCollapsed = isCollapsed;
         foundGroup.isHide = false;
-
-        console.log('click');
-        console.log('hierarchicalList', hierarchicalList);
 
         if (foundGroup?.children) {
             _.forEach(foundGroup.children, (child) => {

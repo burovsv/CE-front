@@ -8,7 +8,7 @@ import { useForm, Controller } from 'react-hook-form';
 import NumberFormat from 'react-number-format';
 import CustomToolbar from '../CustomToolbar';
 
-
+import { resetCreateMark } from '../../redux/slices/mark.slice';
 import { createMark } from '../../redux/actions/knowledgeBase/createMark.action';
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
 
@@ -28,10 +28,13 @@ const ModalArticle = () => {
     const [sectionOptions, setSectionOptions] = useState([]);
     const [markOptions, setMarkOptions] = useState([]);
 
+    const [successCreateMark, setSeccessCreateMark] = useState(false)
+
 
     // получить список групп, разделов, должностей, меток
     const {
-        getMarks: { data: marks, loading: loadingMarks }
+        getMarks: { data: marks, loading: loadingMarks },
+        createMark: { data: createMarkData, loading: createMarkLoading },
     } = useSelector((state) => state.mark);
 
     const {
@@ -68,10 +71,26 @@ const ModalArticle = () => {
 
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        if (createMarkData) {
+          dispatch(getMarks());
+          filterForm.setValue('name', '');
+          setSeccessCreateMark(true);
+          setTimeout(() => {
+            setSeccessCreateMark(false);
+          }, 3000);
+          dispatch(resetCreateMark());
+        }
+      }, [createMarkData]);
+    
+
+    useEffect(()=> {
+        dispatch(getMarks());
+    }, [])
 
 
     useEffect(() => {
-        dispatch(getMarks());
+
 
         let sectionGroupOptionsList = sectionGroups.map((item) => {
             return (
@@ -81,14 +100,14 @@ const ModalArticle = () => {
             )
         })
 
+        console.log(marks);
+
         let markOptionsList = marks.map((item) => {
             return {
                 label: item.name,
                 value: item.id
             }
         })
-
-        console.log(markOptionsList);
 
         setSectionGroupOptions(sectionGroupOptionsList);
         setMarkOptions(markOptionsList);
@@ -116,15 +135,11 @@ const ModalArticle = () => {
         setArticleSection(section);
     }
 
-    const onAddMark = (name) => {
-        console.log(name);
-        dispatch(createMark({ name }));
+    const onAddMark = (data) => {
+        console.log(data);
+        dispatch(createMark({ name: data?.name }));
     }
 
-    const handleChange = (html) => {
-        //   setText(html);
-        //   setValue('desc', html);
-    };
     function imageHandler() {
         //   var range = this.quill.getSelection();
         //   var valuee = prompt('please copy paste the image url here.');
@@ -160,7 +175,7 @@ const ModalArticle = () => {
                     </div>
                 </div>
                 <div>
-                    <div className='moadal__article__select-group'>
+                    <div className='modal__article__select-group'>
                         <div className="modal__select">
                             <select onChange={onSectionGroupChange}>
                                 <option value={''} selected>
@@ -177,7 +192,7 @@ const ModalArticle = () => {
                         </div>
                     </div>
 
-                    <div className='moadal__article__select-group'>
+                    <div className='modal__article__select-group'>
                         <div className="modal__select">
                             <select onChange={onSectionChange}>
                                 <option value={''} selected>
@@ -194,33 +209,31 @@ const ModalArticle = () => {
                         </div>
                     </div>
 
-                    <div className='moadal__article__select-group'>
+                <div className='modal__article__select-group__container'>
+                    <div className='modal__article__select-group'>
                         <div className="modal__select">
-                            <Select
-                                mode='multiple'
-                                placeholder="Выберете метки"
-                                options={markOptions}
-                            >
+                            <Select mode='multiple' placeholder="Выберете метки" >
+                                {marks?.map((mark) => {
+                                    return <option value={mark.id}>{mark.name}</option>
+                                })}
                             </Select>
-
                         </div>
                         <div className="modal__create">
-                            <input type="text" placeholder="Добавить метку" autoComplete="off" />
-                            <button
-                                onClick={filterForm.handleSubmit(onAddMark('name'))}
-                            >
+                            <input type="text" placeholder="Добавить метку" {...filterForm.register('name', { required: true })}  autoComplete="off" />
+                            <button onClick={filterForm.handleSubmit(onAddMark)} disabled={successCreateMark}>
                                 <img src="/img/modal/plus.svg" />
                             </button>
                         </div>
                     </div>
+                    {filterForm.formState?.errors?.name && <div class="text-error" style={{ marginBottom: '10px' }}> Введите название метки, для ее добавления </div>}
+                    {successCreateMark && <div class="text-success" style={{ marginBottom: '10px' }}> Метка добавлена </div>}
+                </div>
 
 
-                    <div className='moadal__article__select-group'>
+                    <div className='modal__article__select-group'>
                         <div className="modal__select">
                             <select>
-                                <option value={''} selected>
-                                    Должность
-                                </option>
+                                <option value={''} selected>Должность</option>
                             </select>
                         </div>
                     </div>

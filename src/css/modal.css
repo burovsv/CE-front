@@ -203,15 +203,15 @@ input[type='checkbox'] {
 }
 
 /* Может в др файл разместить? */
-.moadal__article__select-group {
+.modal__article__select-group__container {
+  display: flex;
+  align-items: center;
+}
+
+.modal__article__select-group {
   display: flex;
   width: 70%;
 }
-/* 
-.moadal__article__select-group div {
-  width: 50%;
-} */
-
 
 .modal__select, .modal__create {
   width: 50%;

@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { initStateGetMarks, reducerGetMarks } from '../actions/knowledgeBase/getMarks.action';
-import { initStateCreateMark, createMark } from '../actions/knowledgeBase/createMark.action';
+import { initStateCreateMark, reducerCreateMark } from '../actions/knowledgeBase/createMark.action';
 
 
 export const initialState = {
     ...initStateGetMarks,
-
+    ...initStateCreateMark
   };
   
 export const markSlice = createSlice({
@@ -19,5 +19,10 @@ export const markSlice = createSlice({
         state.createMark = initStateCreateMark.createMark;
       },
     },
+    extraReducers: {
+      ...reducerGetMarks,
+      ...reducerCreateMark,
+    }
   });
+  export const { resetGetMarks, resetCreateMark } = markSlice.actions;
   export const markReducer = markSlice.reducer;
