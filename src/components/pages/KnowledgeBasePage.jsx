@@ -18,18 +18,32 @@ const KnowledgeBasePage = () => {
     const [sectionsList, setSectionsList] = useState([]);
     const [sectionGroupsList, setSectionGroupsList] = useState([]);
     let [sectionGroupsElement, setSectionGroupsElement] = useState([]);
+    let [initHierarchicalList, setInitHierarchicalList] = useState([]);
+
+
+
+    const onSectionGroupClick = (e, group) => {
+        let hierarchicalList = _.cloneDeep(initHierarchicalList);
+        let foundGroup = _.find(hierarchicalList, { id: group.id });
+        let isCollapsed = !foundGroup?.isCollapsed
+        foundGroup.isCollapsed = isCollapsed;
+        foundGroup.isHide = false;
+
+        console.log('click');
+        console.log('hierarchicalList', hierarchicalList);
+
+        if (foundGroup?.children) {
+            _.forEach(foundGroup.children, (child) => {
+                child.isHide = isCollapsed;
+                child.isCollapsed = isCollapsed;
+            });
+        }
+        setInitHierarchicalList(hierarchicalList);
+    }
 
     const sectionGroupElement = (sectionGroup) => {
         const element = (
-            <div style={{
-                        backgroundColor: 'white',
-                        padding: '10px 20px',
-                        fontWeight: 700,
-                        fontSize: '12px',
-                        marginTop: '20px',
-                        display: 'flex',
-
-                    }}>
+            <div key={sectionGroup.id} onClick={(e) => onSectionGroupClick(e, sectionGroup)} className="knowledge-base__section-group-container">
                 {sectionGroup?.name}
             </div>
         );
@@ -39,23 +53,24 @@ const KnowledgeBasePage = () => {
     const sectionElement = (section) => {
         let result = (section?.children) ? section.children.length : 0;
         const element = (
-            <div style={{
-                        backgroundColor: '#E7E7E7',
-                        padding: '10px 40px',
-                        display: 'flex',
-                    }}>
+            <div key={section.id} onClick={(e) => onSectionGroupClick(e, section)} style={{
+                backgroundColor: '#E7E7E7',
+                padding: '10px 40px',
+                display: 'flex',
+            }}>
                 <div style={{
-                        fontWeight: 700,
-                        fontSize: '12px'}}>
+                    fontWeight: 700,
+                    fontSize: '12px'
+                }}>
                     {section?.name}
                 </div>
                 <div style={{
-                        fontWeight: 400,
-                        color: '#00000080',
-                        fontSize: '12px',
-                        paddingLeft: '10px',
+                    fontWeight: 400,
+                    color: '#00000080',
+                    fontSize: '12px',
+                    paddingLeft: '10px',
 
-                        }}>
+                }}>
                     Результаты: {result}
                 </div>
             </div>
@@ -64,27 +79,27 @@ const KnowledgeBasePage = () => {
     };
 
     const articleElement = (article) => {
-        let foundArticle = _.find(articles, {id: article.id});
+        let foundArticle = _.find(articles, { id: article.id });
         let articlesMarks = [];
         _.forEach(foundArticle.markId, (mark) => {
-            let foundMark = _.find(marks, {id: mark});
+            let foundMark = _.find(marks, { id: mark });
             articlesMarks.push(foundMark);
         });
 
         const element = (
-            <div style={{
-                    padding: '10px 10px 10px 60px',
-                    }}>
+            <div key={article.id} style={{
+                padding: '10px 10px 10px 60px',
+            }}>
                 <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        marginBottom: '10px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '10px',
                 }}>
-                    <Link to={`/knowledgeBase/${article?.id}`} style={{
+                    <Link key={`link__${article.id}`} to={`/knowledgeBase/${article?.id}`} style={{
                         fontWeight: 700,
                         color: 'blue',
                     }} onClick={() => onClick(article)}>
-                        {article?.name??''}
+                        {article?.name ?? ''}
                     </Link>
                     <div style={{
                         color: '#00000080',
@@ -93,11 +108,11 @@ const KnowledgeBasePage = () => {
                     </div>
                 </div>
                 <div style={{
-                        display: 'flex',
-                        flexDirection: 'row',
+                    display: 'flex',
+                    flexDirection: 'row',
                 }}>
                     <div>
-                        Метки: 
+                        Метки:
                     </div>
                     <div style={{
                         color: '#00000080',
@@ -105,19 +120,11 @@ const KnowledgeBasePage = () => {
                     }}>
                         {articlesMarks.map((mark, index) => {
                             // на последний элемент не ставим запятую
-                            if (index === articlesMarks.length - 1) {
-                                return (
-                                    <span>
-                                         {mark?.name}
-                                    </span>
-                                )
-                            } else {
-                                return (
-                                    <span>
-                                        {`${mark?.name}, `}
-                                    </span>
-                                )
-                            }
+                            return (
+                                <span>
+                                    {mark?.name}{(index === articlesMarks.length - 1) ? '' : ', '}
+                                </span>
+                            )
                         })}
                     </div>
                 </div>
@@ -126,7 +133,7 @@ const KnowledgeBasePage = () => {
         return element;
     };
 
-    const initHierarchicalItem = (el, level, parent=null, isGroup=false, isCollapsed=false) => {
+    const initHierarchicalItem = (el, level, parent = null, isGroup = false, isCollapsed = false) => {
         return {
             id: el.id,
             name: el.name,
@@ -134,9 +141,9 @@ const KnowledgeBasePage = () => {
             isGroup: isGroup,
             isCollapsed: isCollapsed,
             level: level,
-            children : (el?.children) ? el.children : null,
+            children: (el?.children) ? el.children : null,
         }
-    } 
+    }
 
     const dispatch = useDispatch();
     // const {
@@ -159,13 +166,13 @@ const KnowledgeBasePage = () => {
     const {
         getMarks: { data: marks, loading: loadingMarks, error: errorMarks, count: marksCount }
     } = useSelector((state) => state.mark);
-        
+
     const {
-        getSections:  { data: sections, loading: loadingSection, error: errorSection, count: sectionCount }
+        getSections: { data: sections, loading: loadingSection, error: errorSection, count: sectionCount }
     } = useSelector((state) => state.section);
 
     const {
-        getSectionGroups:  { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
+        getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
     } = useSelector((state) => state.sectionGroup);
 
 
@@ -173,11 +180,10 @@ const KnowledgeBasePage = () => {
         // console.log('click: ', e);
     }
     // определяем массивы статей, разделов и групп разделов
-
     useEffect(() => {
-        let articlesArray = (!_.isEmpty(articlesList))? articlesList : [];
-        let sectionsArray = (!_.isEmpty(sectionsList))? sectionsList : [];
-        let sectionGroupsArray = (!_.isEmpty(sectionGroupsList))? sectionGroupsList : [];
+        let articlesArray = (!_.isEmpty(articlesList)) ? articlesList : [];
+        let sectionsArray = (!_.isEmpty(sectionsList)) ? sectionsList : [];
+        let sectionGroupsArray = (!_.isEmpty(sectionGroupsList)) ? sectionGroupsList : [];
 
         if (_.isEmpty(articlesList)) {
             articlesArray = articles.map((el) => initHierarchicalItem(el, 2, el.sectionId))
@@ -219,27 +225,38 @@ const KnowledgeBasePage = () => {
                     if (!_.isEmpty(sectionChildren)) {
                         section.children = sectionChildren;
                         sectionGroupChildren.push(section, ...sectionChildren)
+                        sectionGroup.children = sectionGroupChildren;
                     };
                 }
             });
             if (!_.isEmpty(sectionGroupChildren)) hierarchicalList.push(sectionGroup, ...sectionGroupChildren);
-        })
 
-        let groupsList = hierarchicalList.map( (el) => {
-            switch (el.level) {
-                case 0: 
-                    return sectionGroupElement(el);
-                case 1:
-                    return sectionElement(el);
-                case 2:
-                    return articleElement(el);
-                default:
-                    return null;
-            }
         });
 
-        setSectionGroupsElement(groupsList);
-    }, [articles, sectionGroups, sections, marks])
+        setInitHierarchicalList(hierarchicalList);
+    }, [])
+
+    useEffect(() => {
+        function createHierarchicalList() {
+            let hierarchicalList = [];
+            hierarchicalList = initHierarchicalList.map((el) => {
+                if (el?.isCollapsed && el?.isHide) return null;
+                switch (el.level) {
+                    case 0:
+                        return sectionGroupElement(el);
+                    case 1:
+                        return sectionElement(el);
+                    case 2:
+                        return articleElement(el);
+                    default:
+                        return null;
+                }
+            });
+            return hierarchicalList;
+        }
+
+        setSectionGroupsElement(createHierarchicalList())
+    }, [initHierarchicalList])
 
     let element = (
         <div
