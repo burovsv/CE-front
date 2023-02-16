@@ -12,6 +12,8 @@ import { resetCreateMark } from '../../redux/slices/mark.slice';
 import { createMark } from '../../redux/actions/knowledgeBase/createMark.action';
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
 
+import { createSectionGroup } from '../../redux/actions/knowledgeBase/createSectionGroup.action';
+
 import ReactQuill, { Quill } from 'react-quill';
 // import { create } from 'domain';
 
@@ -29,6 +31,7 @@ const ModalArticle = () => {
     const [markOptions, setMarkOptions] = useState([]);
 
     const [successCreateMark, setSeccessCreateMark] = useState(false)
+    const [successCreateSectionGroup, setSeccessCreateSectionGroup] = useState(false)
 
 
     // получить список групп, разделов, должностей, меток
@@ -65,7 +68,8 @@ const ModalArticle = () => {
     }
     const filterForm = useForm({
         deafultValues: {
-            name: '',
+            mark: '',
+            sectionGroup: '',
         },
     });
 
@@ -90,8 +94,6 @@ const ModalArticle = () => {
 
 
     useEffect(() => {
-
-
         let sectionGroupOptionsList = sectionGroups.map((item) => {
             return (
                 <option value={item.id} key={item.id}>
@@ -99,8 +101,6 @@ const ModalArticle = () => {
                 </option>
             )
         })
-
-        console.log(marks);
 
         let markOptionsList = marks.map((item) => {
             return {
@@ -137,7 +137,11 @@ const ModalArticle = () => {
 
     const onAddMark = (data) => {
         console.log(data);
-        dispatch(createMark({ name: data?.name }));
+        dispatch(createMark({ name: data?.mark }));
+    }
+
+    const onAddSectionGroup = (data) => {
+        dispatch(createSectionGroup({ name: data?.sectionGroup }));
     }
 
     function imageHandler() {
@@ -175,37 +179,41 @@ const ModalArticle = () => {
                     </div>
                 </div>
                 <div>
-                    <div className='modal__article__select-group'>
-                        <div className="modal__select">
-                            <select onChange={onSectionGroupChange}>
-                                <option value={''} selected>
-                                    Группа
-                                </option>
-                                {sectionGroupOptions}
-                            </select>
-                        </div>
-                        <div className="modal__create">
-                            <input type="text" placeholder="Добавить группу" autoComplete="off" />
-                            <button>
-                                <img src="/img/modal/plus.svg" />
-                            </button>
+                    <div className='modal__article__select-group__container'>
+                        <div className='modal__article__select-group'>
+                            <div className="modal__select">
+                                <select onChange={onSectionGroupChange}>
+                                    <option value={''} selected>
+                                        Группа
+                                    </option>
+                                    {sectionGroupOptions}
+                                </select>
+                            </div>
+                            <div className="modal__create">
+                                <input type="text" placeholder="Добавить группу" autoComplete="off" />
+                                <button>
+                                    <img src="/img/modal/plus.svg" />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div className='modal__article__select-group'>
-                        <div className="modal__select">
-                            <select onChange={onSectionChange}>
-                                <option value={''} selected>
-                                    Раздел
-                                </option>
-                                {sectionOptions}
-                            </select>
-                        </div>
-                        <div className="modal__create">
-                            <input type="text" placeholder="Добавить раздел" autoComplete="off" />
-                            <button>
-                                <img src="/img/modal/plus.svg" />
-                            </button>
+                    <div className='modal__article__select-group__container'>
+                        <div className='modal__article__select-group'>
+                            <div className="modal__select">
+                                <select onChange={onSectionChange}>
+                                    <option value={''} selected>
+                                        Раздел
+                                    </option>
+                                    {sectionOptions}
+                                </select>
+                            </div>
+                            <div className="modal__create">
+                                <input type="text" placeholder="Добавить раздел" {...filterForm.register('sectionGroup', { required: true })} autoComplete="off" />
+                                <button onClick={filterForm.handleSubmit(onAddSectionGroup)} disabled={successCreateSectionGroup}>
+                                    <img src="/img/modal/plus.svg" />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -219,7 +227,7 @@ const ModalArticle = () => {
                             </Select>
                         </div>
                         <div className="modal__create">
-                            <input type="text" placeholder="Добавить метку" {...filterForm.register('name', { required: true })}  autoComplete="off" />
+                            <input type="text" placeholder="Добавить метку" {...filterForm.register('mark', { required: true })}  autoComplete="off" />
                             <button onClick={filterForm.handleSubmit(onAddMark)} disabled={successCreateMark}>
                                 <img src="/img/modal/plus.svg" />
                             </button>
