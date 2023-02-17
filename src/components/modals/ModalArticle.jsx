@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 
 import { Select } from 'antd';
+import * as _ from 'lodash';
 
 import Modal from './Modal';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +13,9 @@ import { resetCreateMark } from '../../redux/slices/mark.slice';
 import { createMark } from '../../redux/actions/knowledgeBase/createMark.action';
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
 
+import { resetCreateSectionGroup } from '../../redux/actions/knowledgeBase/createSectionGroup.action';
 import { createSectionGroup } from '../../redux/actions/knowledgeBase/createSectionGroup.action';
+import { getSectionGroup } from '../../redux/actions/knowledgeBase/createSectionGroup.action';
 
 import ReactQuill, { Quill } from 'react-quill';
 // import { create } from 'domain';
@@ -31,7 +34,17 @@ const ModalArticle = () => {
     const [markOptions, setMarkOptions] = useState([]);
 
     const [successCreateMark, setSeccessCreateMark] = useState(false)
+    const [successCreateSection, setSeccessCreateSection] = useState(false)
     const [successCreateSectionGroup, setSeccessCreateSectionGroup] = useState(false)
+
+// Для добавления новых эл-ов в бд
+    const [newMark, setNewMark] = useState('');
+    const [newSection, setNewSection] = useState('');
+    const [newGroupSection, setNewGroupSection] = useState('');
+
+    // вывод ошибок
+    const [errorCreateMark, setErrorCreateMark] = useState(false)
+
 
 
     // получить список групп, разделов, должностей, меток
@@ -45,7 +58,8 @@ const ModalArticle = () => {
     } = useSelector((state) => state.section);
 
     const {
-        getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
+        getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount },
+        createSectionGroup: { data: createSectionGroupData, loading: createSectionGroupLoading },
     } = useSelector((state) => state.sectionGroup);
 
     const {
@@ -76,16 +90,16 @@ const ModalArticle = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (createMarkData) {
+        if (createMarkData && newMark) {
           dispatch(getMarks());
-          filterForm.setValue('name', '');
+          setNewMark('');
           setSeccessCreateMark(true);
           setTimeout(() => {
             setSeccessCreateMark(false);
           }, 3000);
           dispatch(resetCreateMark());
         }
-      }, [createMarkData]);
+    }, [createMarkData]);
     
 
     useEffect(()=> {
@@ -135,22 +149,29 @@ const ModalArticle = () => {
         setArticleSection(section);
     }
 
-    const onAddMark = (data) => {
-        console.log(data);
-        dispatch(createMark({ name: data?.mark }));
+    const onAddMarkBtnClick = () => {
+        if (newMark) dispatch(createMark( {name: newMark} ));
+        else {
+            setErrorCreateMark(true);
+            const timer = setTimeout(() => {
+                setErrorCreateMark(false);
+                clearTimeout(timer);
+            }, 3000);
+        }
     }
 
-    const onAddSectionGroup = (data) => {
-        dispatch(createSectionGroup({ name: data?.sectionGroup }));
+    const onAddSectionBtnClick = () => {
+        console.log('Section click');
+        console.log(filterForm.getValues('section'));
+    }
+    
+    const onAddSectionGroupBtnClick = () => {
+        const sectionGroup = filterForm.getValues('sectionGroup') ?? '';
+        dispatch(createSectionGroup( {name: sectionGroup} ));
     }
 
-    function imageHandler() {
-        //   var range = this.quill.getSelection();
-        //   var valuee = prompt('please copy paste the image url here.');
-        //   if (valuee) {
-        //     this.quill.insertEmbed(range.index, 'image', valuee, Quill.sources.USER);
-        //   }
-    }
+    function imageHandler() { }
+
     const formats = ['font', 'size', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'script', 'header', 'blockquote', 'code-block', 'indent', 'list', 'direction', 'align', 'link', 'image', 'video', 'formula'];
     const modules = useMemo(
         () => ({
@@ -164,6 +185,7 @@ const ModalArticle = () => {
         }),
         [],
     );
+
     let element = (
         <>
             <Modal modalStyle={{ maxWidth: '50%' }} title="Добавление статьи" onSave={() => { }} onClose={() => { }}>
@@ -178,6 +200,7 @@ const ModalArticle = () => {
                         </div>
                     </div>
                 </div>
+
                 <div>
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
@@ -190,8 +213,8 @@ const ModalArticle = () => {
                                 </select>
                             </div>
                             <div className="modal__create">
-                                <input type="text" placeholder="Добавить группу" autoComplete="off" />
-                                <button>
+                                <input type="text" placeholder="Добавить группу" {...filterForm.register('sectionGroup', { required: true })} autoComplete="off" />
+                                <button onClick={onAddSectionGroupBtnClick} disabled={successCreateSectionGroup}>
                                     <img src="/img/modal/plus.svg" />
                                 </button>
                             </div>
@@ -209,34 +232,33 @@ const ModalArticle = () => {
                                 </select>
                             </div>
                             <div className="modal__create">
-                                <input type="text" placeholder="Добавить раздел" {...filterForm.register('sectionGroup', { required: true })} autoComplete="off" />
-                                <button onClick={filterForm.handleSubmit(onAddSectionGroup)} disabled={successCreateSectionGroup}>
+                                <input type="text" placeholder="Добавить раздел" {...filterForm.register('section', { required: true })} autoComplete="off" />
+                                <button key={`btn-articles_section`} onClick={onAddSectionBtnClick} disabled={successCreateSection}>
                                     <img src="/img/modal/plus.svg" />
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                <div className='modal__article__select-group__container'>
-                    <div className='modal__article__select-group'>
-                        <div className="modal__select">
-                            <Select mode='multiple' placeholder="Выберете метки" >
-                                {marks?.map((mark) => {
-                                    return <option value={mark.id}>{mark.name}</option>
-                                })}
-                            </Select>
+                    <div className='modal__article__select-group__container'>
+                        <div className='modal__article__select-group'>
+                            <div className="modal__select">
+                                <Select mode='multiple' placeholder="Выберете метки" >
+                                    {marks?.map((mark) => {
+                                        return <option value={mark.id}>{mark.name}</option>
+                                    })}
+                                </Select>
+                            </div>
+                            <div className="modal__create">
+                                <input type="text" placeholder="Добавить метку" value={newMark} onChange={(e) => setNewMark(e.target.value)} autoComplete="off" />
+                                <button key={`btn-articles_mark`} onClick={onAddMarkBtnClick} disabled={successCreateMark}>
+                                    <img src="/img/modal/plus.svg" />
+                                </button>
+                            </div>
                         </div>
-                        <div className="modal__create">
-                            <input type="text" placeholder="Добавить метку" {...filterForm.register('mark', { required: true })}  autoComplete="off" />
-                            <button onClick={filterForm.handleSubmit(onAddMark)} disabled={successCreateMark}>
-                                <img src="/img/modal/plus.svg" />
-                            </button>
-                        </div>
+                        {errorCreateMark && <div class="text-error" style={{ marginBottom: '10px' }}> Введите название метки, для ее добавления </div>}
+                        {successCreateMark && <div class="text-success" style={{ marginBottom: '10px' }}> Метка добавлена </div>}
                     </div>
-                    {filterForm.formState?.errors?.name && <div class="text-error" style={{ marginBottom: '10px' }}> Введите название метки, для ее добавления </div>}
-                    {successCreateMark && <div class="text-success" style={{ marginBottom: '10px' }}> Метка добавлена </div>}
-                </div>
-
 
                     <div className='modal__article__select-group'>
                         <div className="modal__select">
