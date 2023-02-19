@@ -28,6 +28,7 @@ import PrePaymentList from '../PrePaymentList';
 import { getSubdivisionWorkTimeTemplates } from '../../redux/actions/subdivision/getSubdivisionWorkTimeTemplates.action';
 import { resetGetSubdivisionWorkTimeTemplates } from '../../redux/slices/subdivision.slice';
 import { getCashBoxList } from '../../redux/actions/employee/getCashBoxList.action';
+import { getPrePaymentSettings } from '../../redux/actions/employee/getPrePaymentSettings.action';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -51,6 +52,7 @@ const AccountPage = () => {
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
     prePaymentCreate: { data: prePaymentCreateData, loading: prePaymentLoading, error: prePaymentCreateError },
     getCashBoxList: { data: getCashBoxListData },
+    getPrePaymentSettings: { data: prePaymentSettings },
   } = useSelector((state) => state.employee);
   const [childActiveTab, setChildActiveTab] = useState('balance-list-tab');
   const [isManager, setIsManager] = useState(false);
@@ -171,6 +173,7 @@ const AccountPage = () => {
   };
   useEffect(() => {
     dispatch(getEmployeeHistory());
+    dispatch(getPrePaymentSettings());
   }, []);
   const [activeCashBox, setActiveCashBox] = useState(null);
   useEffect(() => {
@@ -337,7 +340,7 @@ const AccountPage = () => {
                                 }}
                                 className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
                                 style={{ textAlign: 'left', cursor: 'pointer' }}>
-                                {row?.earned}
+                                {parseInt(row?.earned)}
                               </div>
 
                               <div
@@ -389,60 +392,65 @@ const AccountPage = () => {
                             </>
                           ))}
                         </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
-                          {getCashBoxListData && (
-                            <select
-                              style={{ width: '218px', marginBottom: '0', marginRight: '20px' }}
-                              onChange={(event) => {
-                                if (event.target.value) {
-                                  const findCurrentCashBox = getCashBoxListData?.find((itemCash) => itemCash?.id_cashbox == event.target.value);
-                                  if (findCurrentCashBox) {
-                                    setActiveCashBox(findCurrentCashBox);
+                        {prePaymentSettings && (
+                          <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+                            {getCashBoxListData && (
+                              <select
+                                style={{ width: '218px', marginBottom: '0', marginRight: '20px' }}
+                                onChange={(event) => {
+                                  if (event.target.value) {
+                                    const findCurrentCashBox = getCashBoxListData?.find((itemCash) => itemCash?.id_cashbox == event.target.value);
+                                    if (findCurrentCashBox) {
+                                      setActiveCashBox(findCurrentCashBox);
+                                    }
                                   }
-                                }
-                              }}>
-                              {getCashBoxListData.map((value) => {
-                                return (
-                                  <option selected={value?.id_cashbox == activeCashBox?.id_cashbox} value={value?.id_cashbox}>
-                                    {value?.name_cashbox}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          )}
+                                }}>
+                                {getCashBoxListData.map((value) => {
+                                  return (
+                                    <option selected={value?.id_cashbox == activeCashBox?.id_cashbox} value={value?.id_cashbox}>
+                                      {value?.name_cashbox}
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            )}
 
-                          <div
-                            onClick={() => {
-                              const isActive =
-                                Object.keys(prePaymentEmployee)
-                                  .map((keyPre) => prePaymentEmployee[keyPre].sum)
-                                  .filter((filterPre) => filterPre).length >= 1 &&
-                                moment().set('day', 20).isSameOrBefore(moment()) &&
-                                moment().set('day', 4).isSameOrAfter(moment());
-                              if (isActive && activeCashBox) {
+                            <div
+                              onClick={() => {
+                                const isActive =
+                                  Object.keys(prePaymentEmployee)
+                                    .map((keyPre) => prePaymentEmployee[keyPre].sum)
+                                    .filter((filterPre) => filterPre).length >= 1 &&
+                                  moment().set('day', prePaymentSettings.startDate).isSameOrBefore(moment()) &&
+                                  moment().set('day', prePaymentSettings.endDate).isSameOrAfter(moment());
                                 setShowPrePayment(true);
-                              }
-                            }}
-                            class="filter__item"
-                            style={{
-                              background:
-                                Object.keys(prePaymentEmployee)
-                                  .map((keyPre) => prePaymentEmployee[keyPre].sum)
-                                  .filter((filterPre) => filterPre).length >= 1 &&
-                                activeCashBox &&
-                                moment().set('day', 20).isSameOrBefore(moment()) &&
-                                moment().set('day', 4).isSameOrAfter(moment())
-                                  ? '#FF0000'
-                                  : '#BAB8B8',
-                              color: '#Fff',
-                              width: 'min-content',
-                              height: '45px',
-                            }}>
-                            Выдать
+                                if (true) {
+                                  setShowPrePayment(true);
+                                }
+                                // if (isActive && activeCashBox) {
+                                //   setShowPrePayment(true);
+                                // }
+                              }}
+                              class="filter__item"
+                              style={{
+                                background:
+                                  Object.keys(prePaymentEmployee)
+                                    .map((keyPre) => prePaymentEmployee[keyPre].sum)
+                                    .filter((filterPre) => filterPre).length >= 1 &&
+                                  activeCashBox &&
+                                  moment().set('day', 20).isSameOrBefore(moment()) &&
+                                  moment().set('day', 4).isSameOrAfter(moment())
+                                    ? '#FF0000'
+                                    : '#BAB8B8',
+                                color: '#Fff',
+                                width: 'min-content',
+                                height: '45px',
+                              }}>
+                              Выдать
+                            </div>
+                            <div>Доступно с 20 по 4 не более 50% от баланса</div>
                           </div>
-                          <div>Доступно с 20 по 4 не более 50% от баланса</div>
-                        </div>
+                        )}
                       </>
                     ) : (!dataAccountList || dataAccountList?.length === 0) && !loadingAccountList ? (
                       <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>Сотрудников не найдено</div>
@@ -533,7 +541,7 @@ const AccountPage = () => {
                             <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{moment(row?.date_sale).format('DD.MM.YYYY')}</div>
                             <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.product}</div>
                             <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.quantity}</div>
-                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)}</div>
+                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(0)}</div>
                           </>
                         ))}
                       </div>

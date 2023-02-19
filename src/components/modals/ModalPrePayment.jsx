@@ -7,19 +7,23 @@ const ModalPrePayment = ({ list, onClose, onSave, loading }) => {
     <Modal
       textSend={'Отменить'}
       textCancel={loading ? 'Загрузка...' : 'Выдать'}
-      styleSendBtn={{ backgroundColor: 'red', color: '#fff' }}
+      styleSendBtn={{ backgroundColor: 'red', color: '#fff', width: '100px', padding: '10px', marginRight: 'auto', order: 2 }}
+      styleCloseBtn={{
+        width: '84px',
+        marginLeft: 'auto',
+      }}
       title=""
       onSave={onSave}
       onClose={onClose}
       modalStyle={{
-        maxWidth: '600px',
+        maxWidth: Object.keys(list).length == 1 ? '300px' : '600px',
       }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '20px', marginBottom: '20px', rowGap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: Object.keys(list).length == 1 ? '1fr' : '1fr 1fr', columnGap: '20px', marginBottom: '20px', rowGap: '20px' }}>
         {Object.keys(list).map(function (key, index) {
           return (
-            <div style={{ display: 'grid', alignItems: 'center', gridTemplateColumns: '1fr 75px', columnGap: '43px' }}>
+            <div style={{ display: 'grid', alignItems: 'center', gridTemplateColumns: '1fr 84px', columnGap: '43px' }}>
               <div>{list[key].name}</div>
-              <div style={{ width: '75px', height: '35px', border: '1px solid #E6E6E6', padding: '10px 15px' }}>{list[key].sum}</div>
+              <div style={{ width: '84px', height: '35px', border: '1px solid #E6E6E6', padding: '10px 15px' }}>{list[key].sum}</div>
             </div>
           );
         })}

@@ -14,6 +14,7 @@ import { initStateGetEmployees, reducerGetEmployees } from '../actions/employee/
 import { initStateGetEmployeeAccess, reducerGetEmployeeAccess } from '../actions/employee/getEmployeesAccess.action';
 import { initStateGetEmployeeUser, reducerGetEmployeeUser } from '../actions/employee/getEmployeeUser.action';
 import { initStateGetPrePayment, reducerGetPrePayment } from '../actions/employee/getPrePayment.action';
+import { initStateGetPrePaymentSettings, reducerGetPrePaymentSettings } from '../actions/employee/getPrePaymentSettings.action';
 import { initStateLoginEmployee, reducerLoginEmployee } from '../actions/employee/login.action';
 import { initStatePrePaymentCreate, reducerPrePaymentCreate } from '../actions/employee/prePaymentCreate.action';
 import { initStateSync1C, reducerSync1C } from '../actions/employee/sync1C.action';
@@ -43,6 +44,7 @@ export const initialState = {
   ...initStatePrePaymentCreate,
   ...initStateGetPrePayment,
   ...initStateGetCashBoxList,
+  ...initStateGetPrePaymentSettings,
 };
 
 export const employeeSlice = createSlice({
@@ -102,6 +104,7 @@ export const employeeSlice = createSlice({
     ...reducerPrePaymentCreate,
     ...reducerGetPrePayment,
     ...reducerGetCashBoxList,
+    ...reducerGetPrePaymentSettings,
   },
 });
 export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount, resetUpdateEmployeeAccess, resetPrePaymentCreate, resetGetPrePayment, resetGetCashBoxList } = employeeSlice.actions;
