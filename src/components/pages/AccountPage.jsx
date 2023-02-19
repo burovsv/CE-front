@@ -289,108 +289,110 @@ const AccountPage = () => {
                             Итоговый <br /> баланс (с <br /> учетом <br /> начисление)
                           </div>
                           <div className="table-common__head">Аванс</div>
-                          {dataAccountList?.map((row, indexRow) => (
-                            <>
-                              <div
-                                onClick={() => {
-                                  setSelectedEmployeeAccount(row?.id);
-                                }}
-                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                style={{ cursor: 'pointer' }}>
-                                {row?.name}
-                              </div>
-                              <div
-                                onClick={() => {
-                                  setSelectedEmployeeAccount(row?.id);
-                                }}
-                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                style={{ cursor: 'pointer' }}>
-                                {row?.post || '-'}
-                              </div>
-                              <div
-                                onClick={() => {
-                                  setSelectedEmployeeAccount(row?.id);
-                                }}
-                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                style={{ cursor: 'pointer' }}>
-                                {row?.hours}
-                              </div>
-                              <div
-                                onClick={() => {
-                                  setSelectedEmployeeAccount(row?.id);
-                                }}
-                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                style={{ textAlign: 'left', cursor: 'pointer', padding: '10px' }}>
+                          {[...dataAccountList]
+                            ?.sort((a, b) => a.post - b.post)
+                            ?.map((row, indexRow) => (
+                              <>
                                 <div
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    height: '35px',
-                                    width: '65px',
-                                    padding: '10px',
-                                    background: '#feed01',
-                                  }}>
-                                  {' '}
-                                  {parseInt(row?.balance) - parseInt(row?.earned)}
+                                  onClick={() => {
+                                    setSelectedEmployeeAccount(row?.id);
+                                  }}
+                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                  style={{ cursor: 'pointer' }}>
+                                  {row?.name}
                                 </div>
-                              </div>
-                              <div
-                                onClick={() => {
-                                  setSelectedEmployeeAccount(row?.id);
-                                }}
-                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                style={{ textAlign: 'left', cursor: 'pointer' }}>
-                                {parseInt(row?.earned)}
-                              </div>
-
-                              <div
-                                onClick={() => {
-                                  setSelectedEmployeeAccount(row?.id);
-                                }}
-                                className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                style={{ cursor: 'pointer' }}>
-                                {parseInt(row?.balance)}
-                              </div>
-                              <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`} style={{ padding: '5px 14px', display: 'flex', alignItems: 'center' }}>
-                                <input
-                                  defaultValue={prePaymentEmployee[row?.userId]?.sum ?? '0'}
-                                  value={prePaymentEmployee[row?.userId]?.sum ?? '0'}
-                                  onChange={(event) => {
-                                    let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                    let valInt = parseInt(event.target.value);
-                                    let val = event.target.value;
-                                    if (val == '' || val == '-') {
-                                      valInt = val;
-                                    } else if (isNaN(valInt)) {
-                                      valInt = 0;
-                                    }
-                                    updatePrePaymentEmployee[row?.userId] = { sum: valInt, name: row?.name };
-
-                                    setPrePaymentEmployee(updatePrePaymentEmployee);
+                                <div
+                                  onClick={() => {
+                                    setSelectedEmployeeAccount(row?.id);
                                   }}
-                                  onBlur={(event) => {
-                                    if (event.target.value == '-' || !event.target.value) {
+                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                  style={{ cursor: 'pointer' }}>
+                                  {row?.post || '-'}
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    setSelectedEmployeeAccount(row?.id);
+                                  }}
+                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                  style={{ cursor: 'pointer' }}>
+                                  {row?.hours}
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    setSelectedEmployeeAccount(row?.id);
+                                  }}
+                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                  style={{ textAlign: 'left', cursor: 'pointer', padding: '10px' }}>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      height: '35px',
+                                      width: '65px',
+                                      padding: '10px',
+                                      background: '#feed01',
+                                    }}>
+                                    {' '}
+                                    {parseInt(row?.balance) - parseInt(row?.earned)}
+                                  </div>
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    setSelectedEmployeeAccount(row?.id);
+                                  }}
+                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                  style={{ textAlign: 'left', cursor: 'pointer' }}>
+                                  {parseInt(row?.earned)}
+                                </div>
+
+                                <div
+                                  onClick={() => {
+                                    setSelectedEmployeeAccount(row?.id);
+                                  }}
+                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                  style={{ cursor: 'pointer' }}>
+                                  {parseInt(row?.balance)}
+                                </div>
+                                <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`} style={{ padding: '5px 14px', display: 'flex', alignItems: 'center' }}>
+                                  <input
+                                    defaultValue={prePaymentEmployee[row?.userId]?.sum ?? '0'}
+                                    value={prePaymentEmployee[row?.userId]?.sum ?? '0'}
+                                    onChange={(event) => {
                                       let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                      updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
-                                      setPrePaymentEmployee(updatePrePaymentEmployee);
-                                    } else if (parseInt(row?.balance) > 0) {
-                                      const val = parseInt(event.target.value);
-                                      const percentNumber = parseInt((parseInt(row?.balance) / 100) * 50);
-
-                                      if (val > percentNumber && val > 0) {
-                                        let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                        updatePrePaymentEmployee[row?.userId] = { sum: percentNumber, name: row?.name };
-                                        setPrePaymentEmployee(updatePrePaymentEmployee);
+                                      let valInt = parseInt(event.target.value);
+                                      let val = event.target.value;
+                                      if (val == '' || val == '-') {
+                                        valInt = val;
+                                      } else if (isNaN(valInt)) {
+                                        valInt = 0;
                                       }
-                                    }
-                                  }}
-                                  disabled={parseInt(row?.balance) <= 0}
-                                  type="text"
-                                  style={{ height: '35px', width: '65px', border: '0.2px solid #C6C6C6', outline: 'none', padding: '10px', boxSizing: 'border-box', fontFamily: 'inherit', ...(parseInt(row?.balance) <= 0 && { background: '#F2F2F2' }) }}
-                                />
-                              </div>
-                            </>
-                          ))}
+                                      updatePrePaymentEmployee[row?.userId] = { sum: valInt, name: row?.name };
+
+                                      setPrePaymentEmployee(updatePrePaymentEmployee);
+                                    }}
+                                    onBlur={(event) => {
+                                      if (event.target.value == '-' || !event.target.value) {
+                                        let updatePrePaymentEmployee = { ...prePaymentEmployee };
+                                        updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
+                                        setPrePaymentEmployee(updatePrePaymentEmployee);
+                                      } else if (parseInt(row?.balance) > 0) {
+                                        const val = parseInt(event.target.value);
+                                        const percentNumber = parseInt((parseInt(row?.balance) / 100) * 50);
+
+                                        if (val > percentNumber && val > 0) {
+                                          let updatePrePaymentEmployee = { ...prePaymentEmployee };
+                                          updatePrePaymentEmployee[row?.userId] = { sum: percentNumber, name: row?.name };
+                                          setPrePaymentEmployee(updatePrePaymentEmployee);
+                                        }
+                                      }
+                                    }}
+                                    disabled={parseInt(row?.balance) <= 0}
+                                    type="text"
+                                    style={{ height: '35px', width: '65px', border: '0.2px solid #C6C6C6', outline: 'none', padding: '10px', boxSizing: 'border-box', fontFamily: 'inherit', ...(parseInt(row?.balance) <= 0 && { background: '#F2F2F2' }) }}
+                                  />
+                                </div>
+                              </>
+                            ))}
                         </div>
                         {prePaymentSettings && (
                           <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
@@ -421,13 +423,10 @@ const AccountPage = () => {
                                   Object.keys(prePaymentEmployee)
                                     .map((keyPre) => prePaymentEmployee[keyPre].sum)
                                     .filter((filterPre) => filterPre).length >= 1 &&
-                                  moment().set('day', prePaymentSettings.startDate).isSameOrBefore(moment()) &&
-                                  moment().set('day', prePaymentSettings.endDate).isSameOrAfter(moment());
-                                setShowPrePayment(true);
-                                // if (true) {
-                                //   setShowPrePayment(true);
-                                // }
-                                if (isActive && activeCashBox) {
+                                  activeCashBox &&
+                                  (moment().set('date', prePaymentSettings.startDate).isSameOrBefore(moment()) || moment().set('date', prePaymentSettings.endDate).isSameOrAfter(moment()));
+
+                                if (isActive) {
                                   setShowPrePayment(true);
                                 }
                               }}
@@ -438,8 +437,7 @@ const AccountPage = () => {
                                     .map((keyPre) => prePaymentEmployee[keyPre].sum)
                                     .filter((filterPre) => filterPre).length >= 1 &&
                                   activeCashBox &&
-                                  moment().set('day', prePaymentSettings.startDate).isSameOrBefore(moment()) &&
-                                  moment().set('day', prePaymentSettings.endDate).isSameOrAfter(moment())
+                                  (moment().set('date', prePaymentSettings.startDate).isSameOrBefore(moment()) || moment().set('date', prePaymentSettings.endDate).isSameOrAfter(moment()))
                                     ? '#FF0000'
                                     : '#BAB8B8',
                                 color: '#Fff',
