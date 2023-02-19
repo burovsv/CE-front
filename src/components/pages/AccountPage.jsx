@@ -424,12 +424,12 @@ const AccountPage = () => {
                                   moment().set('day', prePaymentSettings.startDate).isSameOrBefore(moment()) &&
                                   moment().set('day', prePaymentSettings.endDate).isSameOrAfter(moment());
                                 setShowPrePayment(true);
-                                if (true) {
-                                  setShowPrePayment(true);
-                                }
-                                // if (isActive && activeCashBox) {
+                                // if (true) {
                                 //   setShowPrePayment(true);
                                 // }
+                                if (isActive && activeCashBox) {
+                                  setShowPrePayment(true);
+                                }
                               }}
                               class="filter__item"
                               style={{
@@ -438,8 +438,8 @@ const AccountPage = () => {
                                     .map((keyPre) => prePaymentEmployee[keyPre].sum)
                                     .filter((filterPre) => filterPre).length >= 1 &&
                                   activeCashBox &&
-                                  moment().set('day', 20).isSameOrBefore(moment()) &&
-                                  moment().set('day', 4).isSameOrAfter(moment())
+                                  moment().set('day', prePaymentSettings.startDate).isSameOrBefore(moment()) &&
+                                  moment().set('day', prePaymentSettings.endDate).isSameOrAfter(moment())
                                     ? '#FF0000'
                                     : '#BAB8B8',
                                 color: '#Fff',
@@ -448,7 +448,9 @@ const AccountPage = () => {
                               }}>
                               Выдать
                             </div>
-                            <div>Доступно с 20 по 4 не более 50% от баланса</div>
+                            <div>
+                              Доступно с {prePaymentSettings.startDate} по {prePaymentSettings.endDate} не более 50% от баланса
+                            </div>
                           </div>
                         )}
                       </>
