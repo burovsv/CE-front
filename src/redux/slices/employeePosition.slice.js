@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { initStateGetEmployees, reducerGetEmployeePositions } from '../actions/employeePosition/getEmployeePositions.action';
+import { initStateGetEmployeePositions, reducerGetEmployeePositions } from '../actions/employeePosition/getEmployeePositions.action';
 
 export const initialState = {
-    ...initStateGetEmployees,
+    ...initStateGetEmployeePositions,
 };
 
 export const employeePositionSlice = createSlice({
@@ -10,7 +10,7 @@ export const employeePositionSlice = createSlice({
     initialState,
     reducers: {
         resetGetEmployeePositions(state) {
-            state.getEmployeePositions = initStateGetEmployees.getEmployeePositions;
+            state.getEmployeePositions = initStateGetEmployeePositions.getEmployeePositions;
         }
     },
     extraReducers: {

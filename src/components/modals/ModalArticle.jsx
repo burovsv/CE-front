@@ -55,8 +55,6 @@ const ModalArticle = () => {
     const [errorCreateMark, setErrorCreateMark] = useState(false)
     const [errorCreateSectionGroup, setErrorCreateSectionGroup] = useState(false)
 
-
-
     // получить список групп, разделов, должностей, меток
     const {
         getMarks: { data: marks, loading: loadingMarks },
@@ -74,28 +72,7 @@ const ModalArticle = () => {
 
     const {
         getEmployeePositions: { data: employeePositions, loading: loadingEmployeePositions, error: errorEmployeePositions, count: employeePositionsCount }
-    } = useSelector((state) => state.employeePosition)
-
-    const updateSectionOptions = (group = articleSectionGroup) => {
-        let sectionOptionsList = [];
-        sections.forEach((item) => {
-            if (group?.id === item.sectionGroup) {
-                sectionOptionsList.push(
-                    <option value={item.id} key={item.id}>
-                        {item.name}
-                    </option>
-                )
-            }
-        })
-
-        setSectionOptions(sectionOptionsList);
-    }
-    const filterForm = useForm({
-        deafultValues: {
-            mark: '',
-            sectionGroup: '',
-        },
-    });
+    } = useSelector((state) => state.employeePosition);
 
     const dispatch = useDispatch();
 
@@ -158,15 +135,7 @@ const ModalArticle = () => {
     }
 
     const onSectionGroupChange = (e) => {
-        let sectionGroup = sectionGroups.find((item) => {
-            return item.id === e.target.value;
-        })
-
-        
-        setArticleSectionGroup(e.target.value);
-        updateSectionOptions(sectionGroup);
-        console.log(e.target.value);
-        
+        setArticleSectionGroup(e.target.value); 
     }
 
     const onSectionChange = (e) => {
@@ -244,6 +213,7 @@ const ModalArticle = () => {
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
                                 <select value={articleSectionGroup} onChange={onSectionGroupChange}>
+                                    <option value={''}>Выберите группу</option>
                                     {sectionGroups?.map((group) => {
                                             return <option value={group.id}>{group.name}</option>
                                         })}
@@ -264,6 +234,7 @@ const ModalArticle = () => {
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
                                 <select onChange={onSectionChange}>
+                                    <option value={''}>Выберите раздел</option>
                                     {sections?.map((section) => {
                                         return <option value={section.id}>{section.name}</option>
                                     })}
@@ -281,7 +252,8 @@ const ModalArticle = () => {
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
-                                <Select mode='multiple' placeholder="Выберете метки" >
+                                <Select mode='multiple' placeholder="Выберите метки" >
+                                    <option value={''} selected>Выберите метки</option>
                                     {marks?.map((mark) => {
                                         return <option value={mark.id}>{mark.name}</option>
                                     })}
@@ -302,6 +274,11 @@ const ModalArticle = () => {
                         <div className="modal__select">
                             <select>
                                 <option value={''} selected>Должность</option>
+                                {console.log('em', employeePositions)}
+                                {employeePositions?.map((position) => {
+                                    console.log('pos')
+                                    return <option value={position.ID}>{position.name}</option>
+                                })}
                             </select>
                         </div>
                     </div>

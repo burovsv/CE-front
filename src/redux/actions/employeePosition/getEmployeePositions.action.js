@@ -1,7 +1,7 @@
 import { createAsyncThunk, current } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const initStateGetEmployees = {
+export const initStateGetEmployeePositions = {
   getEmployeePositions: { data: [], loading: false, error: null },
 };
 
@@ -24,8 +24,7 @@ export const reducerGetEmployeePositions = {
   },
   [getEmployeePositions.fulfilled]: (state, action) => {
     state.getEmployeePositions.loading = false;
-    state.getEmployeePositions.data = action.payload.list;
-    state.getEmployeePositions.pages = action.payload.pages;
+    state.getEmployeePositions.data = action.payload;
     state.getEmployeePositions.error = null;
   },
   [getEmployeePositions.rejected]: (state, action) => {
