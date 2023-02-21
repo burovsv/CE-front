@@ -143,6 +143,12 @@ const ModalArticle = () => {
         setArticleSection(section);
     }
 
+    const onEmployeePositionsChange = (e) => {
+        console.log('choisen employee position');
+        // console.log(e.target.value);
+        console.log(e);
+    }
+
     const onAddMarkBtnClick = () => {
         if (newMark) dispatch(createMark( {name: newMark} ));
         else {
@@ -272,14 +278,13 @@ const ModalArticle = () => {
 
                     <div className='modal__article__select-group'>
                         <div className="modal__select">
-                            <select>
-                                <option value={''} selected>Должность</option>
+                            <Select mode='multiple' onChange={onEmployeePositionsChange} placeholder="Выберите должности" >
                                 {console.log('em', employeePositions)}
                                 {employeePositions?.map((position) => {
                                     console.log('pos')
                                     return <option value={position.ID}>{position.name}</option>
                                 })}
-                            </select>
+                            </Select>
                         </div>
                     </div>
                 </div>
