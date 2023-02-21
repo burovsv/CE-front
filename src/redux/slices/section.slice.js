@@ -1,41 +1,36 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { initStateGetSections, reducerGetSections } from '../actions/knowledgeBase/getSections.action';
+import { initStateGetSectionsByGroup, reducerGetSectionsByGroup } from '../actions/knowledgeBase/getSectionsByGroup.action';
+import { initStateCreateSection, reducerCreateSection } from '../actions/knowledgeBase/createSection.action';
 
 
 export const initialState = {
     ...initStateGetSections,
-
+    ...initStateGetSectionsByGroup,
+    ...initStateCreateSection,
   };
   
 export const sectionSlice = createSlice({
     name: 'section',
     initialState,
     reducers: {
-    //   resetGetAdminTestingSingle(state) {
-    //     state.getAdminTestingSingle = initStateGetAdminTestingSingle.getAdminTestingSingle;
-    //   },
+
       resetGetSections(state) {
         state.getSections = initStateGetSections.getSections;
       },
-    //   resetCreateTesting(state) {
-    //     state.createTesting = initStateCreateTesting.createTesting;
-    //   },
-    //   resetUpdateTesting(state) {
-    //     state.updateTesting = initStateUpdateTesting.updateTesting;
-    //   },
-    //   resetGetUserTesting(state) {
-    //     state.getUserTesting = initStateGetUserTesting.getUserTesting;
-    //   },
+      resetGetSectionsByGroup(state) {
+        state.getSectionsByGroup = initStateGetSectionsByGroup.getSectionsByGroup;
+      },
+      resetCreateSection(state) {
+        state.createSection = initStateCreateSection.createSection;
+      },
     },
-    // extraReducers: {
-    // ...reducerGetAdminArticles,
-    //   ...reducerCreateTesting,
-    //   ...reducerGetUserTesting,
-    //   ...reducerUpdateTesting,
-    //   ...reducerGetAdminTestingSingle,
-    //   ...reducerGetUserTestingSingle,
-    //   ...reducerDeleteTesting,
-    // },
+    extraReducers: {
+      ...reducerCreateSection,
+      ...reducerGetSections,
+      ...reducerGetSectionsByGroup,
+    }
+
   });
-//   export const { resetGetAdminTesting, resetGetAdminTestingSingle, resetCreateTesting, resetGetUserTesting, resetUpdateTesting } = testingSlice.actions;
+  export const { resetGetSections, resetGetSectionsByGroup, resetCreateSection, } = sectionSlice.actions;
   export const sectionReducer = sectionSlice.reducer;

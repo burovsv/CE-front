@@ -13,9 +13,11 @@ import { resetCreateMark } from '../../redux/slices/mark.slice';
 import { createMark } from '../../redux/actions/knowledgeBase/createMark.action';
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
 
-import { resetCreateSectionGroup } from '../../redux/actions/knowledgeBase/createSectionGroup.action';
+import { resetCreateSectionGroup } from '../../redux/slices/sectionGroup.slice';
 import { createSectionGroup } from '../../redux/actions/knowledgeBase/createSectionGroup.action';
-import { getSectionGroup } from '../../redux/actions/knowledgeBase/createSectionGroup.action';
+import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
+
+import { getSectionsByGroup } from '../../redux/actions/knowledgeBase/getSectionsByGroup.action';
 
 import ReactQuill, { Quill } from 'react-quill';
 // import { create } from 'domain';
@@ -39,11 +41,12 @@ const ModalArticle = () => {
 
 // Для добавления новых эл-ов в бд
     const [newMark, setNewMark] = useState('');
+    const [newSectionGroup, setNewSectionGroup] = useState('');
     const [newSection, setNewSection] = useState('');
-    const [newGroupSection, setNewGroupSection] = useState('');
 
     // вывод ошибок
     const [errorCreateMark, setErrorCreateMark] = useState(false)
+    const [errorCreateSectionGroup, setErrorCreateSectionGroup] = useState(false)
 
 
 
@@ -54,7 +57,7 @@ const ModalArticle = () => {
     } = useSelector((state) => state.mark);
 
     const {
-        getSections: { data: sections, loading: loadingSection, error: errorSection, count: sectionCount }
+        getSectionsByGroup: { data: sections, loading: loadingSection, error: errorSection, count: sectionCount }
     } = useSelector((state) => state.section);
 
     const {
@@ -100,33 +103,29 @@ const ModalArticle = () => {
           dispatch(resetCreateMark());
         }
     }, [createMarkData]);
+
+    useEffect(() => {
+        if (createSectionGroupData && newSectionGroup) {
+          dispatch(getSectionGroups());
+          setNewSectionGroup('');
+          setSeccessCreateSectionGroup(true);
+          setTimeout(() => {
+            setSeccessCreateSectionGroup(false);
+          }, 3000);
+          dispatch(resetCreateSectionGroup());
+        }
+    }, [createSectionGroupData]);
     
 
     useEffect(()=> {
         dispatch(getMarks());
+        dispatch(getSectionGroups());
+        if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
     }, [])
 
-
     useEffect(() => {
-        let sectionGroupOptionsList = sectionGroups.map((item) => {
-            return (
-                <option value={item.id} key={item.id}>
-                    {item.name}
-                </option>
-            )
-        })
-
-        let markOptionsList = marks.map((item) => {
-            return {
-                label: item.name,
-                value: item.id
-            }
-        })
-
-        setSectionGroupOptions(sectionGroupOptionsList);
-        setMarkOptions(markOptionsList);
-        updateSectionOptions();
-    }, [employees, sectionGroups, sections]);
+        if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
+    }, [articleSectionGroup])
 
     const onArticleNameChange = (e) => {
         setArticleName(e.target.value);
@@ -140,8 +139,12 @@ const ModalArticle = () => {
         let sectionGroup = sectionGroups.find((item) => {
             return item.id === e.target.value;
         })
-        setArticleSectionGroup(sectionGroup);
+
+        
+        setArticleSectionGroup(e.target.value);
         updateSectionOptions(sectionGroup);
+        console.log(e.target.value);
+        
     }
 
     const onSectionChange = (e) => {
@@ -162,12 +165,22 @@ const ModalArticle = () => {
 
     const onAddSectionBtnClick = () => {
         console.log('Section click');
-        console.log(filterForm.getValues('section'));
+        console.log(newSection);
+        console.log('group: ', articleSectionGroup)
+
     }
     
     const onAddSectionGroupBtnClick = () => {
-        const sectionGroup = filterForm.getValues('sectionGroup') ?? '';
-        dispatch(createSectionGroup( {name: sectionGroup} ));
+        if (newSectionGroup) dispatch(createSectionGroup( {name: newSectionGroup} ));
+        else {
+            setErrorCreateSectionGroup(true);
+            const timer = setTimeout(() => {
+                setErrorCreateSectionGroup(false);
+                clearTimeout(timer);
+            }, 3000)
+        }
+
+
     }
 
     function imageHandler() { }
@@ -205,34 +218,34 @@ const ModalArticle = () => {
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
-                                <select onChange={onSectionGroupChange}>
-                                    <option value={''} selected>
-                                        Группа
-                                    </option>
-                                    {sectionGroupOptions}
+                                <select value={articleSectionGroup} onChange={onSectionGroupChange}>
+                                    {sectionGroups?.map((group) => {
+                                            return <option value={group.id}>{group.name}</option>
+                                        })}
                                 </select>
                             </div>
                             <div className="modal__create">
-                                <input type="text" placeholder="Добавить группу" {...filterForm.register('sectionGroup', { required: true })} autoComplete="off" />
+                                <input type="text" placeholder="Добавить группу" value={newSectionGroup} onChange={(e) => setNewSectionGroup(e.target.value)} autoComplete="off" />
                                 <button onClick={onAddSectionGroupBtnClick} disabled={successCreateSectionGroup}>
                                     <img src="/img/modal/plus.svg" />
                                 </button>
                             </div>
                         </div>
+                        {errorCreateSectionGroup && <div class="text-error" style={{ marginBottom: '10px' }}> Введите название группы, для ее добавления </div>}
+                        {successCreateSectionGroup && <div class="text-success" style={{ marginBottom: '10px' }}> Группа добавлена </div>}
                     </div>
 
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
                                 <select onChange={onSectionChange}>
-                                    <option value={''} selected>
-                                        Раздел
-                                    </option>
-                                    {sectionOptions}
+                                    {sections?.map((section) => {
+                                        return <option value={section.id}>{section.name}</option>
+                                    })}
                                 </select>
                             </div>
                             <div className="modal__create">
-                                <input type="text" placeholder="Добавить раздел" {...filterForm.register('section', { required: true })} autoComplete="off" />
+                                <input type="text" placeholder="Добавить раздел" value={newSection} onChange={e => setNewSection(e.target.value)} autoComplete="off" />
                                 <button key={`btn-articles_section`} onClick={onAddSectionBtnClick} disabled={successCreateSection}>
                                     <img src="/img/modal/plus.svg" />
                                 </button>
