@@ -5,9 +5,9 @@ export const initStateGetEmployees = {
   getEmployeePositions: { data: [], loading: false, error: null },
 };
 
-export const getEmployeePositions = createAsyncThunk('employeePosition/getEmployeePositions', async (data, { rejectWithValue, fulfillWithValue }) => {
+export const getEmployeePositions = createAsyncThunk('employeePositions/list', async (data, { rejectWithValue, fulfillWithValue }) => {
   return await axios
-    .get(`http://192.168.240.196/zup_pay/hs/Exch_LP/ListEmployees`, {})
+    .get(`${process.env.REACT_APP_SERVER_API}/employeePositions/list`, {})
     .then((res) => {
         console.log('data', res.data);
       return fulfillWithValue(res.data);

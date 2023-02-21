@@ -18,11 +18,18 @@ import { createSectionGroup } from '../../redux/actions/knowledgeBase/createSect
 import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
 
 import { getSectionsByGroup } from '../../redux/actions/knowledgeBase/getSectionsByGroup.action';
+import { createSection } from '../../redux/actions/knowledgeBase/createSection.action';
+
+import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
+
 
 import ReactQuill, { Quill } from 'react-quill';
 // import { create } from 'domain';
 
 const ModalArticle = () => {
+
+    const [paramsData, setParamsData] = useState({ page: 1, search: '' });
+
     const [text, setText] = useState('');
     const [articleName, setArticleName] = useState('');
     const [articleDate, setArticleDate] = useState('');
@@ -66,8 +73,8 @@ const ModalArticle = () => {
     } = useSelector((state) => state.sectionGroup);
 
     const {
-        getEmployees: { data: employees, loading: loadingEmployeePositions, error: errorEmployeePositions, count: employeePositionsCount }
-    } = useSelector((state) => state.employee);
+        getEmployeePositions: { data: employeePositions, loading: loadingEmployeePositions, error: errorEmployeePositions, count: employeePositionsCount }
+    } = useSelector((state) => state.employeePosition)
 
     const updateSectionOptions = (group = articleSectionGroup) => {
         let sectionOptionsList = [];
@@ -115,16 +122,31 @@ const ModalArticle = () => {
           dispatch(resetCreateSectionGroup());
         }
     }, [createSectionGroupData]);
+
+    // useEffect(() => {
+    //     if (createSectionGroupData && newSectionGroup) {
+    //       dispatch(getSectionGroups());
+    //       setNewSectionGroup('');
+    //       setSeccessCreateSectionGroup(true);
+    //       setTimeout(() => {
+    //         setSeccessCreateSectionGroup(false);
+    //       }, 3000);
+    //       dispatch(resetCreateSectionGroup());
+    //     }
+    // }, [createSection]);
     
 
     useEffect(()=> {
         dispatch(getMarks());
         dispatch(getSectionGroups());
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
+        dispatch(getEmployeePositions());
+        console.log(employeePositions);
     }, [])
 
     useEffect(() => {
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
+        console.log('группа изменена', sections)
     }, [articleSectionGroup])
 
     const onArticleNameChange = (e) => {
@@ -167,6 +189,9 @@ const ModalArticle = () => {
         console.log('Section click');
         console.log(newSection);
         console.log('group: ', articleSectionGroup)
+
+        if (articleSectionGroup && newSection) dispatch(createSection( {name: newSection, groupId: articleSectionGroup} ))
+        else console.log('Чего-то не хватает:(')
 
     }
     
