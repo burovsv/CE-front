@@ -189,8 +189,10 @@ const ModalArticle = () => {
                 clearTimeout(timer);
             }, 3000)
         }
+    }
 
-
+    const onDateChange = (e) => {
+        console.log('дата ', e.target.value)
     }
 
     function imageHandler() {
@@ -228,7 +230,7 @@ const ModalArticle = () => {
                                 rules={{
                                 required: true,
                                 }}
-                                render={({ field: { onChange, name, value } }) => <NumberFormat format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onChange} autoComplete="off" />}
+                                render={({ field: { onChange, name, value } }) => <NumberFormat format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onDateChange} autoComplete="off" />}
                             />
                         </div>
                     </div>
