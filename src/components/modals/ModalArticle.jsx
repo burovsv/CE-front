@@ -55,6 +55,16 @@ const ModalArticle = () => {
     const [errorCreateMark, setErrorCreateMark] = useState(false)
     const [errorCreateSectionGroup, setErrorCreateSectionGroup] = useState(false)
 
+    const defaultValues = {
+        // control: ''
+    }
+
+    const {
+        control,
+        formState: { errors },
+      } = useForm({ defaultValues });
+
+
     // получить список групп, разделов, должностей, меток
     const {
         getMarks: { data: marks, loading: loadingMarks },
@@ -132,6 +142,7 @@ const ModalArticle = () => {
 
     const onArticleDescChange = (e) => {
         setArticleDesc(e);
+        console.log('desc', e)
     }
 
     const onSectionGroupChange = (e) => {
@@ -167,7 +178,6 @@ const ModalArticle = () => {
 
         if (articleSectionGroup && newSection) dispatch(createSection( {name: newSection, groupId: articleSectionGroup} ))
         else console.log('Чего-то не хватает:(')
-
     }
     
     const onAddSectionGroupBtnClick = () => {
@@ -183,14 +193,19 @@ const ModalArticle = () => {
 
     }
 
-    function imageHandler() { }
+    function imageHandler() {
+        var range = this.quill.getSelection();
+        var valuee = prompt('Введите URL изображения для ее добавления');
+        if (valuee) {
+          this.quill.insertEmbed(range.index, 'image', valuee, Quill.sources.USER);
+        }
+      }
 
     const formats = ['font', 'size', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'script', 'header', 'blockquote', 'code-block', 'indent', 'list', 'direction', 'align', 'link', 'image', 'video', 'formula'];
     const modules = useMemo(
         () => ({
             toolbar: {
                 container: '#toolbar',
-
                 handlers: {
                     image: imageHandler,
                 },
@@ -207,9 +222,14 @@ const ModalArticle = () => {
                     <div className="date">
                         <div className="date__wrap">
                             <div className="date__title">от:</div>
-                            {/* <Controller
-                            render={({ field: { onChange, name, value } }) => <NumberFormat format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onChange} autoComplete="off" />}
-                        /> */}
+                            <Controller
+                                control={control}
+                                name={'datePublish'}
+                                rules={{
+                                required: true,
+                                }}
+                                render={({ field: { onChange, name, value } }) => <NumberFormat format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onChange} autoComplete="off" />}
+                            />
                         </div>
                     </div>
                 </div>
