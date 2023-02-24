@@ -376,12 +376,32 @@ const AccountPage = () => {
                                         updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
                                         setPrePaymentEmployee(updatePrePaymentEmployee);
                                       } else if (parseInt(row?.balance) > 0) {
+                                        let percentNumber;
+                                        let maxSum;
                                         const val = parseInt(event.target.value);
-                                        const percentNumber = parseInt((parseInt(row?.balance) / 100) * 50);
-
-                                        if (val > percentNumber && val > 0) {
+                                        const percentNumberBalance = parseInt((parseInt(row?.balance) / 100) * prePaymentSettings.percent);
+                                        const percentNumberEarned = parseInt((parseInt(row?.earned) / 100) * prePaymentSettings.percent);
+                                        percentNumber = percentNumberBalance + percentNumberEarned;
+                                        let maxSumBalance = parseInt(row?.balance) - prePaymentSettings.minSum;
+                                        if (maxSumBalance < 0) {
+                                          maxSumBalance = 0;
+                                        }
+                                        let maxSumEarned = parseInt(row?.earned) - prePaymentSettings.minSum;
+                                        if (maxSumEarned < 0) {
+                                          maxSumEarned = 0;
+                                        }
+                                        maxSum = maxSumBalance + maxSumEarned;
+                                        if (maxSum <= 0) {
                                           let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                          updatePrePaymentEmployee[row?.userId] = { sum: percentNumber, name: row?.name };
+                                          updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
+                                          setPrePaymentEmployee(updatePrePaymentEmployee);
+                                        } else if ((val > percentNumber || val > maxSum) && val > 0) {
+                                          let maxCount = percentNumber;
+                                          if (maxSum < percentNumber) {
+                                            maxCount = maxSum;
+                                          }
+                                          let updatePrePaymentEmployee = { ...prePaymentEmployee };
+                                          updatePrePaymentEmployee[row?.userId] = { sum: maxCount, name: row?.name };
                                           setPrePaymentEmployee(updatePrePaymentEmployee);
                                         }
                                       }

@@ -18,10 +18,10 @@ export const initialState = {
     workTimeStart2: '08:00',
     workTimeStart3: '08:00',
     workTimeStart4: '08:00',
-    active1: true,
-    active2: true,
-    active3: true,
-    active4: true,
+    active1: false,
+    active2: false,
+    active3: false,
+    active4: false,
   },
 };
 

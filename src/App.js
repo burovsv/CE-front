@@ -35,7 +35,7 @@ function App() {
     (config) => {
       const token = localStorage?.getItem('token');
 
-      config.headers = { request_token: token };
+      config.headers = { 'request-token': token };
 
       return config;
     },

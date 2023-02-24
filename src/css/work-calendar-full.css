@@ -53,7 +53,7 @@
   height: 100%;
   width: 0.2px;
   top: 0px;
-  left: -1px;
+  left: 0px;
   background-color: #b7b7b7;
   position: absolute;
 }
@@ -195,7 +195,7 @@
   padding-left: 6px;
   text-transform: uppercase;
   height: 44px;
-  background-color: #fdec31;
+  background-color: #fcf6b1;
 }
 .work-calendar-full-cell-day-sick {
   text-align: left;
@@ -203,7 +203,7 @@
   padding-left: 6px;
   text-transform: uppercase;
   height: 44px;
-  background-color: #54ccff;
+  background-color: #99e1ff;
 }
 .work-calendar-full-cell-comand {
   text-align: left;
@@ -211,7 +211,7 @@
   padding-left: 6px;
   text-transform: uppercase;
   height: 44px;
-  background: #bf40bf;
+  background: #d0baff;
 }
 .work-calendar-full-cell-day-off {
   text-align: left;
@@ -219,7 +219,7 @@
   padding-left: 6px;
   text-transform: uppercase;
   height: 44px;
-  background: #e4e4e4;
+  background: #f8bbbb;
   /* color: #fff; */
 }
 .work-calendar-full-cell-day-work div:nth-child(1) {
@@ -282,5 +282,29 @@
   color: #000 !important;
 }
 .work-calendar-full-cell-day-work.error div {
-  background: #fc0000 !important;
+  background: #1f1f1f !important;
+  color: #fff !important;
+}
+.work-calendar-full-cell-day-work.error div:nth-child(4) {
+  position: relative;
+}
+.work-calendar-full-cell-day-work.error div:nth-child(4):after {
+  content: '';
+  position: absolute;
+  top: -0.7px;
+  left: -0.7px;
+  width: 102%;
+  height: 0.2px;
+  background: #b7b7b7;
+  z-index: 1;
+}
+.work-calendar-full-cell-day-work.error div:nth-child(4):before {
+  content: '';
+  position: absolute;
+  top: -0.7px;
+  left: -0.7px;
+  width: 1px;
+  height: 102%;
+  background: #b7b7b7;
+  z-index: 1;
 }

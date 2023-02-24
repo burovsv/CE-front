@@ -113,23 +113,23 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
             {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
           </div>
         ) : item?.type == 'vacation' ? (
-          <div className="work-calendar-full-cell-day-vacation" style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }}>
+          <div className="work-calendar-full-cell-day-vacation" style={{ ...(timeTableItem?.hours && { background: '#1F1F1F', color: '#fff' }) }}>
             отп {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
           </div>
         ) : item?.type == 'sick' ? (
-          <div style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }} className="work-calendar-full-cell-day-sick">
+          <div style={{ ...(timeTableItem?.hours && { background: '#1F1F1F', color: '#fff' }) }} className="work-calendar-full-cell-day-sick">
             блн {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
           </div>
         ) : item?.type == 'day-off' ? (
-          <div style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }} className="work-calendar-full-cell-day-off">
+          <div style={{ ...(timeTableItem?.hours && { background: '#1F1F1F', color: '#fff' }) }} className="work-calendar-full-cell-day-off">
             вых {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
           </div>
         ) : item?.type == 'hours' ? (
-          <div style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }} className="work-calendar-full-cell-day-off">
+          <div style={{ ...(timeTableItem?.hours && { background: '#1F1F1F', color: '#fff' }) }} className="work-calendar-full-cell-day-off">
             {timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
           </div>
         ) : item?.type == 'comand' ? (
-          <div style={{ ...(timeTableItem?.hours && { background: '#fc0000' }) }} className="work-calendar-full-cell-comand">
+          <div style={{ ...(timeTableItem?.hours && { background: '#1F1F1F', color: '#fff' }) }} className="work-calendar-full-cell-comand">
             кмд{timeTableItem?.hours ? <div class="work-calendar-full-cell-timetable">{timeTableItem?.hours}</div> : ''}
           </div>
         ) : (
@@ -220,7 +220,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                   onClickMenu('vacation');
                   onClose();
                 }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#fdec31' }}>
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#FCF6B1' }}>
                 Отпуск
               </div>
               <div
@@ -228,7 +228,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                   onClickMenu('sick');
                   onClose();
                 }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#54ccff' }}>
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#99E1FF' }}>
                 Больничный
               </div>
               <div
@@ -236,7 +236,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                   onClickMenu('comand');
                   onClose();
                 }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#BF40BF' }}>
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#D0BAFF' }}>
                 Командировка
               </div>
               <div
@@ -244,7 +244,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
                   onClickMenu('day-off');
                   onClose();
                 }}
-                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#e4e4e4' }}>
+                style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#f8bbbb' }}>
                 Выходной
               </div>
             </OutsideClickHandler>

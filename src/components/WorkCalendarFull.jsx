@@ -70,7 +70,10 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       if (workTimeTemplates?.timeEnd4 && validateTime(workTimeTemplates?.timeEnd4)) {
         existWorkTimeTemplate.workTimeEnd4 = workTimeTemplates?.timeEnd4;
       }
-
+      existWorkTimeTemplate.active1 = workTimeTemplates.active1;
+      existWorkTimeTemplate.active2 = workTimeTemplates.active2;
+      existWorkTimeTemplate.active3 = workTimeTemplates.active3;
+      existWorkTimeTemplate.active4 = workTimeTemplates.active4;
       dispatch(setWorkTimeTemplate({ ...workTimeTemplate, ...existWorkTimeTemplate }));
     }
   }, [workTimeTemplates]);
@@ -202,10 +205,10 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     }
   };
 
-  const countWorkers = (val, day) => {
+  const countWorkers = (val, day, post) => {
     return val
       ?.map((workers) => {
-        return workers?.calendarData[day]?.type === 'work' ? true : false;
+        return workers?.calendarData[day]?.type === 'work' && (!post ? true : workers.post == post ? true : false) ? true : false;
       })
       .filter((workers) => workers).length;
   };
@@ -263,11 +266,18 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       dispatch(setWorkTimeTemplate({ ...workTimeTemplate, [startName]: minStartTime.format('HH:mm') }));
     }
   };
+  const watchCalendar = watch('calendar');
+  console.log(
+    allDays?.map((itemDayInner, dayIndex) => {
+      return countWorkers(watchCalendar, dayIndex);
+    }),
+  );
   React.useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       let totalWorkers1 = [];
       let totalWorkers2 = [];
       let totalWorkers3 = [];
+
       allDays?.map((item, dayIndex) => {
         totalWorkers1.push(countWorkers(value?.calendar, dayIndex));
         totalWorkers2.push(countMinTimeWorkers(value?.calendar, dayIndex, 'startTime'));
@@ -322,6 +332,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             <label>
               <input
                 defaultChecked={workTimeTemplate.active1}
+                checked={workTimeTemplate.active1}
                 type="checkbox"
                 onChange={(event) => {
                   dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active1: event.target.checked }));
@@ -365,6 +376,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             <label>
               <input
                 defaultChecked={workTimeTemplate.active2}
+                checked={workTimeTemplate.active2}
                 type="checkbox"
                 onChange={(event) => {
                   dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active2: event.target.checked }));
@@ -408,6 +420,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             <label>
               <input
                 defaultChecked={workTimeTemplate.active3}
+                checked={workTimeTemplate.active3}
                 type="checkbox"
                 onChange={(event) => {
                   dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active3: event.target.checked }));
@@ -451,6 +464,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             <label>
               <input
                 defaultChecked={workTimeTemplate.active4}
+                checked={workTimeTemplate.active4}
                 type="checkbox"
                 onChange={(event) => {
                   dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active4: event.target.checked }));
@@ -536,7 +550,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
                 </td>
               );
             })}
-            <td width="300" colSpan="4" className="work-calendar-full-cell-small-wrap sticky-right-td" style={{ textTransform: 'uppercase', position: 'sticky', right: 0, zIndex: 2 }}>
+            <td width="120" colSpan="4" className="work-calendar-full-cell-small-wrap sticky-right-td" style={{ textTransform: 'uppercase', position: 'sticky', right: 0, zIndex: 2 }}>
               Итого
             </td>
           </tr>
@@ -561,22 +575,25 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
                 </td>
               );
             })}
-            <td width="100" className="work-calendar-full-cell-small-wrap sticky-right-td" style={{ position: 'sticky', right: '225px', zIndex: 2 }}>
+            <td width="30" className="work-calendar-full-cell-small-wrap sticky-right-td" style={{ position: 'sticky', right: '90px', zIndex: 2, fontWeight: 600 }}>
               Часы
             </td>{' '}
-            <td width="100" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '150px', zIndex: 2 }}>
-              Выходные
+            <td width="30" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '60px', zIndex: 2, width: '30px', fontWeight: 600 }}>
+              Вых
             </td>{' '}
-            <td width="100" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '75px', zIndex: 2 }}>
-              Отпуск
+            <td width="30" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '30px', zIndex: 2, fontWeight: 600 }}>
+              Отп
             </td>
-            <td width="100" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '0px', zIndex: 2 }}>
-              Больничный
+            <td width="30" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '0px', zIndex: 2, fontWeight: 600 }}>
+              Бол
             </td>
           </tr>
           {fields?.map((item, index) => {
             return (
               <WorkCalendarFullRow
+                onLastCountWork={allDays?.map((itemDayInner, dayIndex) => {
+                  return countWorkers(watchCalendar, dayIndex, fields[index - 1]?.post);
+                })}
                 lastIndex={fields?.length}
                 lastPostRow={item.isLastPost}
                 resetSelectedColumn={() => {
