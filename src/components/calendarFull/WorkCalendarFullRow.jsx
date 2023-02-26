@@ -14,9 +14,7 @@ export const convertMinsToHrsMins = (minutes) => {
     return h;
   } else return 0;
 };
-const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit, timeTableRow, selectedColumn, resetSelectedColumn, lastPostRow = false, lastIndex, onLastCountWork }) => {
-  // console.log(onLastCountWork);
-  console.log('ROW INDEx', index);
+const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit, timeTableRow, selectedColumn, resetSelectedColumn, lastPostRow = false, lastIndex, onLastCountWork, onLastCountWorkLast }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -69,7 +67,11 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
     }
   };
   const timeTableByDay = (currentDay) => {
-    return timeTableRow?.find((timeTableItem) => moment(timeTableItem.date_time).format('YYYY-MM-DD').toString() == moment(currentDay).format('YYYY-MM-DD').toString());
+    if (currentDay) {
+      return timeTableRow?.find((timeTableItem) => moment(timeTableItem.date_time).format('YYYY-MM-DD').toString() == moment(currentDay).format('YYYY-MM-DD').toString());
+    } else {
+      return;
+    }
   };
   return (
     <>
@@ -304,7 +306,7 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
           <td class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" colSpan={2} style={{ position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
             Кол-во в смену
           </td>
-          {onLastCountWork?.map((itemCount) => (
+          {onLastCountWorkLast?.map((itemCount) => (
             <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work">{itemCount}</td>
           ))}
           <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work sticky-right-td" style={{ position: 'sticky', right: '90px', zIndex: 2, background: '#Fff', width: '30px' }}></td>
