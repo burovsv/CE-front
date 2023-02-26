@@ -68,7 +68,9 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
       setEnd(i);
     }
   };
-
+  const timeTableByDay = (currentDay) => {
+    return timeTableRow?.find((timeTableItem) => moment(timeTableItem.date_time).format('YYYY-MM-DD').toString() == moment(currentDay).format('YYYY-MM-DD').toString());
+  };
   return (
     <>
       {lastPostRow && (
@@ -119,7 +121,7 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
                 }
               }}
               onMouseMove={() => updateSelection(indexItem)}
-              timeTableItem={timeTableRow?.[indexItem]}
+              timeTableItem={timeTableByDay(dayItem?.date)}
               isAccessEdit={isAccessEdit}
               onChangeStartTime={(newStartTime) => {
                 if (isAccessEdit) {
