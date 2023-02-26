@@ -116,7 +116,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   });
   useEffect(() => {
     reset();
-    const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: activeMonthYear };
+    const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: moment(activeMonthYear).format("YYYY-MM-DD").toString() };
     dispatch(getEmployees(paramsEmployees));
   }, [activeMonthYear]);
   const onSubmit = (data) => {
@@ -592,7 +592,8 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             return (
               <WorkCalendarFullRow
                 onLastCountWork={allDays?.map((itemDayInner, dayIndex) => {
-                  return countWorkers(watchCalendar, dayIndex, fields[index - 1]?.post);
+                  const indexCount = fields?.length - 1 == index ? index : index - 1; 
+                  return countWorkers(watchCalendar, dayIndex, fields[indexCount]?.post);
                 })}
                 lastIndex={fields?.length}
                 lastPostRow={item.isLastPost}

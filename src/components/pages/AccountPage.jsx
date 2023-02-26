@@ -70,7 +70,7 @@ const AccountPage = () => {
   } = useSelector((state) => state.employeeHistory);
   const [clickEditWorkTable, setClickEditWorkTable] = useState(false);
   const handleClickOpenFullCalendar = () => {
-    const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: activeMonthYear };
+    const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: moment(activeMonthYear).format('YYYY-MM-DD').toString() };
     dispatch(getSubdivisionWorkTimeTemplates(activeCalendarSubdivision?.id));
     dispatch(getEmployees(paramsEmployees));
     setClickEditWorkTable(true);
@@ -383,13 +383,13 @@ const AccountPage = () => {
                                         const percentNumberEarned = parseInt((parseInt(row?.earned) / 100) * prePaymentSettings.percent);
                                         percentNumber = percentNumberBalance + percentNumberEarned;
                                         let maxSumBalance = parseInt(row?.balance) - prePaymentSettings.minSum;
-                                        if (maxSumBalance < 0) {
-                                          maxSumBalance = 0;
-                                        }
+                                        // if (maxSumBalance < 0) {
+                                        //   maxSumBalance = 0;
+                                        // }
                                         let maxSumEarned = parseInt(row?.earned) - prePaymentSettings.minSum;
-                                        if (maxSumEarned < 0) {
-                                          maxSumEarned = 0;
-                                        }
+                                        // if (maxSumEarned < 0) {
+                                        //   maxSumEarned = 0;
+                                        // }
                                         maxSum = maxSumBalance + maxSumEarned;
                                         if (maxSum <= 0) {
                                           let updatePrePaymentEmployee = { ...prePaymentEmployee };

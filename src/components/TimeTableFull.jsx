@@ -71,7 +71,7 @@ const TimeTableFull = () => {
   console.log(watch());
   useEffect(() => {
     reset();
-    const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: activeMonthYear };
+    const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: moment(activeMonthYear).format("YYYY-MM-DD").toString() };
     dispatch(getEmployees(paramsEmployees));
   }, [activeMonthYear]);
   const onSubmit = (data) => {
