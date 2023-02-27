@@ -17,6 +17,7 @@ import { resetCreateSectionGroup } from '../../redux/slices/sectionGroup.slice';
 import { createSectionGroup } from '../../redux/actions/knowledgeBase/createSectionGroup.action';
 import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
 
+import { resetCreateSection } from '../../redux/slices/section.slice';
 import { getSectionsByGroup } from '../../redux/actions/knowledgeBase/getSectionsByGroup.action';
 import { createSection } from '../../redux/actions/knowledgeBase/createSection.action';
 
@@ -42,11 +43,11 @@ const ModalArticle = () => {
     const [sectionOptions, setSectionOptions] = useState([]);
     const [markOptions, setMarkOptions] = useState([]);
 
-    const [successCreateMark, setSeccessCreateMark] = useState(false)
-    const [successCreateSection, setSeccessCreateSection] = useState(false)
-    const [successCreateSectionGroup, setSeccessCreateSectionGroup] = useState(false)
+    const [successCreateMark, setSuccessCreateMark] = useState(false)
+    const [successCreateSection, setSuccessCreateSection] = useState(false)
+    const [successCreateSectionGroup, setSuccessCreateSectionGroup] = useState(false)
 
-// Для добавления новых эл-ов в бд
+    // Для добавления новых эл-ов в бд
     const [newMark, setNewMark] = useState('');
     const [newSectionGroup, setNewSectionGroup] = useState('');
     const [newSection, setNewSection] = useState('');
@@ -54,6 +55,7 @@ const ModalArticle = () => {
     // вывод ошибок
     const [errorCreateMark, setErrorCreateMark] = useState(false)
     const [errorCreateSectionGroup, setErrorCreateSectionGroup] = useState(false)
+    const [errorCreateSection, setErrorCreateSection] = useState(false)
 
     const defaultValues = {
         // control: ''
@@ -62,7 +64,7 @@ const ModalArticle = () => {
     const {
         control,
         formState: { errors },
-      } = useForm({ defaultValues });
+    } = useForm({ defaultValues });
 
 
     // получить список групп, разделов, должностей, меток
@@ -72,7 +74,8 @@ const ModalArticle = () => {
     } = useSelector((state) => state.mark);
 
     const {
-        getSectionsByGroup: { data: sections, loading: loadingSection, error: errorSection, count: sectionCount }
+        getSectionsByGroup: { data: sections, loading: loadingSection, error: errorSection, count: sectionCount },
+        createSection: { data: createSectionData, loading: createSectionLoading },
     } = useSelector((state) => state.section);
 
     const {
@@ -88,42 +91,42 @@ const ModalArticle = () => {
 
     useEffect(() => {
         if (createMarkData && newMark) {
-          dispatch(getMarks());
-          setNewMark('');
-          setSeccessCreateMark(true);
-          setTimeout(() => {
-            setSeccessCreateMark(false);
-          }, 3000);
-          dispatch(resetCreateMark());
+            dispatch(getMarks());
+            setNewMark('');
+            setSuccessCreateMark(true);
+            setTimeout(() => {
+                setSuccessCreateMark(false);
+            }, 3000);
+            dispatch(resetCreateMark());
         }
     }, [createMarkData]);
 
     useEffect(() => {
         if (createSectionGroupData && newSectionGroup) {
-          dispatch(getSectionGroups());
-          setNewSectionGroup('');
-          setSeccessCreateSectionGroup(true);
-          setTimeout(() => {
-            setSeccessCreateSectionGroup(false);
-          }, 3000);
-          dispatch(resetCreateSectionGroup());
+            dispatch(getSectionGroups());
+            setNewSectionGroup('');
+            setSuccessCreateSectionGroup(true);
+            setTimeout(() => {
+                setSuccessCreateSectionGroup(false);
+            }, 3000);
+            dispatch(resetCreateSectionGroup());
         }
     }, [createSectionGroupData]);
 
-    // useEffect(() => {
-    //     if (createSectionGroupData && newSectionGroup) {
-    //       dispatch(getSectionGroups());
-    //       setNewSectionGroup('');
-    //       setSeccessCreateSectionGroup(true);
-    //       setTimeout(() => {
-    //         setSeccessCreateSectionGroup(false);
-    //       }, 3000);
-    //       dispatch(resetCreateSectionGroup());
-    //     }
-    // }, [createSection]);
-    
+    useEffect(() => {
+        if (createSectionData && newSection) {
+            dispatch(getSectionsByGroup(articleSectionGroup));
+            setNewSection('');
+            setSuccessCreateSection(true);
+            setTimeout(() => {
+                setSuccessCreateSection(false);
+            }, 3000);
+            dispatch(resetCreateSection());
+        }
+    }, [createSectionData]);
 
-    useEffect(()=> {
+
+    useEffect(() => {
         dispatch(getMarks());
         dispatch(getSectionGroups());
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
@@ -146,7 +149,7 @@ const ModalArticle = () => {
     }
 
     const onSectionGroupChange = (e) => {
-        setArticleSectionGroup(e.target.value); 
+        setArticleSectionGroup(e.target.value);
     }
 
     const onSectionChange = (e) => {
@@ -161,7 +164,7 @@ const ModalArticle = () => {
     }
 
     const onAddMarkBtnClick = () => {
-        if (newMark) dispatch(createMark( {name: newMark} ));
+        if (newMark) dispatch(createMark({ name: newMark }));
         else {
             setErrorCreateMark(true);
             const timer = setTimeout(() => {
@@ -176,12 +179,19 @@ const ModalArticle = () => {
         console.log(newSection);
         console.log('group: ', articleSectionGroup)
 
-        if (articleSectionGroup && newSection) dispatch(createSection( {name: newSection, groupId: articleSectionGroup} ))
-        else console.log('Чего-то не хватает:(')
+        if (articleSectionGroup && newSection) dispatch(createSection({ name: newSection, groupId: articleSectionGroup }))
+        else {
+            console.log('Чего-то не хватает:(');
+            setErrorCreateSection(true);
+            const timer = setTimeout(() => {
+                setErrorCreateSection(false);
+                clearTimeout(timer);
+            }, 3000)
+        }
     }
-    
+
     const onAddSectionGroupBtnClick = () => {
-        if (newSectionGroup) dispatch(createSectionGroup( {name: newSectionGroup} ));
+        if (newSectionGroup) dispatch(createSectionGroup({ name: newSectionGroup }));
         else {
             setErrorCreateSectionGroup(true);
             const timer = setTimeout(() => {
@@ -199,9 +209,9 @@ const ModalArticle = () => {
         var range = this.quill.getSelection();
         var valuee = prompt('Введите URL изображения для ее добавления');
         if (valuee) {
-          this.quill.insertEmbed(range.index, 'image', valuee, Quill.sources.USER);
+            this.quill.insertEmbed(range.index, 'image', valuee, Quill.sources.USER);
         }
-      }
+    }
 
     const formats = ['font', 'size', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'script', 'header', 'blockquote', 'code-block', 'indent', 'list', 'direction', 'align', 'link', 'image', 'video', 'formula'];
     const modules = useMemo(
@@ -228,7 +238,7 @@ const ModalArticle = () => {
                                 control={control}
                                 name={'datePublish'}
                                 rules={{
-                                required: true,
+                                    required: true,
                                 }}
                                 render={({ field: { onChange, name, value } }) => <NumberFormat format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onDateChange} autoComplete="off" />}
                             />
@@ -243,8 +253,8 @@ const ModalArticle = () => {
                                 <select value={articleSectionGroup} onChange={onSectionGroupChange}>
                                     <option value={''}>Выберите группу</option>
                                     {sectionGroups?.map((group) => {
-                                            return <option value={group.id}>{group.name}</option>
-                                        })}
+                                        return <option value={group.id}>{group.name}</option>
+                                    })}
                                 </select>
                             </div>
                             <div className="modal__create">
@@ -254,7 +264,7 @@ const ModalArticle = () => {
                                 </button>
                             </div>
                         </div>
-                        {errorCreateSectionGroup && <div class="text-error" style={{ marginBottom: '10px' }}> Введите название группы, для ее добавления </div>}
+                        {errorCreateSectionGroup && <div class="text-error" style={{ marginBottom: '10px' }}> Введите название группы, для добавления </div>}
                         {successCreateSectionGroup && <div class="text-success" style={{ marginBottom: '10px' }}> Группа добавлена </div>}
                     </div>
 
@@ -275,6 +285,8 @@ const ModalArticle = () => {
                                 </button>
                             </div>
                         </div>
+                        {errorCreateSection && <div class="text-error" style={{ marginBottom: '10px' }}> Введите название раздела, для добавления </div>}
+                        {successCreateSection && <div class="text-success" style={{ marginBottom: '10px' }}> Раздел добавлен </div>}
                     </div>
 
                     <div className='modal__article__select-group__container'>
