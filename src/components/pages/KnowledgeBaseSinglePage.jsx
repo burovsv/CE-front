@@ -17,7 +17,7 @@ const KnowledgeBaseSinglePage = () => {
 
 
     const {
-        getAdminArticles: { data: articles, loading: loadingArticles, error: errorArticles, count: articlesCount }
+        getArticles: { data: articles, loading: loadingArticles, error: errorArticles, count: articlesCount }
     } = useSelector((state) => state.article);
     
     const {

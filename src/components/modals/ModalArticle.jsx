@@ -23,25 +23,21 @@ import { createSection } from '../../redux/actions/knowledgeBase/createSection.a
 
 import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
 
+// import { resetCreateSection } from '../../redux/slices/section.slice';
+import { createArticle } from '../../redux/actions/knowledgeBase/createArticle.action';
+
+
+
 
 import ReactQuill, { Quill } from 'react-quill';
 // import { create } from 'domain';
 
 const ModalArticle = () => {
 
-    const [paramsData, setParamsData] = useState({ page: 1, search: '' });
-
-    const [text, setText] = useState('');
     const [articleName, setArticleName] = useState('');
-    const [articleDate, setArticleDate] = useState('');
     const [articleSection, setArticleSection] = useState('');
     const [articleSectionGroup, setArticleSectionGroup] = useState('');
-    const [articleMarks, setArticleMarks] = useState([]);
-    const [articleEmployeePosition, setArticleEmployeePosition] = useState([]);
     const [articleDesc, setArticleDesc] = useState('');
-    const [sectionGroupOptions, setSectionGroupOptions] = useState([]);
-    const [sectionOptions, setSectionOptions] = useState([]);
-    const [markOptions, setMarkOptions] = useState([]);
 
     const [successCreateMark, setSuccessCreateMark] = useState(false)
     const [successCreateSection, setSuccessCreateSection] = useState(false)
@@ -58,12 +54,20 @@ const ModalArticle = () => {
     const [errorCreateSection, setErrorCreateSection] = useState(false)
 
     const defaultValues = {
-        // control: ''
+        name: '',
+        date: '',
+        section: '',
+        mark: [],
+        employeePosition: '',
+        content: '',
     }
 
     const {
         control,
         formState: { errors },
+        getValues,
+        register,
+        setValue
     } = useForm({ defaultValues });
 
 
@@ -86,6 +90,10 @@ const ModalArticle = () => {
     const {
         getEmployeePositions: { data: employeePositions, loading: loadingEmployeePositions, error: errorEmployeePositions, count: employeePositionsCount }
     } = useSelector((state) => state.employeePosition);
+
+    const {
+        createArticle: { data: createArticleData, loading: createArticleLoading }
+    } = useSelector((state) => state.article)
 
     const dispatch = useDispatch();
 
@@ -131,12 +139,10 @@ const ModalArticle = () => {
         dispatch(getSectionGroups());
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
         dispatch(getEmployeePositions());
-        console.log(employeePositions);
     }, [])
 
     useEffect(() => {
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
-        console.log('группа изменена', sections)
     }, [articleSectionGroup])
 
     const onArticleNameChange = (e) => {
@@ -145,7 +151,7 @@ const ModalArticle = () => {
 
     const onArticleDescChange = (e) => {
         setArticleDesc(e);
-        console.log('desc', e)
+        setValue('content', e);
     }
 
     const onSectionGroupChange = (e) => {
@@ -158,9 +164,11 @@ const ModalArticle = () => {
     }
 
     const onEmployeePositionsChange = (e) => {
-        console.log('choisen employee position');
-        // console.log(e.target.value);
-        console.log(e);
+        setValue('employeePosition', e);
+    }
+
+    const onMarkChange = (e) => {
+        setValue('mark', e);
     }
 
     const onAddMarkBtnClick = () => {
@@ -175,13 +183,8 @@ const ModalArticle = () => {
     }
 
     const onAddSectionBtnClick = () => {
-        console.log('Section click');
-        console.log(newSection);
-        console.log('group: ', articleSectionGroup)
-
         if (articleSectionGroup && newSection) dispatch(createSection({ name: newSection, groupId: articleSectionGroup }))
         else {
-            console.log('Чего-то не хватает:(');
             setErrorCreateSection(true);
             const timer = setTimeout(() => {
                 setErrorCreateSection(false);
@@ -202,7 +205,21 @@ const ModalArticle = () => {
     }
 
     const onDateChange = (e) => {
-        console.log('дата ', e.target.value)
+        setValue('date', e.target.value);
+    }
+
+    const onSaveBtnClick = () => {
+        console.log('Нажали на кнопку сохранить');
+        // получить все элементы
+        console.log(getValues())
+
+        console.log('Наименование ', getValues('name'));
+        console.log('Дата ', getValues('date'));
+        console.log('Раздел ', getValues('section'));
+        console.log('Метки ', getValues('mark'));
+        console.log('Должность ', getValues('employeePosition'));
+        console.log('Контент ', getValues('content'));
+
     }
 
     function imageHandler() {
@@ -228,19 +245,18 @@ const ModalArticle = () => {
 
     let element = (
         <>
-            <Modal modalStyle={{ maxWidth: '50%' }} title="Добавление статьи" onSave={() => { }} onClose={() => { }}>
+            <Modal modalStyle={{ maxWidth: '50%' }} title="Добавление статьи" onSave={onSaveBtnClick} onClose={() => { }}>
                 <div>
-                    <input type="text" onChange={onArticleNameChange} value={articleName} placeholder="Название статьи" />
+                    <input type="text" {...register('name', { required: true, maxLength: 40 })} onChange={onArticleNameChange} value={articleName} placeholder="Название статьи" />
                     <div className="date">
                         <div className="date__wrap">
                             <div className="date__title">от:</div>
                             <Controller
                                 control={control}
                                 name={'datePublish'}
-                                rules={{
-                                    required: true,
-                                }}
-                                render={({ field: { onChange, name, value } }) => <NumberFormat format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onDateChange} autoComplete="off" />}
+                                rules={{required: true,}}
+                                
+                                render={({ field: { onChange, name, value } }) => <NumberFormat {...register('date')} format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onDateChange} autoComplete="off" />}
                             />
                         </div>
                     </div>
@@ -271,7 +287,7 @@ const ModalArticle = () => {
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
-                                <select onChange={onSectionChange}>
+                                <select {...register('section')} onChange={onSectionChange}>
                                     <option value={''}>Выберите раздел</option>
                                     {sections?.map((section) => {
                                         return <option value={section.id}>{section.name}</option>
@@ -292,7 +308,7 @@ const ModalArticle = () => {
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
-                                <Select mode='multiple' placeholder="Выберите метки" >
+                                <Select {...register('mark')} onChange={(e) => onMarkChange(e)} mode='multiple' placeholder="Выберите метки" >
                                     <option value={''} selected>Выберите метки</option>
                                     {marks?.map((mark) => {
                                         return <option value={mark.id}>{mark.name}</option>
@@ -313,10 +329,8 @@ const ModalArticle = () => {
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
-                                <Select mode='multiple' onChange={onEmployeePositionsChange} placeholder="Выберите должности" >
-                                    {console.log('em', employeePositions)}
+                                <Select  {...register('employeePosition')} mode='multiple' onChange={onEmployeePositionsChange} placeholder="Выберите должности" >
                                     {employeePositions?.map((position) => {
-                                        console.log('pos')
                                         return <option value={position.ID}>{position.name}</option>
                                     })}
                                 </Select>
@@ -325,7 +339,7 @@ const ModalArticle = () => {
                     </div>
                 </div>
                 <CustomToolbar />
-                <ReactQuill value={articleDesc} onChange={onArticleDescChange} modules={modules} formats={formats} defaultValue={''} />
+                <ReactQuill {...register('content')}  value={articleDesc} onChange={onArticleDescChange} modules={modules} formats={formats} defaultValue={''} />
             </Modal >
         </>
     )

@@ -3,7 +3,7 @@ import '../../css/knowledgeBase.css';
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { getAdminArticles } from '../../redux/actions/knowledgeBase/getAdminArticles.action';
+import { getArticles } from '../../redux/actions/knowledgeBase/getArticles.action';
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
 import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
 import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
@@ -142,7 +142,7 @@ const KnowledgeBasePage = () => {
 
     const dispatch = useDispatch();
     // const {
-    //   getAdminArticles: { data: articles, loading, error, count: articlesCount },
+    //   getArticles: { data: articles, loading, error, count: articlesCount },
     //   // createArticle: { data: createArticleData, loading: createArticleLoading },
     //   // updateArticle: { data: updateArticleData, loading: updateArticleLoading },
     //   // deleteArticle: { data: deleteArticleData, loading: deleteArticleLoading },
@@ -155,7 +155,7 @@ const KnowledgeBasePage = () => {
     // получаем статьи, метки, разделы и группы разделов
 
     const {
-        getAdminArticles: { data: articles, loading: loadingArticles, error: errorArticles, count: articlesCount }
+        getArticles: { data: articles, loading: loadingArticles, error: errorArticles, count: articlesCount }
     } = useSelector((state) => state.article);
 
     const {

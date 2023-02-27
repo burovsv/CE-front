@@ -1,41 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { initStateGetAdminArticles, reducerGetAdminArticles } from '../actions/knowledgeBase/getAdminArticles.action';
+import { initStateGetArticles, reducerGetArticles } from '../actions/knowledgeBase/getArticles.action';
+import { initStateCreateArticle, reducerCreateArticle } from '../actions/knowledgeBase/createArticle.action';
 
 
 export const initialState = {
-    ...initStateGetAdminArticles,
-
+    ...initStateGetArticles,
+    ...initStateCreateArticle
   };
   
 export const articleSlice = createSlice({
     name: 'article',
     initialState,
     reducers: {
-    //   resetGetAdminTestingSingle(state) {
-    //     state.getAdminTestingSingle = initStateGetAdminTestingSingle.getAdminTestingSingle;
-    //   },
-      resetGetAdminArticles(state) {
-        state.getAdminArticles = initStateGetAdminArticles.getAdminArticles;
+      resetGetArticles(state) {
+        state.getArticles = initStateGetArticles.getArticles;
       },
-    //   resetCreateTesting(state) {
-    //     state.createTesting = initStateCreateTesting.createTesting;
-    //   },
-    //   resetUpdateTesting(state) {
-    //     state.updateTesting = initStateUpdateTesting.updateTesting;
-    //   },
-    //   resetGetUserTesting(state) {
-    //     state.getUserTesting = initStateGetUserTesting.getUserTesting;
-    //   },
+      resetCreateArticle(state) {
+        state.creareArticle = initStateCreateArticle.creareArticle;
+      }
     },
-    // extraReducers: {
-    // ...reducerGetAdminArticles,
-    //   ...reducerCreateTesting,
-    //   ...reducerGetUserTesting,
-    //   ...reducerUpdateTesting,
-    //   ...reducerGetAdminTestingSingle,
-    //   ...reducerGetUserTestingSingle,
-    //   ...reducerDeleteTesting,
-    // },
+    extraReducers: {
+      ...reducerGetArticles,
+      ...reducerCreateArticle,
+    },
   });
-//   export const { resetGetAdminTesting, resetGetAdminTestingSingle, resetCreateTesting, resetGetUserTesting, resetUpdateTesting } = testingSlice.actions;
+  export const { resetCreateArticle, resetGetArticles } = articleSlice.actions;
   export const articleReducer = articleSlice.reducer;

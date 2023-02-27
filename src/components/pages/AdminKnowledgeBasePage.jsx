@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Table from '../Table';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAdminArticles } from '../../redux/actions/knowledgeBase/getAdminArticles.action';
+import { getArticles } from '../../redux/actions/knowledgeBase/getArticles.action';
 import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
 import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
 import { setActiveModal } from '../../redux/slices/app.slice';
@@ -23,7 +23,7 @@ const AdminKnowledgeBasePage = () => {
   
   const dispatch = useDispatch();
   const {
-    getAdminArticles: { data: articles, loading, error, count: articlesCount },
+    getArticles: { data: articles, loading, error, count: articlesCount },
     // createArticle: { data: createArticleData, loading: createArticleLoading },
     // updateArticle: { data: updateArticleData, loading: updateArticleLoading },
     // deleteArticle: { data: deleteArticleData, loading: deleteArticleLoading },
@@ -38,7 +38,7 @@ const AdminKnowledgeBasePage = () => {
 
   useEffect(() => {
     // добаить еще раздел и группу
-    let adminArticles = articles?.map((article) => {
+    let Articles = articles?.map((article) => {
       let section = sections?.find((section) => section?.id === article?.sectionId);
       let sectionGroup = sectionGroups?.find((sectionGroup) => sectionGroup?.id === section?.sectionGroup);
       return {
@@ -48,7 +48,7 @@ const AdminKnowledgeBasePage = () => {
       }
     })
 
-    setViewData(adminArticles)
+    setViewData(Articles)
   }, [articles])
 
     const header = [
