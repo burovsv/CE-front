@@ -310,15 +310,17 @@ const ModalArticle = () => {
                         {successCreateMark && <div class="text-success" style={{ marginBottom: '10px' }}> Метка добавлена </div>}
                     </div>
 
-                    <div className='modal__article__select-group'>
-                        <div className="modal__select">
-                            <Select mode='multiple' onChange={onEmployeePositionsChange} placeholder="Выберите должности" >
-                                {console.log('em', employeePositions)}
-                                {employeePositions?.map((position) => {
-                                    console.log('pos')
-                                    return <option value={position.ID}>{position.name}</option>
-                                })}
-                            </Select>
+                    <div className='modal__article__select-group__container'>
+                        <div className='modal__article__select-group'>
+                            <div className="modal__select">
+                                <Select mode='multiple' onChange={onEmployeePositionsChange} placeholder="Выберите должности" >
+                                    {console.log('em', employeePositions)}
+                                    {employeePositions?.map((position) => {
+                                        console.log('pos')
+                                        return <option value={position.ID}>{position.name}</option>
+                                    })}
+                                </Select>
+                            </div>
                         </div>
                     </div>
                 </div>
