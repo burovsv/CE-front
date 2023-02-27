@@ -18,6 +18,8 @@ import { markReducer } from './slices/mark.slice';
 import { sectionReducer } from './slices/section.slice';
 import { sectionGroupReducer } from './slices/sectionGroup.slice';
 import { employeePositionReducer } from './slices/employeePosition.slice';
+import { articleEmployeePositionReducer } from './slices/articleEmployeePosition.slice';
+import { articleMarkReducer } from './slices/articleMark.slice';
 
 export const store = configureStore({
   reducer: {
@@ -39,5 +41,7 @@ export const store = configureStore({
     section: sectionReducer,
     sectionGroup: sectionGroupReducer,
     employeePosition: employeePositionReducer,
+    articleMark: articleMarkReducer,
+    articleEmployeePosition: articleEmployeePositionReducer,
   },
 });

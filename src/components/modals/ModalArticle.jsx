@@ -23,11 +23,14 @@ import { createSection } from '../../redux/actions/knowledgeBase/createSection.a
 
 import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
 
-// import { resetCreateSection } from '../../redux/slices/section.slice';
+// создание статьи
+import { resetCreateArticle } from '../../redux/slices/article.slice';
 import { createArticle } from '../../redux/actions/knowledgeBase/createArticle.action';
-
-
-
+// создание смежных
+import { resetCreateArticleMark } from '../../redux/slices/articleMark.slice';
+import { createArticleMark } from '../../redux/actions/knowledgeBase/createArticleMark.action';
+import { resetCreateArticleEmployeePosition } from '../../redux/slices/articleEmployeePosition.slice';
+import { createArticleEmployeePosition } from '../../redux/actions/knowledgeBase/createArticleEmployeePosition.action';
 
 import ReactQuill, { Quill } from 'react-quill';
 // import { create } from 'domain';
@@ -212,6 +215,13 @@ const ModalArticle = () => {
         console.log('Нажали на кнопку сохранить');
         // получить все элементы
         console.log(getValues())
+        const name = getValues('name');
+        const date = getValues('date');
+        const section = getValues('section');
+        const mark = getValues('mark');
+        const employeePosition = getValues('employeePosition');
+        const content = getValues('content');
+        
 
         console.log('Наименование ', getValues('name'));
         console.log('Дата ', getValues('date'));
@@ -219,6 +229,17 @@ const ModalArticle = () => {
         console.log('Метки ', getValues('mark'));
         console.log('Должность ', getValues('employeePosition'));
         console.log('Контент ', getValues('content'));
+
+        const article = {
+            name: name,
+            content: content,
+            date: date,
+            sectionId: section
+        }
+
+        dispatch(createArticle(article));
+
+        console.log(createArticleData);
 
     }
 

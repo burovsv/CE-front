@@ -5,7 +5,7 @@ export const initStateGetSectionsByGroup = {
     getSectionsByGroup: { data: [], loading: false, error: null }
 }
 
-export const getSectionsByGroup = createAsyncThunk('section/list', async (id, { rejectWithValue, fulfillWithValue }) => {
+export const getSectionsByGroup = createAsyncThunk(`section/list/`, async (id, { rejectWithValue, fulfillWithValue }) => {
   return await axios
     .get(`${process.env.REACT_APP_SERVER_API}/section/list/${id}`)
     .then((res) => {
