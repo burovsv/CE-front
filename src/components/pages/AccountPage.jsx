@@ -375,40 +375,33 @@ const AccountPage = () => {
                                         let updatePrePaymentEmployee = { ...prePaymentEmployee };
                                         updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
                                         setPrePaymentEmployee(updatePrePaymentEmployee);
-                                      } else if (parseInt(row?.balance) > 0) {
-                                        let percentNumber;
-                                        let maxSum;
-                                        const val = parseInt(event.target.value);
-                                        const percentNumberBalance = parseInt((parseInt(row?.balance) / 100) * prePaymentSettings.percent);
-                                        const percentNumberEarned = parseInt((parseInt(row?.earned) / 100) * prePaymentSettings.percent);
-                                        percentNumber = percentNumberBalance + percentNumberEarned;
-                                        let maxSumBalance = parseInt(row?.balance) - prePaymentSettings.minSum;
-                                        // if (maxSumBalance < 0) {
-                                        //   maxSumBalance = 0;
-                                        // }
-                                        let maxSumEarned = parseInt(row?.earned) - prePaymentSettings.minSum;
-                                        // if (maxSumEarned < 0) {
-                                        //   maxSumEarned = 0;
-                                        // }
-                                        maxSum = maxSumBalance + maxSumEarned;
-                                        if (maxSum <= 0) {
+                                      } else if (parseInt(row?.balance) + parseInt(row?.earned) > prePaymentSettings.minSum) {
+                                        let resultSum = parseInt(row?.balance) + parseInt(row?.earned) - prePaymentSettings.minSum;
+                                        const percentSum = parseInt((parseInt(resultSum) / 100) * prePaymentSettings.percent);
+
+                                        if (val <= percentSum && val > 0) {
+                                          let updatePrePaymentEmployee = { ...prePaymentEmployee };
+                                          updatePrePaymentEmployee[row?.userId] = { sum: val, name: row?.name };
+                                          setPrePaymentEmployee(updatePrePaymentEmployee);
+                                        } else {
                                           let updatePrePaymentEmployee = { ...prePaymentEmployee };
                                           updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
-                                          setPrePaymentEmployee(updatePrePaymentEmployee);
-                                        } else if ((val > percentNumber || val > maxSum) && val > 0) {
-                                          let maxCount = percentNumber;
-                                          if (maxSum < percentNumber) {
-                                            maxCount = maxSum;
-                                          }
-                                          let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                          updatePrePaymentEmployee[row?.userId] = { sum: maxCount, name: row?.name };
                                           setPrePaymentEmployee(updatePrePaymentEmployee);
                                         }
                                       }
                                     }}
-                                    disabled={parseInt(row?.balance) <= 0}
+                                    disabled={parseInt(row?.balance) + parseInt(row?.earned) <= prePaymentSettings.minSum}
                                     type="text"
-                                    style={{ height: '35px', width: '65px', border: '0.2px solid #C6C6C6', outline: 'none', padding: '10px', boxSizing: 'border-box', fontFamily: 'inherit', ...(parseInt(row?.balance) <= 0 && { background: '#F2F2F2' }) }}
+                                    style={{
+                                      height: '35px',
+                                      width: '65px',
+                                      border: '0.2px solid #C6C6C6',
+                                      outline: 'none',
+                                      padding: '10px',
+                                      boxSizing: 'border-box',
+                                      fontFamily: 'inherit',
+                                      ...(parseInt(row?.balance) + parseInt(row?.earned) <= prePaymentSettings.minSum && { background: '#F2F2F2' }),
+                                    }}
                                   />
                                 </div>
                               </>
