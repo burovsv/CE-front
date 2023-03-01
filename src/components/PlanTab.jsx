@@ -216,56 +216,58 @@ const PlanTab = ({ list }) => {
                     <th>Количество</th>
                     <th>Место</th>
                   </tr>
-                  {itemEmpoyeComp?.mass_id?.map(
-                    (itemEmployMass) =>
-                      !itemEmployMass?.name?.includes('undefined') &&
-                      itemEmployMass?.id_city === activeSubdiv && (
-                        <>
-                          <tr
-                            onClick={() => {
-                              const isShowEmpl = isManager || dataUser?.idService == itemEmployMass.id;
-                              if (isShowEmpl) {
-                                if (activeEmployee) {
-                                  setActiveEmployee(null);
-                                } else {
-                                  setActiveEmployee(itemEmployMass?.id);
+                  {[...itemEmpoyeComp?.mass_id]
+                    ?.sort((a, b) => a.name.localeCompare(b.name))
+                    ?.map(
+                      (itemEmployMass) =>
+                        !itemEmployMass?.name?.includes('undefined') &&
+                        itemEmployMass?.id_city === activeSubdiv && (
+                          <>
+                            <tr
+                              onClick={() => {
+                                const isShowEmpl = isManager || dataUser?.idService == itemEmployMass.id;
+                                if (isShowEmpl) {
+                                  if (activeEmployee) {
+                                    setActiveEmployee(null);
+                                  } else {
+                                    setActiveEmployee(itemEmployMass?.id);
+                                  }
                                 }
-                              }
-                            }}
-                            class={`table-plan-row ${dataUser?.idService == itemEmployMass.id ? 'table-plan-row-current' : ''}`}>
-                            <td>{itemEmployMass?.name}</td>
-                            <td>{Math.ceil(itemEmployMass?.trade_sum) || '-'}</td>
-                            {!!isUserPlan && <td>{Math.ceil(itemEmployMass?.user_plan) ? parseInt(itemEmployMass?.user_plan) : '-'}</td>}
-                            {!!isTradeUserPlan && <td>{Math.ceil(itemEmployMass?.trade_user_plan) || '-'}</td>}
+                              }}
+                              class={`table-plan-row ${dataUser?.idService == itemEmployMass.id ? 'table-plan-row-current' : ''}`}>
+                              <td>{itemEmployMass?.name}</td>
+                              <td>{Math.ceil(itemEmployMass?.trade_sum) || '-'}</td>
+                              {!!isUserPlan && <td>{Math.ceil(itemEmployMass?.user_plan) ? parseInt(itemEmployMass?.user_plan) : '-'}</td>}
+                              {!!isTradeUserPlan && <td>{Math.ceil(itemEmployMass?.trade_user_plan) || '-'}</td>}
 
-                            <td>{Math.ceil(itemEmployMass?.trade_quantity)}</td>
-                            <td>{itemEmployMass?.place}</td>
-                          </tr>
-                          {itemEmployMass.id === activeEmployee && (
-                            <>
-                              {loadingCompetitionProducts ? (
-                                <tr style={{ padding: 0, background: '#F9F9F9' }}>
-                                  <td colSpan={4} className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
-                                    &nbsp;Идет загрузка...
-                                  </td>
-                                </tr>
-                              ) : dataCompetitionProducts?.length >= 1 ? (
-                                dataCompetitionProducts?.map((itemProd) => (
-                                  <tr class="table-plan-row" style={{ background: '#f2f2f2' }}>
-                                    <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
-                                    <td>{itemProd?.trade_sum}</td>
-                                    <td>{itemProd?.trade_quantity}</td>
-                                    <td></td>
+                              <td>{Math.ceil(itemEmployMass?.trade_quantity)}</td>
+                              <td>{itemEmployMass?.place}</td>
+                            </tr>
+                            {itemEmployMass.id === activeEmployee && (
+                              <>
+                                {loadingCompetitionProducts ? (
+                                  <tr style={{ padding: 0, background: '#F9F9F9' }}>
+                                    <td colSpan={4} className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
+                                      &nbsp;Идет загрузка...
+                                    </td>
                                   </tr>
-                                ))
-                              ) : (
-                                <div style={{ fontWeight: '600', color: '#FF0505', padding: '15px 20px' }}>Товаров не найдено</div>
-                              )}
-                            </>
-                          )}
-                        </>
-                      ),
-                  )}
+                                ) : dataCompetitionProducts?.length >= 1 ? (
+                                  dataCompetitionProducts?.map((itemProd) => (
+                                    <tr class="table-plan-row" style={{ background: '#f2f2f2' }}>
+                                      <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
+                                      <td>{itemProd?.trade_sum}</td>
+                                      <td>{itemProd?.trade_quantity}</td>
+                                      <td></td>
+                                    </tr>
+                                  ))
+                                ) : (
+                                  <div style={{ fontWeight: '600', color: '#FF0505', padding: '15px 20px' }}>Товаров не найдено</div>
+                                )}
+                              </>
+                            )}
+                          </>
+                        ),
+                    )}
                 </table>
               );
             }

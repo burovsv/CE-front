@@ -290,7 +290,7 @@ const AccountPage = () => {
                           </div>
                           <div className="table-common__head">Аванс</div>
                           {[...dataAccountList]
-                            ?.sort((a, b) => a.post - b.post)
+                            ?.sort((a, b) => a.post.localeCompare(b.post))
                             ?.map((row, indexRow) => (
                               <>
                                 <div
@@ -376,6 +376,7 @@ const AccountPage = () => {
                                         updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
                                         setPrePaymentEmployee(updatePrePaymentEmployee);
                                       } else if (parseInt(row?.balance) + parseInt(row?.earned) > prePaymentSettings.minSum) {
+                                        let val = parseInt(event.target.value);
                                         let resultSum = parseInt(row?.balance) + parseInt(row?.earned) - prePaymentSettings.minSum;
                                         const percentSum = parseInt((parseInt(resultSum) / 100) * prePaymentSettings.percent);
 
@@ -385,7 +386,7 @@ const AccountPage = () => {
                                           setPrePaymentEmployee(updatePrePaymentEmployee);
                                         } else {
                                           let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                          updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
+                                          updatePrePaymentEmployee[row?.userId] = { sum: percentSum, name: row?.name };
                                           setPrePaymentEmployee(updatePrePaymentEmployee);
                                         }
                                       }

@@ -157,21 +157,23 @@ const AdminAccessPage = () => {
             placeholder="Должность"
             disabled={loading || updateEmployeeLoading}>
             <option value={''}>{`Выберите сотрудника`}</option>;
-            {employees?.map((item, itemIndex) => {
-              let findInAccess = false;
-              let findInAddedAccess = false;
-              let findInRemoveAccess = true;
-              if (selectedType == 'content') {
-                findInAccess = employeesAccess?.find((accessItem) => accessItem?.id == item?.id);
-                findInAddedAccess = employeeAddedAccess?.find((accessItem) => accessItem?.id == item?.id);
-                findInRemoveAccess = employeeRemoveAccess?.find((accessItem) => accessItem?.id == item?.id);
-              } else {
-              }
+            {[...employees]
+              ?.sort((a, b) => a.lastName.localeCompare(b.lastName))
+              ?.map((item, itemIndex) => {
+                let findInAccess = false;
+                let findInAddedAccess = false;
+                let findInRemoveAccess = true;
+                if (selectedType == 'content') {
+                  findInAccess = employeesAccess?.find((accessItem) => accessItem?.id == item?.id);
+                  findInAddedAccess = employeeAddedAccess?.find((accessItem) => accessItem?.id == item?.id);
+                  findInRemoveAccess = employeeRemoveAccess?.find((accessItem) => accessItem?.id == item?.id);
+                } else {
+                }
 
-              if (((!findInAccess && !findInAddedAccess) || findInRemoveAccess) && item?.id !== 1) {
-                return <option value={item?.id}>{`${item?.firstName} ${item?.lastName}`}</option>;
-              }
-            })}
+                if (((!findInAccess && !findInAddedAccess) || findInRemoveAccess) && item?.id !== 1) {
+                  return <option value={item?.id}>{`${item?.firstName} ${item?.lastName}`}</option>;
+                }
+              })}
           </select>
         </div>
         <button
