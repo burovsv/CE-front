@@ -176,6 +176,7 @@ const KnowledgeBasePage = () => {
     }
     // определяем массивы статей, разделов и групп разделов
     useEffect(() => {
+        if (!articles || !sections || !sectionGroups || !marks) return;
         let articlesArray = (!_.isEmpty(articlesList)) ? articlesList : [];
         let sectionsArray = (!_.isEmpty(sectionsList)) ? sectionsList : [];
         let sectionGroupsArray = (!_.isEmpty(sectionGroupsList)) ? sectionGroupsList : [];
@@ -229,7 +230,7 @@ const KnowledgeBasePage = () => {
         });
 
         setInitHierarchicalList(hierarchicalList);
-    }, [])
+    }, [articles, sections, sectionGroups, marks])
 
     useEffect(() => {
         function createHierarchicalList() {
