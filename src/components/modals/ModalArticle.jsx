@@ -234,7 +234,9 @@ const ModalArticle = () => {
             name: name,
             content: content,
             date: date,
-            sectionId: section
+            sectionId: section,
+            employeePositionIds: employeePosition,
+            markIds: mark,
         }
 
         dispatch(createArticle(article));
