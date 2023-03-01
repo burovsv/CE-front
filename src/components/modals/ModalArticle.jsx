@@ -221,7 +221,7 @@ const ModalArticle = () => {
         const mark = getValues('mark');
         const employeePosition = getValues('employeePosition');
         const content = getValues('content');
-        
+
 
         console.log('Наименование ', getValues('name'));
         console.log('Дата ', getValues('date'));
@@ -229,11 +229,13 @@ const ModalArticle = () => {
         console.log('Метки ', getValues('mark'));
         console.log('Должность ', getValues('employeePosition'));
         console.log('Контент ', getValues('content'));
+        let newDate = date.split('.').reverse().join('-');
+
 
         const article = {
             name: name,
             content: content,
-            date: date,
+            date: newDate,
             sectionId: section,
             employeePositionIds: employeePosition,
             markIds: mark,
@@ -241,9 +243,15 @@ const ModalArticle = () => {
 
         dispatch(createArticle(article));
 
-        console.log(createArticleData);
 
     }
+
+    useEffect(() => {
+        console.log('create new article');
+        console.log(createArticleData);
+
+
+    }, [createArticleData])
 
     function imageHandler() {
         var range = this.quill.getSelection();
@@ -277,8 +285,8 @@ const ModalArticle = () => {
                             <Controller
                                 control={control}
                                 name={'datePublish'}
-                                rules={{required: true,}}
-                                
+                                rules={{ required: true, }}
+
                                 render={({ field: { onChange, name, value } }) => <NumberFormat {...register('date')} format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onDateChange} autoComplete="off" />}
                             />
                         </div>
@@ -362,7 +370,7 @@ const ModalArticle = () => {
                     </div>
                 </div>
                 <CustomToolbar />
-                <ReactQuill {...register('content')}  value={articleDesc} onChange={onArticleDescChange} modules={modules} formats={formats} defaultValue={''} />
+                <ReactQuill {...register('content')} value={articleDesc} onChange={onArticleDescChange} modules={modules} formats={formats} defaultValue={''} />
             </Modal >
         </>
     )
