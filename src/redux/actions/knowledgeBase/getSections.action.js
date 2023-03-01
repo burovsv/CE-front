@@ -2,7 +2,7 @@ import { createAsyncThunk, current } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const initStateGetSections = {
-    getSections: { data: [], loading: false, error: null }
+    getSections: { data: null, loading: false, error: null }
 }
 
 export const getSections = createAsyncThunk('section/list', async (data, { rejectWithValue, fulfillWithValue }) => {

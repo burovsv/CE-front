@@ -2,7 +2,7 @@ import { createAsyncThunk, current } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const initStateGetArticles = {
-    getArticles: { data: [], loading: false, error: null },
+    getArticles: { data: null, loading: false, error: null },
   };
 
   export const getArticles = createAsyncThunk('article/list', async (data, { rejectWithValue, fulfillWithValue }) => {
@@ -23,9 +23,7 @@ export const initStateGetArticles = {
     },
     [getArticles.fulfilled]: (state, action) => {
       state.getArticles.loading = false;
-      state.getArticles.data = action.payload.list;
-      state.getArticles.count = action.payload.count;
-  
+      state.getArticles.data = action.payload;
       state.getArticles.error = null;
     },
     [getArticles.rejected]: (state, action) => {

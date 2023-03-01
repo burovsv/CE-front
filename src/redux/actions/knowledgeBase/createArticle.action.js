@@ -19,14 +19,17 @@ export const createArticle = createAsyncThunk('/article/create', async (data, { 
 export const reducerCreateArticle = {
     [createArticle.pending]: (state) => {
         state.createArticle.loading = true;
+        state.createArticle.success = false;
     },
     [createArticle.fulfilled]: (state, action) => {
         state.createArticle.loading = false;
         state.createArticle.data = action.payload;
         state.createArticle.error = null;
+        state.createArticle.success = true;
     },
     [createArticle.rejected]: (state, action) => {
         state.createArticle.loading = false;
         state.createArticle.error = action.payload;
+        state.createArticle.success = false;
     }
 };

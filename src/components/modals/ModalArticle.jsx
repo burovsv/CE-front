@@ -9,6 +9,8 @@ import { useForm, Controller } from 'react-hook-form';
 import NumberFormat from 'react-number-format';
 import CustomToolbar from '../CustomToolbar';
 
+import { setActiveModal } from '../../redux/slices/app.slice';
+
 import { resetCreateMark } from '../../redux/slices/mark.slice';
 import { createMark } from '../../redux/actions/knowledgeBase/createMark.action';
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
@@ -24,13 +26,7 @@ import { createSection } from '../../redux/actions/knowledgeBase/createSection.a
 import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
 
 // создание статьи
-import { resetCreateArticle } from '../../redux/slices/article.slice';
 import { createArticle } from '../../redux/actions/knowledgeBase/createArticle.action';
-// создание смежных
-import { resetCreateArticleMark } from '../../redux/slices/articleMark.slice';
-import { createArticleMark } from '../../redux/actions/knowledgeBase/createArticleMark.action';
-import { resetCreateArticleEmployeePosition } from '../../redux/slices/articleEmployeePosition.slice';
-import { createArticleEmployeePosition } from '../../redux/actions/knowledgeBase/createArticleEmployeePosition.action';
 
 import ReactQuill, { Quill } from 'react-quill';
 // import { create } from 'domain';
@@ -212,9 +208,7 @@ const ModalArticle = () => {
     }
 
     const onSaveBtnClick = () => {
-        console.log('Нажали на кнопку сохранить');
         // получить все элементы
-        console.log(getValues())
         const name = getValues('name');
         const date = getValues('date');
         const section = getValues('section');
@@ -222,15 +216,7 @@ const ModalArticle = () => {
         const employeePosition = getValues('employeePosition');
         const content = getValues('content');
 
-
-        console.log('Наименование ', getValues('name'));
-        console.log('Дата ', getValues('date'));
-        console.log('Раздел ', getValues('section'));
-        console.log('Метки ', getValues('mark'));
-        console.log('Должность ', getValues('employeePosition'));
-        console.log('Контент ', getValues('content'));
         let newDate = date.split('.').reverse().join('-');
-
 
         const article = {
             name: name,
@@ -242,16 +228,8 @@ const ModalArticle = () => {
         }
 
         dispatch(createArticle(article));
-
-
+        dispatch(setActiveModal(''));
     }
-
-    useEffect(() => {
-        console.log('create new article');
-        console.log(createArticleData);
-
-
-    }, [createArticleData])
 
     function imageHandler() {
         var range = this.quill.getSelection();
@@ -339,10 +317,10 @@ const ModalArticle = () => {
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
-                                <Select {...register('mark')} onChange={(e) => onMarkChange(e)} mode='multiple' placeholder="Выберите метки" >
+                                <Select  {...register('mark')} onChange={(e) => onMarkChange(e)} mode='multiple' placeholder="Выберите метки" >
                                     <option value={''} selected>Выберите метки</option>
                                     {marks?.map((mark) => {
-                                        return <option value={mark.id}>{mark.name}</option>
+                                        return <option value={mark.id} label={mark.name}>{mark.name}</option>
                                     })}
                                 </Select>
                             </div>
