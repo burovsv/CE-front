@@ -180,7 +180,7 @@ const KnowledgeBasePage = () => {
             console.log(articlesArray);
         }
         if (_.isEmpty(sectionsList)) {
-            sectionsArray = sections.map((el) => initHierarchicalItem(el, 1, el.sectionGroup, true))
+            sectionsArray = sections.map((el) => initHierarchicalItem(el, 1, el.sectionGroupId, true))
             setSectionsList(sectionsArray);
 
             console.log(sectionsArray);
