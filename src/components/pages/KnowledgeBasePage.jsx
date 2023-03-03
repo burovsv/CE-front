@@ -76,13 +76,8 @@ const KnowledgeBasePage = () => {
     };
 
     const articleElement = (article) => {
-        let foundArticle = _.find(articles, { id: article.id });
-        let articlesMarks = [];
-        // _.forEach(foundArticle.markId, (mark) => {
-        //     let foundMark = _.find(marks, { id: mark });
-        //     articlesMarks.push(foundMark);
-        // });
-
+        const articlesMarks = article?.data?.marks ?? [];
+  
         const element = (
             <div style={{
                 padding: '10px 10px 10px 60px',
@@ -139,6 +134,7 @@ const KnowledgeBasePage = () => {
             isCollapsed: isCollapsed,
             level: level,
             children: (el?.children) ? el.children : null,
+            data: el
         }
     }
 
@@ -175,7 +171,7 @@ const KnowledgeBasePage = () => {
     // определяем массивы статей, разделов и групп разделов
     useEffect(() => {
         if (!articlesUser || !sections || !sectionGroups) return;
-        console.log('ехн')
+        
         let articlesArray = (!_.isEmpty(articlesList)) ? articlesList : [];
         let sectionsArray = (!_.isEmpty(sectionsList)) ? sectionsList : [];
         let sectionGroupsArray = (!_.isEmpty(sectionGroupsList)) ? sectionGroupsList : [];
@@ -197,11 +193,6 @@ const KnowledgeBasePage = () => {
         console.log(sectionGroups)
         console.log(sections)
         console.log(marks)
-        /*
-                console.log(articlesArray);
-                console.log(sectionsArray);
-                console.log(sectionGroupsArray);
-                */
 
         //   создать массив иерархических групп разделов
         let hierarchicalList = [];
@@ -246,22 +237,11 @@ const KnowledgeBasePage = () => {
                         return null;
                 }
             });
-            console.log('hierart', hierarchicalList)
             return hierarchicalList;
         }
 
-        console.log(createHierarchicalList())
-
         setSectionGroupsElement(createHierarchicalList())
     }, [initHierarchicalList])
-
-    useEffect(() => {
-
-        console.log(initHierarchicalList);
-
-        console.log(sectionGroupsElement)
-
-    }, [sectionGroupsElement])
 
     let element = (
         <div
