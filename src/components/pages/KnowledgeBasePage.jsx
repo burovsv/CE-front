@@ -35,7 +35,6 @@ const KnowledgeBasePage = () => {
             });
         }
 
-        console.log(hierarchicalList)
         setInitHierarchicalList(hierarchicalList);
     }
 
@@ -79,10 +78,10 @@ const KnowledgeBasePage = () => {
     const articleElement = (article) => {
         let foundArticle = _.find(articles, { id: article.id });
         let articlesMarks = [];
-        _.forEach(foundArticle.markId, (mark) => {
-            let foundMark = _.find(marks, { id: mark });
-            articlesMarks.push(foundMark);
-        });
+        // _.forEach(foundArticle.markId, (mark) => {
+        //     let foundMark = _.find(marks, { id: mark });
+        //     articlesMarks.push(foundMark);
+        // });
 
         const element = (
             <div key={article.id} style={{
@@ -145,7 +144,7 @@ const KnowledgeBasePage = () => {
 
     const {
         getArticles: { data: articles, loading: loadingArticles, error: errorArticles, count: articlesCount },
-        getArticlesUser: { data: articlesUser, loading: loadingArticlesUser, error: errorArticlesUser}
+        getArticlesUser: { data: articlesUser, loading: loadingArticlesUser, error: errorArticlesUser }
     } = useSelector((state) => state.article);
 
     const {
@@ -162,6 +161,14 @@ const KnowledgeBasePage = () => {
 
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        // инициализируем данные из бд
+        dispatch(getArticlesUser());
+        dispatch(getMarks());
+        dispatch(getSections());
+        dispatch(getSectionGroups());
+    }, []);
+
     const onClick = (e) => {
         // console.log('click: ', e);
     }
@@ -176,33 +183,25 @@ const KnowledgeBasePage = () => {
         if (_.isEmpty(articlesList)) {
             articlesArray = articlesUser.map((el) => initHierarchicalItem(el, 2, el.sectionId))
             setArticlesList(articlesArray);
-
-            console.log(articlesArray);
         }
         if (_.isEmpty(sectionsList)) {
             sectionsArray = sections.map((el) => initHierarchicalItem(el, 1, el.sectionGroupId, true))
             setSectionsList(sectionsArray);
-
-            console.log(sectionsArray);
-
         }
         if (_.isEmpty(sectionGroupsList)) {
             sectionGroupsArray = sectionGroups.map((el) => initHierarchicalItem(el, 0, null, true))
             setSectionGroupsList(sectionGroupsArray);
-
-            console.log(sectionGroupsArray);
-
         }
 
         console.log(articlesUser)
         console.log(sectionGroups)
         console.log(sections)
         console.log(marks)
-/*
-        console.log(articlesArray);
-        console.log(sectionsArray);
-        console.log(sectionGroupsArray);
-        */
+        /*
+                console.log(articlesArray);
+                console.log(sectionsArray);
+                console.log(sectionGroupsArray);
+                */
 
         //   создать массив иерархических групп разделов
         let hierarchicalList = [];
@@ -227,19 +226,9 @@ const KnowledgeBasePage = () => {
 
         });
 
-        console.log(hierarchicalList)
-
-
         setInitHierarchicalList(hierarchicalList);
     }, [articlesUser, sections, sectionGroups, marks])
 
-    useEffect(() => {
-        // получение данных из бд
-        dispatch(getArticlesUser());
-        dispatch(getMarks());
-        dispatch(getSections());
-        dispatch(getSectionGroups());
-    }, []);
 
     useEffect(() => {
         function createHierarchicalList() {
@@ -257,6 +246,7 @@ const KnowledgeBasePage = () => {
                         return null;
                 }
             });
+            console.log('hierart', hierarchicalList)
             return hierarchicalList;
         }
 
