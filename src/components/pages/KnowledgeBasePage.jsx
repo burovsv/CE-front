@@ -23,7 +23,7 @@ const KnowledgeBasePage = () => {
 
     const onSectionGroupClick = (e, group) => {
         let hierarchicalList = _.cloneDeep(initHierarchicalList);
-        let foundGroup = _.find(hierarchicalList, { id: group.id });
+        let foundGroup = _.find(hierarchicalList, { id: group.id, level: group.level });
         let isCollapsed = !foundGroup?.isCollapsed
         foundGroup.isCollapsed = isCollapsed;
         foundGroup.isHide = false;
