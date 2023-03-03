@@ -40,7 +40,7 @@ const KnowledgeBasePage = () => {
 
     const sectionGroupElement = (sectionGroup) => {
         const element = (
-            <div key={sectionGroup.id} onClick={(e) => onSectionGroupClick(e, sectionGroup)} className="knowledge-base__section-group-container">
+            <div onClick={(e) => onSectionGroupClick(e, sectionGroup)} className="knowledge-base__section-group-container">
                 {sectionGroup?.name}
             </div>
         );
@@ -50,7 +50,7 @@ const KnowledgeBasePage = () => {
     const sectionElement = (section) => {
         let result = (section?.children) ? section.children.length : 0;
         const element = (
-            <div key={section.id} onClick={(e) => onSectionGroupClick(e, section)} style={{
+            <div onClick={(e) => onSectionGroupClick(e, section)} style={{
                 backgroundColor: '#E7E7E7',
                 padding: '10px 40px',
                 display: 'flex',
@@ -84,7 +84,7 @@ const KnowledgeBasePage = () => {
         // });
 
         const element = (
-            <div key={article.id} style={{
+            <div style={{
                 padding: '10px 10px 10px 60px',
             }}>
                 <div style={{
@@ -92,7 +92,7 @@ const KnowledgeBasePage = () => {
                     justifyContent: 'space-between',
                     marginBottom: '10px',
                 }}>
-                    <Link key={`link__${article.id}`} to={`/knowledgeBase/${article?.id}`} style={{
+                    <Link to={`/knowledgeBase/${article?.id}`} style={{
                         fontWeight: 700,
                         color: 'blue',
                     }} onClick={() => onClick(article)}>
@@ -254,6 +254,14 @@ const KnowledgeBasePage = () => {
 
         setSectionGroupsElement(createHierarchicalList())
     }, [initHierarchicalList])
+
+    useEffect(() => {
+
+        console.log(initHierarchicalList);
+
+        console.log(sectionGroupsElement)
+
+    }, [sectionGroupsElement])
 
     let element = (
         <div
