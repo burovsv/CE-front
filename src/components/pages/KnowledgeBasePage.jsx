@@ -90,7 +90,7 @@ const KnowledgeBasePage = () => {
                     <Link to={`/knowledgeBase/${article?.id}`} style={{
                         fontWeight: 700,
                         color: 'blue',
-                    }} onClick={() => onClick(article)}>
+                    }}>
                         {article?.name ?? ''}
                     </Link>
                     <div style={{
@@ -164,14 +164,11 @@ const KnowledgeBasePage = () => {
         dispatch(getSections());
         dispatch(getSectionGroups());
     }, []);
-
-    const onClick = (e) => {
-        // console.log('click: ', e);
-    }
+    
     // определяем массивы статей, разделов и групп разделов
     useEffect(() => {
         if (!articlesUser || !sections || !sectionGroups) return;
-        
+
         let articlesArray = (!_.isEmpty(articlesList)) ? articlesList : [];
         let sectionsArray = (!_.isEmpty(sectionsList)) ? sectionsList : [];
         let sectionGroupsArray = (!_.isEmpty(sectionGroupsList)) ? sectionGroupsList : [];
@@ -189,10 +186,10 @@ const KnowledgeBasePage = () => {
             setSectionGroupsList(sectionGroupsArray);
         }
 
-        console.log(articlesUser)
-        console.log(sectionGroups)
-        console.log(sections)
-        console.log(marks)
+        // console.log(articlesUser)
+        // console.log(sectionGroups)
+        // console.log(sections)
+        // console.log(marks)
 
         //   создать массив иерархических групп разделов
         let hierarchicalList = [];

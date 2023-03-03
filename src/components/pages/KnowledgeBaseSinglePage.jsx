@@ -3,6 +3,13 @@ import * as _ from "lodash";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, useParams } from 'react-router';
+import { addYouTubeIframe } from '../../utils/addYouTubeIframe';
+
+
+import { getArticlesUser } from '../../redux/actions/knowledgeBase/getArticlesUser.action';
+import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
+import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
+import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
 
 
 const KnowledgeBaseSinglePage = () => {
@@ -17,7 +24,7 @@ const KnowledgeBaseSinglePage = () => {
 
 
     const {
-        getArticles: { data: articles, loading: loadingArticles, error: errorArticles, count: articlesCount }
+        getArticlesUser: { data: articles, loading: loadingArticlesUser, error: errorArticlesUser }
     } = useSelector((state) => state.article);
     
     const {
@@ -32,33 +39,35 @@ const KnowledgeBaseSinglePage = () => {
         getSectionGroups:  { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
     } = useSelector((state) => state.sectionGroup);
 
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        // инициализируем данные из бд
+        dispatch(getArticlesUser());
+        dispatch(getMarks());
+        dispatch(getSections());
+        dispatch(getSectionGroups());
+
+        console.log('хэй');
+    }, []);
 
 
     useEffect(() => {
-        console.log(knowledgeBaseId);
-        console.log(articles);
-        let article = _.find(articles, (el) => el.id === knowledgeBaseId);
-        let marksList = [];
-        _.forEach(article.markId, (markId) => {
-            let mark = _.find(marks, (el) => el.id === markId);
-            marksList.push(mark);
-        });
+        if (!articles) return
+        let article = articles.find(el => el.id == knowledgeBaseId);
 
-        let articleSection = _.find(sections, (el) => el.id === article.sectionId);
-        let articleSectionGroup = _.find(sectionGroups, (el) => el.id === articleSection.sectionGroup);
-
-        console.log(article, marksList, articleSection, articleSectionGroup);
-
+        console.log(article)
+        let articleMarks = article?.marks ?? [];
 
         setName(article.name);
         setDate(article.date);
         setDescription(article.content);
-        setSection(articleSection.name);
-        setSectionGroup(articleSectionGroup.name);
-        setArticleMarks(marksList);
+        setSection(article?.section?.name);
+        // setSectionGroup(articleSectionGroup.name);
+        setArticleMarks(articleMarks);
 
 
-    }, [knowledgeBaseId]);
+    }, [articles]);
 
     const element = (
         <div
@@ -84,11 +93,13 @@ const KnowledgeBaseSinglePage = () => {
             </div>
             <div style={{
                 marginTop: '20px',
-                lineHeight: '1.8',
-                fontSize: '1.2rem',
+                lineHeight: '1.6',
+                // fontSize: '1.2rem',
                 textAlign: 'justify',
         
-            }}>{description}</div>
+            }}>
+                <div dangerouslySetInnerHTML={{ __html: addYouTubeIframe(description) }} />
+            </div>
 
 
         </div>
