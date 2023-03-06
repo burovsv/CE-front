@@ -23,7 +23,8 @@ import { resetCreateSection } from '../../redux/slices/section.slice';
 import { getSectionsByGroup } from '../../redux/actions/knowledgeBase/getSectionsByGroup.action';
 import { createSection } from '../../redux/actions/knowledgeBase/createSection.action';
 
-import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
+// import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
+import { getPosts } from '../../redux/actions/post/getPosts.action';
 
 // создание статьи
 import { createArticle } from '../../redux/actions/knowledgeBase/createArticle.action';
@@ -51,6 +52,11 @@ const ModalArticle = () => {
     const [errorCreateMark, setErrorCreateMark] = useState(false)
     const [errorCreateSectionGroup, setErrorCreateSectionGroup] = useState(false)
     const [errorCreateSection, setErrorCreateSection] = useState(false)
+
+    const [optionsPosts, setOptionsPosts] = useState([]);
+    const [optionsMarks, setOptionsMarks] = useState([]);
+    const [optionsSectionGroups, setOptionsSectionGroups] = useState([]);
+    const [optionsSections, setOptionsSections] = useState([]);
 
     const defaultValues = {
         name: '',
@@ -87,8 +93,8 @@ const ModalArticle = () => {
     } = useSelector((state) => state.sectionGroup);
 
     const {
-        getEmployeePositions: { data: employeePositions, loading: loadingEmployeePositions, error: errorEmployeePositions, count: employeePositionsCount }
-    } = useSelector((state) => state.employeePosition);
+        getPosts: { data: employeePositions, loading: loadingEmployeePositions, error: errorEmployeePositions, count: employeePositionsCount }
+    } = useSelector((state) => state.post);
 
     const {
         createArticle: { data: createArticleData, loading: createArticleLoading }
@@ -137,7 +143,7 @@ const ModalArticle = () => {
         dispatch(getMarks());
         dispatch(getSectionGroups());
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
-        dispatch(getEmployeePositions());
+        dispatch(getPosts());
     }, [])
 
     useEffect(() => {
@@ -162,14 +168,6 @@ const ModalArticle = () => {
         setArticleSection(section);
     }
 
-    const onEmployeePositionsChange = (e) => {
-        setValue('employeePosition', e);
-    }
-
-    const onMarkChange = (e) => {
-        setValue('mark', e);
-    }
-
     const onAddMarkBtnClick = () => {
         if (newMark) dispatch(createMark({ name: newMark }));
         else {
@@ -191,6 +189,28 @@ const ModalArticle = () => {
             }, 3000)
         }
     }
+
+    useEffect(()=> {
+        const options = employeePositions?.map((position) => <option value={position.id}>{position.name}</option>) ?? []
+        setOptionsPosts(options);
+    }, [employeePositions])
+
+    useEffect(()=> {
+        const options = marks?.map((mark) => <option value={mark.id} label={mark.name}>{mark.name}</option>) ?? []
+        setOptionsMarks(options);
+    }, [marks])
+
+    useEffect(()=> {
+        const options = sectionGroups?.map((group) => <option value={group.id}>{group.name}</option>) ?? []
+        setOptionsSectionGroups(options);
+    }, [sectionGroups])
+    
+    useEffect(()=> {
+        const options = sections?.map((section) => <option value={section.id}>{section.name}</option>) ?? []
+        setOptionsSections(options);
+    }, [sections])
+
+
 
     const onAddSectionGroupBtnClick = () => {
         if (newSectionGroup) dispatch(createSectionGroup({ name: newSectionGroup }));
@@ -254,7 +274,7 @@ const ModalArticle = () => {
 
     let element = (
         <>
-            <Modal modalStyle={{ maxWidth: '50%' }} title="Добавление статьи" onSave={onSaveBtnClick} onClose={() => { }}>
+            <Modal modalStyle={{ maxWidth: '50%', height: '100%' }} title="Добавление статьи" onSave={onSaveBtnClick} onClose={() => { }}>
                 <div>
                     <input type="text" {...register('name', { required: true, maxLength: 40 })} onChange={onArticleNameChange} value={articleName} placeholder="Название статьи" />
                     <div className="date">
@@ -277,9 +297,7 @@ const ModalArticle = () => {
                             <div className="modal__select">
                                 <select value={articleSectionGroup} onChange={onSectionGroupChange}>
                                     <option value={''}>Выберите группу</option>
-                                    {sectionGroups?.map((group) => {
-                                        return <option value={group.id}>{group.name}</option>
-                                    })}
+                                    {optionsSectionGroups}
                                 </select>
                             </div>
                             <div className="modal__create">
@@ -298,9 +316,7 @@ const ModalArticle = () => {
                             <div className="modal__select">
                                 <select {...register('section')} onChange={onSectionChange}>
                                     <option value={''}>Выберите раздел</option>
-                                    {sections?.map((section) => {
-                                        return <option value={section.id}>{section.name}</option>
-                                    })}
+                                    {optionsSections}
                                 </select>
                             </div>
                             <div className="modal__create">
@@ -317,11 +333,9 @@ const ModalArticle = () => {
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
                             <div className="modal__select">
-                                <Select  {...register('mark')} onChange={(e) => onMarkChange(e)} mode='multiple' placeholder="Выберите метки" >
+                                <Select  {...register('mark')} onChange={(e) => setValue('mark', e)} mode='multiple' placeholder="Выберите метки" >
                                     <option value={''} selected>Выберите метки</option>
-                                    {marks?.map((mark) => {
-                                        return <option value={mark.id} label={mark.name}>{mark.name}</option>
-                                    })}
+                                    {optionsMarks}
                                 </Select>
                             </div>
                             <div className="modal__create">
@@ -337,11 +351,9 @@ const ModalArticle = () => {
 
                     <div className='modal__article__select-group__container'>
                         <div className='modal__article__select-group'>
-                            <div className="modal__select">
-                                <Select  {...register('employeePosition')} mode='multiple' onChange={onEmployeePositionsChange} placeholder="Выберите должности" >
-                                    {employeePositions?.map((position) => {
-                                        return <option value={position.ID}>{position.name}</option>
-                                    })}
+                            <div className="modal__select" style={{width: '100%'}}>
+                                <Select  {...register('employeePosition')} mode='multiple' onChange={(e) => setValue('employeePosition', e)} placeholder="Выберите должности" >
+                                    {optionsPosts}
                                 </Select>
                             </div>
                         </div>

@@ -45,17 +45,6 @@ const AdminKnowledgeBasePage = () => {
   }, [activeModal])
 
   useEffect(() => {
-    // добаить еще раздел и группу
-    // let Articles = articles?.map((article) => {
-    //   let section = sections?.find((section) => section?.id === article?.sectionId);
-    //   let sectionGroup = sectionGroups?.find((sectionGroup) => sectionGroup?.id === section?.sectionGroup);
-    //   return {
-    //     ...article,
-    //     sectionName: section?.name,
-    //     sectionGroupName: sectionGroup?.name,
-    //   }
-    // })
-
     if (articles && sections && sectionGroups) {
       console.log(articles)
       console.log(sections)
