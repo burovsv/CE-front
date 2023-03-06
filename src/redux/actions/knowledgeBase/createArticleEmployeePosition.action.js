@@ -1,13 +1,13 @@
 import { createAsyncThunk, current } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const initStateCreateArticleEmployeePosition = {
-    createArticleEmployeePosition: { data: null, loading: false, error: null },
+export const initStateCreateArticlePost = {
+    createArticlePost: { data: null, loading: false, error: null },
 };
 
-export const createArticleEmployeePosition = createAsyncThunk('/articlemployeeposition/create', async (data, { rejectWithValue, fulfillWithValue }) => {
+export const createArticlePost = createAsyncThunk('/articlepost/create', async (data, { rejectWithValue, fulfillWithValue }) => {
     return await axios
-        .post(`${process.env.REACT_APP_SERVER_API}/articlemployeeposition/create`, data)
+        .post(`${process.env.REACT_APP_SERVER_API}/articlepost/create`, data)
         .then((res) => {
             return fulfillWithValue(res.data);
         })
@@ -16,17 +16,17 @@ export const createArticleEmployeePosition = createAsyncThunk('/articlemployeepo
         });
 });
 
-export const reducerCreateArticleEmployeePosition = {
-    [createArticleEmployeePosition.pending]: (state) => {
-        state.createArticleEmployeePosition.loading = true;
+export const reducerCreateArticlePost = {
+    [createArticlePost.pending]: (state) => {
+        state.createArticlePost.loading = true;
     },
-    [createArticleEmployeePosition.fulfilled]: (state, action) => {
-        state.createArticleEmployeePosition.loading = false;
-        state.createArticleEmployeePosition.data = action.payload;
-        state.createArticleEmployeePosition.error = null;
+    [createArticlePost.fulfilled]: (state, action) => {
+        state.createArticlePost.loading = false;
+        state.createArticlePost.data = action.payload;
+        state.createArticlePost.error = null;
     },
-    [createArticleEmployeePosition.rejected]: (state, action) => {
-        state.createArticleEmployeePosition.loading = false;
-        state.createArticleEmployeePosition.error = action.payload;
+    [createArticlePost.rejected]: (state, action) => {
+        state.createArticlePost.loading = false;
+        state.createArticlePost.error = action.payload;
     }
 };

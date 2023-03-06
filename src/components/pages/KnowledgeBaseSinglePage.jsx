@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, useParams } from 'react-router';
 import { addYouTubeIframe } from '../../utils/addYouTubeIframe';
-
+import { Link } from 'react-router-dom';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 import { getArticlesUser } from '../../redux/actions/knowledgeBase/getArticlesUser.action';
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
@@ -21,7 +22,6 @@ const KnowledgeBaseSinglePage = () => {
     const [articleMarks, setArticleMarks] = useState([]);
 
     const { knowledgeBaseId } = useParams();
-
 
     const {
         getArticlesUser: { data: articles, loading: loadingArticlesUser, error: errorArticlesUser }
@@ -47,23 +47,22 @@ const KnowledgeBaseSinglePage = () => {
         dispatch(getMarks());
         dispatch(getSections());
         dispatch(getSectionGroups());
-
-        console.log('хэй');
     }, []);
 
 
     useEffect(() => {
         if (!articles) return
         let article = articles.find(el => el.id == knowledgeBaseId);
+        let sectionGroupId = article?.section?.sectionGroupId;
 
-        console.log(article)
+        let sectionGroup = sectionGroups.find(group => group.id == sectionGroupId );
         let articleMarks = article?.marks ?? [];
 
         setName(article.name);
         setDate(article.date);
         setDescription(article.content);
         setSection(article?.section?.name);
-        // setSectionGroup(articleSectionGroup.name);
+        setSectionGroup(sectionGroup.name);
         setArticleMarks(articleMarks);
 
 
@@ -79,6 +78,10 @@ const KnowledgeBaseSinglePage = () => {
                 padding: '20px',
             }}
         >
+            <div style={{marginBottom: '20px'}}>
+                <ArrowLeftOutlined />
+                <Link to={`/knowledgeBase`} style={{marginLeft: '5px', color: 'black'}}>Назад</Link>
+            </div>
             <h2>Статья: {name}</h2>
             <div style={{marginLeft: '20px', color: '#909090'}}>
                 <div style={{marginTop: '10px'}}>Группа: {sectionGroup}</div>

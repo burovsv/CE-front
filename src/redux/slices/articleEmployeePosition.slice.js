@@ -1,28 +1,28 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { initStateGetArticleEmployeePositionByArticle, reducerGetArticleEmployeePositionByArticle } from '../actions/knowledgeBase/getArticleEmployeePositionByArticle.action';
-import { initStateCreateArticleEmployeePosition, reducerCreateArticleEmployeePosition } from '../actions/knowledgeBase/createArticleEmployeePosition.action';
+import { initStateGetArticlePostByArticle, reducerGetArticlePostByArticle } from '../actions/knowledgeBase/getArticlePostByArticle.action';
+import { initStateCreateArticlePost, reducerCreateArticlePost } from '../actions/knowledgeBase/createArticlePost.action';
 
 
 export const initialState = {
-    ...initStateGetArticleEmployeePositionByArticle,
-    ...initStateCreateArticleEmployeePosition,
+    ...initStateGetArticlePostByArticle,
+    ...initStateCreateArticlePost,
   };
   
-export const articleEmployeePositionSlice = createSlice({
-    name: 'articleEmployeePosition',
+export const articlePostSlice = createSlice({
+    name: 'articlePost',
     initialState,
     reducers: {
-      resetGetArticleEmployeePositionByArticle(state) {
-        state.getArticles = initStateGetArticleEmployeePositionByArticle.getArticleEmployeePositionByArticle;
+      resetGetArticlePostByArticle(state) {
+        state.getArticles = initStateGetArticlePostByArticle.getArticlePostByArticle;
       },
-      resetCreateArticleEmployeePosition(state) {
-        state.createArticleEmployeePositionByArticle = initStateCreateArticleEmployeePosition.createArticleEmployeePosition;
+      resetCreateArticlePost(state) {
+        state.createArticlePostByArticle = initStateCreateArticlePost.createArticlePost;
       }
     },
     extraReducers: {
-      ...reducerGetArticleEmployeePositionByArticle,
-      ...reducerCreateArticleEmployeePosition,
+      ...reducerGetArticlePostByArticle,
+      ...reducerCreateArticlePost,
     },
   });
-  export const { resetGetArticleEmployeePositionByArticle, resetGetArticles } = articleEmployeePositionSlice.actions;
-  export const articleEmployeePositionReducer = articleEmployeePositionSlice.reducer;
+  export const { resetGetArticlePostByArticle, resetGetArticles } = articlePostSlice.actions;
+  export const articlePostReducer = articlePostSlice.reducer;

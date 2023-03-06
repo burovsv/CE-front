@@ -1,13 +1,13 @@
 import { createAsyncThunk, current } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const initStateGetArticleEmployeePositionByArticle = {
-    getArticleEmployeePositionByArticle: { data: [], loading: false, error: null },
+export const initStateGetArticlePostByArticle = {
+    getArticlePostByArticle: { data: [], loading: false, error: null },
 };
 
-export const getArticleEmployeePositionByArticle = createAsyncThunk(`articleEmployeePosition/list/`, async (id, { rejectWithValue, fulfillWithValue }) => {
+export const getArticlePostByArticle = createAsyncThunk(`articlepost/list/`, async (id, { rejectWithValue, fulfillWithValue }) => {
     return await axios
-        .get(`${process.env.REACT_APP_SERVER_API}/articleEmployeePosition/list/${id}`)
+        .get(`${process.env.REACT_APP_SERVER_API}/articlepost/list/${id}`)
         .then((res) => {
             return fulfillWithValue(res.data);
         })
@@ -16,17 +16,17 @@ export const getArticleEmployeePositionByArticle = createAsyncThunk(`articleEmpl
         });
 });
 
-export const reducerGetArticleEmployeePositionByArticle = {
-    [getArticleEmployeePositionByArticle.pending]: (state) => {
-        state.getArticleEmployeePositionByArticle.loading = true;
+export const reducerGetArticlePostByArticle = {
+    [getArticlePostByArticle.pending]: (state) => {
+        state.getArticlePostByArticle.loading = true;
     },
-    [getArticleEmployeePositionByArticle.fulfilled]: (state, action) => {
-        state.getArticleEmployeePositionByArticle.loading = false;
-        state.getArticleEmployeePositionByArticle.data = action.payload;
-        state.getArticleEmployeePositionByArticle.error = null;
+    [getArticlePostByArticle.fulfilled]: (state, action) => {
+        state.getArticlePostByArticle.loading = false;
+        state.getArticlePostByArticle.data = action.payload;
+        state.getArticlePostByArticle.error = null;
     },
-    [getArticleEmployeePositionByArticle.rejected]: (state, action) => {
-        state.getArticleEmployeePositionByArticle.loading = false;
-        state.getArticleEmployeePositionByArticle.error = action.payload;
+    [getArticlePostByArticle.rejected]: (state, action) => {
+        state.getArticlePostByArticle.loading = false;
+        state.getArticlePostByArticle.error = action.payload;
     }
 };
