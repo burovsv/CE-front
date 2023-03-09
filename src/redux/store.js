@@ -21,6 +21,9 @@ import { employeePositionReducer } from './slices/employeePosition.slice';
 import { articlePostReducer } from './slices/articlePost.slice';
 import { articleMarkReducer } from './slices/articleMark.slice';
 
+// загруза доков на сервер
+import { uploadArticleFileReducer } from './slices/uploadArticleFile.slice';
+
 export const store = configureStore({
   reducer: {
     employeeHistory: employeeHistoryReducer,
@@ -43,5 +46,6 @@ export const store = configureStore({
     employeePosition: employeePositionReducer,
     articleMark: articleMarkReducer,
     articlePost: articlePostReducer,
+    uploadArticleFile: uploadArticleFileReducer,
   },
 });

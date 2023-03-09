@@ -23,6 +23,8 @@ import { resetCreateSection } from '../../redux/slices/section.slice';
 import { getSectionsByGroup } from '../../redux/actions/knowledgeBase/getSectionsByGroup.action';
 import { createSection } from '../../redux/actions/knowledgeBase/createSection.action';
 
+import { uploadArticleFile } from '../../redux/actions/knowledgeBase/uploadArticleFile.action';
+
 // import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
 import { getPosts } from '../../redux/actions/post/getPosts.action';
 
@@ -57,6 +59,8 @@ const ModalArticle = () => {
     const [optionsMarks, setOptionsMarks] = useState([]);
     const [optionsSectionGroups, setOptionsSectionGroups] = useState([]);
     const [optionsSections, setOptionsSections] = useState([]);
+
+    const [textFile, setTextFile] = useState();
 
     const defaultValues = {
         name: '',
@@ -100,6 +104,11 @@ const ModalArticle = () => {
         createArticle: { data: createArticleData, loading: createArticleLoading }
     } = useSelector((state) => state.article)
 
+    
+    const {
+        uploadArticleFile: { data: uploadArticleFileData, loading: uploadArticleFileLoading }
+    } = useSelector((state) => state.uploadArticleFile)
+    
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -251,6 +260,13 @@ const ModalArticle = () => {
         dispatch(setActiveModal(''));
     }
 
+    const onBtnDownloadClick = () => {
+        let file = document.getElementById('documentFiles').files[0];
+
+        console.log(file)
+        dispatch(uploadArticleFile(file))
+    }
+
     function imageHandler() {
         var range = this.quill.getSelection();
         var valuee = prompt('Введите URL изображения для ее добавления');
@@ -356,6 +372,14 @@ const ModalArticle = () => {
                                     {optionsPosts}
                                 </Select>
                             </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>Добавленные файлы</div>
+                        <div>
+                            <input id='documentFiles' type="file" value={textFile}/>
+                            <button onClick={onBtnDownloadClick}>Загрузить</button>
                         </div>
                     </div>
                 </div>
