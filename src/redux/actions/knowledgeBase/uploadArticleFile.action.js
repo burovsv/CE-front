@@ -8,7 +8,7 @@ export const initStateUploadArticleFile = {
 export const uploadArticleFile = createAsyncThunk('/article/file/upload', async (data, { rejectWithValue, fulfillWithValue }) => {
 
     let formData = new FormData();
-    formData.append('file', data, 'file');
+    formData.append('file', data);
     console.log('file--', formData)
 
     return await axios
