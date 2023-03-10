@@ -65,6 +65,10 @@
   width: 100%;
   padding: 15px;
   background-color: #fdec31;
+}.modal__btn {
+  width: 100%;
+  padding: 15px;
+  background-color: #fdec31;
 }
 .modal textarea {
   resize: none;
@@ -228,4 +232,42 @@ input[type='checkbox'] {
 .modal__select .ant-select-selector, .modal__select  .ant-select-selection-search {
   border-radius: 0;
   height: 100% !important;
+}
+
+.modal-article__btn {
+  padding: 15px 20px;
+  background-color: #e5e5e5;
+}
+
+.modal-article__group-container {
+}
+
+.modal-article__group-input-container {
+  display: flex;
+}
+.modal-article__group-input-container input {
+  margin-bottom: 0;
+}
+
+.modal-article__group-header {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.modal__article__collapsed-group {
+  margin-bottom: 20px;
+}
+
+.modal__article {
+  display: flex;
+}
+
+.modal-article__group-container__list {
+  margin-top: 25px;
+}
+
+.modal-article__url {
+  padding: 15px 20px;
+  border: 1px solid #e1e1e1;
+  text-align: center;
 }
