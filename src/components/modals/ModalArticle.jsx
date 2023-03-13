@@ -34,6 +34,7 @@ import { createArticle } from '../../redux/actions/knowledgeBase/createArticle.a
 
 import ReactQuill, { Quill } from 'react-quill';
 // import { create } from 'domain';
+import * as mammoth from 'mammoth/mammoth.browser.js';
 
 const { Panel } = Collapse;
 
@@ -72,6 +73,41 @@ const ModalArticle = () => {
     const [videoFilesList, setVideoFilesList] = useState([]);
 
     const [imageUrl, setImageUrl] = useState('');
+
+    // MAMMOTH
+    const [renderedDoc, setRenderedDoc] = useState();
+        
+    const h1 = new RegExp("<(S*?)[^>]*>.*?</1>|<.*?/>");
+
+    function getFirstChild(string) {
+        let output = h1.exec(string);
+        // console.log("getFirstChild", string);
+        console.log("getFirstChild", output);
+    }
+
+    function parseWordDocxFile(inputElement) {
+        var files = inputElement.files || [];
+        if (!files.length) return;
+        var file = files[0]; // solo el 1er archivo
+    
+        console.time();
+        var reader = new FileReader();
+        reader.onloadend = function (event) {
+          var arrayBuffer = reader.result;
+          // debugger
+    
+          mammoth
+            .convertToHtml({ arrayBuffer: arrayBuffer })
+            .then(function (resultObject) {
+              let rendered = resultObject.value;
+              console.log(rendered);
+              setRenderedDoc(rendered);
+              getFirstChild(rendered);
+            });
+          console.timeEnd();
+        }
+        reader.readAsArrayBuffer(file);
+    }
 
     const defaultValues = {
         name: '',
@@ -177,6 +213,7 @@ const ModalArticle = () => {
 
     const onArticleDescChange = (e) => {
         setArticleDesc(e);
+        setRenderedDoc(e);
         setValue('content', e);
     }
 
@@ -489,8 +526,10 @@ const ModalArticle = () => {
                                     <button className="modal-article__btn" onClick={onBtnUploadImageClick}>Загрузить</button>
                                     <div className="modal-article__url">{(imageUrl) ? imageUrl : 'URL изображения'}</div>
                                 </div>
+                                <input type="file" onChange={(e) => parseWordDocxFile(e.target)} />
                                 <CustomToolbar />
-                                <ReactQuill {...register('content')} value={articleDesc} onChange={(e) => onArticleDescChange(e)} modules={modules} formats={formats} />
+                                <ReactQuill {...register('content')} value={renderedDoc} onChange={(e) => onArticleDescChange(e)} modules={modules} formats={formats} />
+                                {/* {renderedDoc ? (<div dangerouslySetInnerHTML={{ __html: renderedDoc }} />) : ( "")} */}
                             </div>
                         </Panel>
 
