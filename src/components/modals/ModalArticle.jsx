@@ -115,12 +115,12 @@ const ModalArticle = () => {
         createArticle: { data: createArticleData, loading: createArticleLoading }
     } = useSelector((state) => state.article)
 
-    
+
     const {
         uploadArticleFile: { data: uploadArticleFileData, loading: uploadArticleFileLoading },
         uploadArticleImage: { data: uploadArticleImageData, loading: uploadArticleImageLoading },
     } = useSelector((state) => state.uploadArticleFile)
-    
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -211,22 +211,22 @@ const ModalArticle = () => {
         }
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         const options = employeePositions?.map((position) => <option value={position.id}>{position.name}</option>) ?? []
         setOptionsPosts(options);
     }, [employeePositions])
 
-    useEffect(()=> {
+    useEffect(() => {
         const options = marks?.map((mark) => <option value={mark.id} label={mark.name}>{mark.name}</option>) ?? []
         setOptionsMarks(options);
     }, [marks])
 
-    useEffect(()=> {
+    useEffect(() => {
         const options = sectionGroups?.map((group) => <option value={group.id}>{group.name}</option>) ?? []
         setOptionsSectionGroups(options);
     }, [sectionGroups])
-    
-    useEffect(()=> {
+
+    useEffect(() => {
         const options = sections?.map((section) => <option value={section.id}>{section.name}</option>) ?? []
         setOptionsSections(options);
     }, [sections])
@@ -347,10 +347,21 @@ const ModalArticle = () => {
         }),
         [],
     );
+    const modulesVideo = useMemo(
+        () => ({
+            toolbar: {
+                container: '#toolbar',
+                handlers: {
+                    image: imageHandler,
+                },
+            },
+        }),
+        [],
+    );
 
     let element = (
         <>
-            <Modal modalStyle={{ maxWidth: '50%'}} title="Добавление статьи" onSave={onSaveBtnClick} onClose={() => { }}>
+            <Modal modalStyle={{ maxWidth: '50%' }} title="Добавление статьи" onSave={onSaveBtnClick} onClose={() => { }}>
                 <div>
                     <input type="text" {...register('name', { required: true, maxLength: 40 })} onChange={onArticleNameChange} value={articleName} placeholder="Название статьи" />
                     <div className="date">
@@ -369,120 +380,121 @@ const ModalArticle = () => {
 
 
                 <div className='modal__article__collapsed-group'>
-                        <Collapse collapsible="header"  defaultActiveKey={['1']} ghost>
-                            <Panel header="Общая информация" key="1">
-                                <div className='modal__article__select-group__container'>
-                                    <div className='modal__article__select-group'>
-                                        <div className="modal__select">
-                                            <select value={articleSectionGroup} onChange={onSectionGroupChange}>
-                                                <option value={''}>Выберите группу</option>
-                                                {optionsSectionGroups}
-                                            </select>
-                                        </div>
-                                        <div className="modal__create">
-                                            <input type="text" placeholder="Добавить группу" value={newSectionGroup} onChange={(e) => setNewSectionGroup(e.target.value)} autoComplete="off" />
-                                            <button onClick={onAddSectionGroupBtnClick} disabled={successCreateSectionGroup}>
-                                                <img alt='+' src="/img/modal/plus.svg" />
-                                            </button>
-                                        </div>
+                    <Collapse collapsible="header" defaultActiveKey={['1']} ghost>
+                        <Panel header="Общая информация" key="1">
+                            <div className='modal__article__select-group__container'>
+                                <div className='modal__article__select-group'>
+                                    <div className="modal__select">
+                                        <select value={articleSectionGroup} onChange={onSectionGroupChange}>
+                                            <option value={''}>Выберите группу</option>
+                                            {optionsSectionGroups}
+                                        </select>
                                     </div>
-                                    {errorCreateSectionGroup && <div className="text-error" style={{ marginBottom: '10px' }}> Введите название группы, для добавления </div>}
-                                    {successCreateSectionGroup && <div className="text-success" style={{ marginBottom: '10px' }}> Группа добавлена </div>}
-                                </div>
-
-                                <div className='modal__article__select-group__container'>
-                                    <div className='modal__article__select-group'>
-                                        <div className="modal__select">
-                                            <select {...register('section')} onChange={onSectionChange}>
-                                                <option value={''}>Выберите раздел</option>
-                                                {optionsSections}
-                                            </select>
-                                        </div>
-                                        <div className="modal__create">
-                                            <input type="text" placeholder="Добавить раздел" value={newSection} onChange={e => setNewSection(e.target.value)} autoComplete="off" />
-                                            <button key={`btn-articles_section`} onClick={onAddSectionBtnClick} disabled={successCreateSection}>
-                                                <img src="/img/modal/plus.svg" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    {errorCreateSection && <div className="text-error" style={{ marginBottom: '10px' }}> Введите название раздела, для добавления </div>}
-                                    {successCreateSection && <div className="text-success" style={{ marginBottom: '10px' }}> Раздел добавлен </div>}
-                                </div>
-
-                                <div className='modal__article__select-group__container'>
-                                    <div className='modal__article__select-group'>
-                                        <div className="modal__select">
-                                            <Select  {...register('mark')} onChange={(e) => setValue('mark', e)} mode='multiple' placeholder="Выберите метки" >
-                                                <option value={''} selected>Выберите метки</option>
-                                                {optionsMarks}
-                                            </Select>
-                                        </div>
-                                        <div className="modal__create">
-                                            <input type="text" placeholder="Добавить метку" value={newMark} onChange={(e) => setNewMark(e.target.value)} autoComplete="off" />
-                                            <button key={`btn-articles_mark`} onClick={onAddMarkBtnClick} disabled={successCreateMark}>
-                                                <img src="/img/modal/plus.svg" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    {errorCreateMark && <div className="text-error" style={{ marginBottom: '10px' }}> Введите название метки, для ее добавления </div>}
-                                    {successCreateMark && <div className="text-success" style={{ marginBottom: '10px' }}> Метка добавлена </div>}
-                                </div>
-
-                                <div className='modal__article__select-group__container'>
-                                    <div className='modal__article__select-group'>
-                                        <div className="modal__select" style={{width: '100%'}}>
-                                            <Select  {...register('employeePosition')} mode='multiple' onChange={(e) => setValue('employeePosition', e)} placeholder="Выберите должности" >
-                                                {optionsPosts}
-                                            </Select>
-                                        </div>
+                                    <div className="modal__create">
+                                        <input type="text" placeholder="Добавить группу" value={newSectionGroup} onChange={(e) => setNewSectionGroup(e.target.value)} autoComplete="off" />
+                                        <button onClick={onAddSectionGroupBtnClick} disabled={successCreateSectionGroup}>
+                                            <img alt='+' src="/img/modal/plus.svg" />
+                                        </button>
                                     </div>
                                 </div>
-                            </Panel>
+                                {errorCreateSectionGroup && <div className="text-error" style={{ marginBottom: '10px' }}> Введите название группы, для добавления </div>}
+                                {successCreateSectionGroup && <div className="text-success" style={{ marginBottom: '10px' }}> Группа добавлена </div>}
+                            </div>
 
-                            <Panel header="Дополнительные текстовые файлы" key="2">
-                                <div className='modal-article__group-container'>
-                                    <div className='modal-article__group-input-container'>
-                                        <input id='textFiles' type="file" placeholder/>
-                                        <input placeholder='Наименование' value={textFileName} onChange={(e) => setTextFileName(e.target.value)}/>
-                                        <button disabled={ !textFileName } className="modal-article__btn" onClick={onBtnUploadTextFileClick}>Загрузить</button>
+                            <div className='modal__article__select-group__container'>
+                                <div className='modal__article__select-group'>
+                                    <div className="modal__select">
+                                        <select {...register('section')} onChange={onSectionChange}>
+                                            <option value={''}>Выберите раздел</option>
+                                            {optionsSections}
+                                        </select>
                                     </div>
-                                    <ul className='modal-article__group-container__list'>
-                                        {textFilesList.map(el => <li key={el.url}>{el.name}</li>)}
-                                    </ul>
+                                    <div className="modal__create">
+                                        <input type="text" placeholder="Добавить раздел" value={newSection} onChange={e => setNewSection(e.target.value)} autoComplete="off" />
+                                        <button key={`btn-articles_section`} onClick={onAddSectionBtnClick} disabled={successCreateSection}>
+                                            <img src="/img/modal/plus.svg" />
+                                        </button>
+                                    </div>
                                 </div>
-                            </Panel>
+                                {errorCreateSection && <div className="text-error" style={{ marginBottom: '10px' }}> Введите название раздела, для добавления </div>}
+                                {successCreateSection && <div className="text-success" style={{ marginBottom: '10px' }}> Раздел добавлен </div>}
+                            </div>
 
-
-                            <Panel header="Дополнительные видео файлы" key="3">
-                                <div className='modal-article__group-container'>
-                                    <div className='modal-article__group-input-container'>
-                                        <input placeholder='URL видео' value={videoFileUrl} onChange={(e) => setVideoFileUrl(e.target.value)}/>
-                                        <input placeholder='Наименование' value={videoFileName} onChange={(e) => setVideoFileName(e.target.value)}/>
-                                        <button className="modal-article__btn" onClick={onBtnAddedVideoFileClick}>Загрузить</button>
+                            <div className='modal__article__select-group__container'>
+                                <div className='modal__article__select-group'>
+                                    <div className="modal__select">
+                                        <Select  {...register('mark')} onChange={(e) => setValue('mark', e)} mode='multiple' placeholder="Выберите метки" >
+                                            <option value={''} selected>Выберите метки</option>
+                                            {optionsMarks}
+                                        </Select>
                                     </div>
-                                    <CustomToolbar />
-                                    <ReactQuill value={videoFileDesc} onChange={(e) => setVideoFileDesc(e)} modules={modules} formats={formats} defaultValue={''} />
-                                    <ul className='modal-article__group-container__list'>
+                                    <div className="modal__create">
+                                        <input type="text" placeholder="Добавить метку" value={newMark} onChange={(e) => setNewMark(e.target.value)} autoComplete="off" />
+                                        <button key={`btn-articles_mark`} onClick={onAddMarkBtnClick} disabled={successCreateMark}>
+                                            <img src="/img/modal/plus.svg" />
+                                        </button>
+                                    </div>
+                                </div>
+                                {errorCreateMark && <div className="text-error" style={{ marginBottom: '10px' }}> Введите название метки, для ее добавления </div>}
+                                {successCreateMark && <div className="text-success" style={{ marginBottom: '10px' }}> Метка добавлена </div>}
+                            </div>
+
+                            <div className='modal__article__select-group__container'>
+                                <div className='modal__article__select-group'>
+                                    <div className="modal__select" style={{ width: '100%' }}>
+                                        <Select  {...register('employeePosition')} mode='multiple' onChange={(e) => setValue('employeePosition', e)} placeholder="Выберите должности" >
+                                            {optionsPosts}
+                                        </Select>
+                                    </div>
+                                </div>
+                            </div>
+                        </Panel>
+
+                        <Panel header="Дополнительные текстовые файлы" key="2">
+                            <div className='modal-article__group-container'>
+                                <div className='modal-article__group-input-container'>
+                                    <input id='textFiles' type="file" placeholder />
+                                    <input placeholder='Наименование' value={textFileName} onChange={(e) => setTextFileName(e.target.value)} />
+                                    <button disabled={!textFileName} className="modal-article__btn" onClick={onBtnUploadTextFileClick}>Загрузить</button>
+                                </div>
+                                <ul className='modal-article__group-container__list'>
+                                    {textFilesList.map(el => <li key={el.url}>{el.name}</li>)}
+                                </ul>
+                            </div>
+                        </Panel>
+
+                        <Panel header="Дополнительные видео файлы" key="3">
+                            <div className='modal-article__group-container'>
+                                <div className='modal-article__group-input-container'>
+                                    <input placeholder='URL видео' value={videoFileUrl} onChange={(e) => setVideoFileUrl(e.target.value)} />
+                                    <input placeholder='Наименование' value={videoFileName} onChange={(e) => setVideoFileName(e.target.value)} />
+                                    <button className="modal-article__btn" onClick={onBtnAddedVideoFileClick}>Загрузить</button>
+                                </div>
+                                <textarea placeholder="Краткое описание" rows="3" onChange={(e) => setVideoFileDesc(e)}>
+                                    {videoFileDesc}
+                                </textarea>
+                                {(!_.isEmpty(videoFilesList))
+                                    ? <ul className='modal-article__group-container__list'>
                                         {videoFilesList.map(el => <li key={el.url}>{el.name}</li>)}
                                     </ul>
+                                    : null
+                                }
+                            </div>
+                        </Panel>
+
+                        <Panel header="Текст статьи" key="4">
+                            <div className='modal-article__group-container'>
+                                <div className='modal-article__group-input-container'>
+                                    <input id='imageFiles' type="file" placeholder />
+                                    <button className="modal-article__btn" onClick={onBtnUploadImageClick}>Загрузить</button>
+                                    <div className="modal-article__url">{(imageUrl) ? imageUrl : 'URL изображения'}</div>
                                 </div>
-                            </Panel>
+                                <CustomToolbar />
+                                <ReactQuill {...register('content')} value={articleDesc} onChange={(e) => onArticleDescChange(e)} modules={modules} formats={formats} />
+                            </div>
+                        </Panel>
 
-
-
-                            <Panel header="Текст статьи" key="4">
-                                <div className='modal-article__group-container'>
-                                    <div className='modal-article__group-input-container'>
-                                        <input id='imageFiles' type="file" placeholder/>
-                                        <button className="modal-article__btn" onClick={onBtnUploadImageClick}>Загрузить</button>
-                                        <div className="modal-article__url">{(imageUrl) ? imageUrl : 'URL изображения'}</div>
-                                    </div>
-                                    <CustomToolbar />
-                                    <ReactQuill {...register('content')} value={articleDesc} onChange={onArticleDescChange} modules={modules} formats={formats} defaultValue={''} />
-                                </div>
-                            </Panel>
-
-                        </Collapse>
+                    </Collapse>
                 </div>
             </Modal >
         </>
