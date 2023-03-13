@@ -75,15 +75,8 @@ const ModalArticle = () => {
     const [imageUrl, setImageUrl] = useState('');
 
     // MAMMOTH
-    const [renderedDoc, setRenderedDoc] = useState();
         
     const h1 = new RegExp("<(S*?)[^>]*>.*?</1>|<.*?/>");
-
-    function getFirstChild(string) {
-        let output = h1.exec(string);
-        // console.log("getFirstChild", string);
-        console.log("getFirstChild", output);
-    }
 
     function parseWordDocxFile(inputElement) {
         var files = inputElement.files || [];
@@ -100,9 +93,7 @@ const ModalArticle = () => {
             .convertToHtml({ arrayBuffer: arrayBuffer })
             .then(function (resultObject) {
               let rendered = resultObject.value;
-              console.log(rendered);
-              setRenderedDoc(rendered);
-              getFirstChild(rendered);
+              setArticleDesc(rendered);
             });
           console.timeEnd();
         }
@@ -213,8 +204,8 @@ const ModalArticle = () => {
 
     const onArticleDescChange = (e) => {
         setArticleDesc(e);
-        setRenderedDoc(e);
         setValue('content', e);
+        console.log(e)
     }
 
     const onSectionGroupChange = (e) => {
@@ -526,9 +517,12 @@ const ModalArticle = () => {
                                     <button className="modal-article__btn" onClick={onBtnUploadImageClick}>Загрузить</button>
                                     <div className="modal-article__url">{(imageUrl) ? imageUrl : 'URL изображения'}</div>
                                 </div>
-                                <input type="file" onChange={(e) => parseWordDocxFile(e.target)} />
+                                <div>
+                                    <p>Загрузить из документа:</p>
+                                    <input type="file" onChange={(e) => parseWordDocxFile(e.target)} />
+                                </div>
                                 <CustomToolbar />
-                                <ReactQuill {...register('content')} value={renderedDoc} onChange={(e) => onArticleDescChange(e)} modules={modules} formats={formats} />
+                                <ReactQuill {...register('content')} value={articleDesc} onChange={(e) => onArticleDescChange(e)} modules={modules} formats={formats} />
                                 {/* {renderedDoc ? (<div dangerouslySetInnerHTML={{ __html: renderedDoc }} />) : ( "")} */}
                             </div>
                         </Panel>
