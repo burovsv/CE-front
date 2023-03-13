@@ -287,6 +287,8 @@ const ModalArticle = () => {
 
         let newDate = date.split('.').reverse().join('-');
 
+        let blob = new Blob([content], {type: "text/plain"});
+
         const article = {
             name: name,
             content: content,
