@@ -72,12 +72,13 @@ const ModalArticle = () => {
     const [videoFileDesc, setVideoFileDesc] = useState('');
     const [videoFilesList, setVideoFilesList] = useState([]);
 
+// список файлов для записи
+    const [documentFilesList, setDocumentFilesList] = useState([]);
+
     const [imageUrl, setImageUrl] = useState('');
 
     // MAMMOTH
         
-    const h1 = new RegExp("<(S*?)[^>]*>.*?</1>|<.*?/>");
-
     function parseWordDocxFile(inputElement) {
         var files = inputElement.files || [];
         if (!files.length) return;
@@ -320,10 +321,38 @@ const ModalArticle = () => {
         setVideoFileDesc('');
     }
 
+    // определение расширения файла
+    const ext = (name) => name.match(/\.([^.]+)$/)?.[1];
+
     const onBtnUploadTextFileClick = () => {
+
+
+
         let file = document.getElementById('textFiles').files[0];
+        // определяем формат
+        const format = ext(file.name);
+        console.log(file)
+        let el = {}
+        if (format == 'docx') {
+            console.log('docx');
+            el = {
+                name: file.name,
+                content: file,
+                type: 'docx',
+            }
+
+        } else if (format == 'pdf') {
+            console.log('pdf');
+            el = {
+                name: file.name,
+                content: file,
+                type: 'pdf',
+            }
+        } else {
+            console.log('не поддерживаемый формат');
+        }
         if (!file) return;
-        dispatch(uploadArticleFile(file));
+        // dispatch(uploadArticleFile(file));
     }
 
     const onBtnUploadImageClick = () => {
@@ -483,7 +512,7 @@ const ModalArticle = () => {
                         <Panel header="Дополнительные текстовые файлы" key="2">
                             <div className='modal-article__group-container'>
                                 <div className='modal-article__group-input-container'>
-                                    <input id='textFiles' type="file" placeholder />
+                                    <input id='textFiles' type="file" accept='.docx, .pdf' placeholder />
                                     <input placeholder='Наименование' value={textFileName} onChange={(e) => setTextFileName(e.target.value)} />
                                     <button disabled={!textFileName} className="modal-article__btn" onClick={onBtnUploadTextFileClick}>Загрузить</button>
                                 </div>
@@ -521,7 +550,7 @@ const ModalArticle = () => {
                                 </div>
                                 <div>
                                     <p>Загрузить из документа:</p>
-                                    <input type="file" onChange={(e) => parseWordDocxFile(e.target)} />
+                                    <input type="file" accept='.docx' onChange={(e) => parseWordDocxFile(e.target)} />
                                 </div>
                                 <CustomToolbar />
                                 <ReactQuill {...register('content')} value={articleDesc} onChange={(e) => onArticleDescChange(e)} modules={modules} formats={formats} />
