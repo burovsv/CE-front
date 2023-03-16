@@ -44,6 +44,7 @@ const ModalArticle = () => {
     const [articleSection, setArticleSection] = useState('');
     const [articleSectionGroup, setArticleSectionGroup] = useState('');
     const [articleDesc, setArticleDesc] = useState('');
+    const [additionDocDesc, setAdditionDocDesc] = useState('');
 
     const [successCreateMark, setSuccessCreateMark] = useState(false)
     const [successCreateSection, setSuccessCreateSection] = useState(false)
@@ -79,22 +80,20 @@ const ModalArticle = () => {
 
     // MAMMOTH
         
-    function parseWordDocxFile(inputElement) {
-        var files = inputElement.files || [];
-        if (!files.length) return;
-        var file = files[0]; // solo el 1er archivo
+    function parseWordDocxFile(element, setValue) {
+        if (!element) return;
+        let file = element;
     
         console.time();
         var reader = new FileReader();
         reader.onloadend = function (event) {
           var arrayBuffer = reader.result;
           // debugger
-    
           mammoth
             .convertToHtml({ arrayBuffer: arrayBuffer })
             .then(function (resultObject) {
-              let rendered = resultObject.value;
-              setArticleDesc(rendered);
+                let rendered = resultObject.value;
+                setValue(rendered)                
             });
           console.timeEnd();
         }
@@ -206,7 +205,14 @@ const ModalArticle = () => {
     const onArticleDescChange = (e) => {
         setArticleDesc(e);
         setValue('content', e);
-        console.log(e)
+    }
+    const onArticleDescInputChange = (e) => {
+        let files = e.target.files || [];
+        if (!files.length) return;
+
+        let file = files[0]; // solo el 1er archivo
+
+        parseWordDocxFile(file, setArticleDesc)
     }
 
     const onSectionGroupChange = (e) => {
@@ -285,14 +291,13 @@ const ModalArticle = () => {
         const mark = getValues('mark');
         const employeePosition = getValues('employeePosition');
         const content = getValues('content');
+        let blob = new Blob([content], {type: 'text/html'});
 
         let newDate = date.split('.').reverse().join('-');
 
-        let blob = new Blob([content], {type: "text/plain"});
-
         const article = {
             name: name,
-            content: content,
+            content: blob,
             date: newDate,
             sectionId: section,
             employeePositionIds: employeePosition,
@@ -302,6 +307,14 @@ const ModalArticle = () => {
         dispatch(createArticle(article));
         dispatch(setActiveModal(''));
     }
+
+    useEffect(() => {
+        if (createArticleData) {
+            console.log('createArticleData', createArticleData);
+        }
+
+
+    }, [createArticleData])
 
     const onBtnDownloadClick = () => {
 
@@ -324,34 +337,41 @@ const ModalArticle = () => {
     // определение расширения файла
     const ext = (name) => name.match(/\.([^.]+)$/)?.[1];
 
-    const onBtnUploadTextFileClick = () => {
+    const uploadTextFileInputChange = (e) => {
+        let file = e.target.files[0];
+        const format = ext(file.name);
+        if (format !== 'docx') return;
+        parseWordDocxFile(file, setAdditionDocDesc);
+    }
 
-
-
-        let file = document.getElementById('textFiles').files[0];
+    const onBtnUploadTextFileClick = async() => {
+        let file = document.getElementById('textFiles').files[0] || [];
+        if (!file) return;
         // определяем формат
         const format = ext(file.name);
-        console.log(file)
         let el = {}
         if (format == 'docx') {
-            console.log('docx');
+            let content = (additionDocDesc) ? additionDocDesc : file;
             el = {
-                name: file.name,
-                content: file,
+                name: textFileName,
+                content: content,
                 type: 'docx',
             }
-
         } else if (format == 'pdf') {
-            console.log('pdf');
             el = {
-                name: file.name,
+                name: textFileName,
                 content: file,
                 type: 'pdf',
             }
         } else {
-            console.log('не поддерживаемый формат');
+            // console.log('не поддерживаемый формат');
         }
-        if (!file) return;
+        
+        setTextFileName('');
+        setAdditionDocDesc('');
+        document.getElementById('textFiles').value = '';
+
+        if (el) setDocumentFilesList([...documentFilesList, el]);
         // dispatch(uploadArticleFile(file));
     }
 
@@ -378,7 +398,7 @@ const ModalArticle = () => {
         if (!uploadArticleImageData) return;
 
         const url = `${process.env.REACT_APP_SERVER_API}/article/images/${uploadArticleImageData}`
-        console.log(url);
+        // console.log(url);
 
         setImageUrl(url)
 
@@ -512,12 +532,12 @@ const ModalArticle = () => {
                         <Panel header="Дополнительные текстовые файлы" key="2">
                             <div className='modal-article__group-container'>
                                 <div className='modal-article__group-input-container'>
-                                    <input id='textFiles' type="file" accept='.docx, .pdf' placeholder />
-                                    <input placeholder='Наименование' value={textFileName} onChange={(e) => setTextFileName(e.target.value)} />
+                                    <input id='textFiles' type="file" accept='.docx, .pdf' placeholder onChange={uploadTextFileInputChange} />
+                                    <input placeholder='Наименование'  value={textFileName} onChange={(e) => setTextFileName(e.target.value)} />
                                     <button disabled={!textFileName} className="modal-article__btn" onClick={onBtnUploadTextFileClick}>Загрузить</button>
                                 </div>
                                 <ul className='modal-article__group-container__list'>
-                                    {textFilesList.map(el => <li key={el.url}>{el.name}</li>)}
+                                    {documentFilesList.map((el, key) => <li key={key}>{el.name}</li>)}
                                 </ul>
                             </div>
                         </Panel>
@@ -534,7 +554,7 @@ const ModalArticle = () => {
                                 </textarea>
                                 {(!_.isEmpty(videoFilesList))
                                     ? <ul className='modal-article__group-container__list'>
-                                        {videoFilesList.map(el => <li key={el.url}>{el.name}</li>)}
+                                        {videoFilesList.map((el, key) => <li key={key} >{el.name}</li>)}
                                     </ul>
                                     : null
                                 }
@@ -550,7 +570,7 @@ const ModalArticle = () => {
                                 </div>
                                 <div>
                                     <p>Загрузить из документа:</p>
-                                    <input type="file" accept='.docx' onChange={(e) => parseWordDocxFile(e.target)} />
+                                    <input type="file" accept='.docx' onChange={onArticleDescInputChange} />
                                 </div>
                                 <CustomToolbar />
                                 <ReactQuill {...register('content')} value={articleDesc} onChange={(e) => onArticleDescChange(e)} modules={modules} formats={formats} />
