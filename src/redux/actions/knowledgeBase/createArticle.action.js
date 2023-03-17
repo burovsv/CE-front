@@ -7,7 +7,11 @@ export const initStateCreateArticle = {
 
 export const createArticle = createAsyncThunk('/article/create', async (data, { rejectWithValue, fulfillWithValue }) => {
     return await axios
-        .post(`${process.env.REACT_APP_SERVER_API}/article/create`, data)
+        .post(`${process.env.REACT_APP_SERVER_API}/article/create`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
         .then((res) => {
             return fulfillWithValue(res.data);
         })

@@ -290,14 +290,12 @@ const ModalArticle = () => {
         const section = getValues('section');
         const mark = getValues('mark');
         const employeePosition = getValues('employeePosition');
-        const content = getValues('content');
-        let blob = new Blob([content], {type: 'text/html'});
-
         let newDate = date.split('.').reverse().join('-');
+
+        // dispatch(uploadArticleFile(fileText));
 
         const article = {
             name: name,
-            content: blob,
             date: newDate,
             sectionId: section,
             employeePositionIds: employeePosition,
@@ -305,12 +303,33 @@ const ModalArticle = () => {
         }
 
         dispatch(createArticle(article));
-        dispatch(setActiveModal(''));
     }
 
     useEffect(() => {
         if (createArticleData) {
+            console.log(createArticleData);
             console.log('createArticleData', createArticleData);
+            const content = getValues('content');
+            let fileText = new File([content], "text.txt", {type: "text/plain"})
+
+            let doc = {
+                file: fileText,
+                isMain: true, 
+                articleId: createArticleData, 
+                type: 'txt'
+            }
+
+            
+            
+            dispatch(uploadArticleFile(doc));
+
+            // получаем все файлы и их отправляем их на сервер, в запрос передаем id статьи
+            
+            
+            console.log(createArticleData)
+            
+
+            dispatch(setActiveModal(''));
         }
 
 
@@ -563,11 +582,11 @@ const ModalArticle = () => {
 
                         <Panel header="Текст статьи" key="4">
                             <div className='modal-article__group-container'>
-                                <div className='modal-article__group-input-container'>
+                                {/* <div className='modal-article__group-input-container'>
                                     <input id='imageFiles' type="file" placeholder />
                                     <button className="modal-article__btn" onClick={onBtnUploadImageClick}>Загрузить</button>
                                     <div className="modal-article__url">{(imageUrl) ? imageUrl : 'URL изображения'}</div>
-                                </div>
+                                </div> */}
                                 <div>
                                     <p>Загрузить из документа:</p>
                                     <input type="file" accept='.docx' onChange={onArticleDescInputChange} />
