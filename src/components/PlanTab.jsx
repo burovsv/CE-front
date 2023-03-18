@@ -217,7 +217,7 @@ const PlanTab = ({ list }) => {
                     <th>Место</th>
                   </tr>
                   {[...itemEmpoyeComp?.mass_id]
-                    ?.sort((a, b) => a.name.localeCompare(b.name))
+                    ?.sort((a, b) => a.place - b.place)
                     ?.map(
                       (itemEmployMass) =>
                         !itemEmployMass?.name?.includes('undefined') &&

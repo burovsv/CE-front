@@ -14,7 +14,7 @@ export const convertMinsToHrsMins = (minutes) => {
     return h;
   } else return 0;
 };
-const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, isAccessEdit, timeTableRow, selectedColumn, resetSelectedColumn, lastPostRow = false, lastIndex, onLastCountWork, onLastCountWorkLast }) => {
+const WorkCalendarFullRow = ({ dayList, isTimeTable, setIsEdited, item, control, index, isAccessEdit, timeTableRow, selectedColumn, resetSelectedColumn, lastPostRow = false, lastIndex, onLastCountWork, onLastCountWorkLast }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
   } = useSelector((state) => state.employee);
@@ -83,8 +83,8 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
           <td class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" colSpan={2} style={{ position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
             Кол-во в смену
           </td>
-          {onLastCountWork?.map((itemCount) => (
-            <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work">{itemCount}</td>
+          {onLastCountWork?.map((itemCount, countIndex) => (
+            <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', dayList[countIndex]?.getDay() === 6 ? 'cell-day-sb' : dayList[countIndex]?.getDay() === 0 ? 'cell-day-vs' : '')}>{itemCount}</td>
           ))}{' '}
           <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work sticky-right-td" style={{ position: 'sticky', right: '90px', zIndex: 2, background: '#Fff', width: '30px' }}></td>
           <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work" style={{ position: 'sticky', right: '60px', zIndex: 2, background: '#Fff', width: '30px' }}></td>
@@ -94,8 +94,8 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
       )}
       <tr className={clsx(lastPostRow && 'last-post-row')}>
         <td width="150" className="work-calendar-full-cell-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
-          {item?.firstName} <br />
-          {item?.lastName}
+          {item?.lastName} <br />
+          {item?.firstName}
         </td>
         <td width="150" className="work-calendar-full-cell-wrap " style={{ position: 'sticky', left: '100px', zIndex: 2, backgroundColor: '#fff' }}>
           {item?.post}
@@ -103,6 +103,7 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
         {fields?.map((dayItem, indexItem) => {
           return (
             <WorkCalendarFullItem
+              itemIndex={indexItem}
               rowIndex={index}
               lastRowIndex={lastIndex}
               selectedColumn={selectedColumn}
@@ -113,7 +114,7 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
                   setEnd(-1);
                 }
               }}
-              className={(end <= indexItem && indexItem <= start) || (start <= indexItem && indexItem <= end) || indexItem == selectedColumn ? 'cell-selected' : ''}
+              className={((end <= indexItem && indexItem <= start) || (start <= indexItem && indexItem <= end) || indexItem == selectedColumn ? 'cell-selected ' : '') + (dayList[indexItem]?.getDay() === 6 ? 'cell-day-sb' : dayList[indexItem]?.getDay() === 0 ? 'cell-day-vs' : '')}
               onMouseDown={(e) => {
                 if (e.nativeEvent.button === 2 && isAccessEdit) {
                   resetSelectedColumn();
@@ -309,8 +310,8 @@ const WorkCalendarFullRow = ({ isTimeTable, setIsEdited, item, control, index, i
           <td class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" colSpan={2} style={{ position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
             Кол-во в смену
           </td>
-          {onLastCountWorkLast?.map((itemCount) => (
-            <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work">{itemCount}</td>
+          {onLastCountWorkLast?.map((itemCount, countIndex) => (
+            <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', dayList[countIndex]?.getDay() === 6 ? 'cell-day-sb' : dayList[countIndex]?.getDay() === 0 ? 'cell-day-vs' : '')}>{itemCount}</td>
           ))}
           <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work sticky-right-td" style={{ position: 'sticky', right: '90px', zIndex: 2, background: '#Fff', width: '30px' }}></td>
           <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work" style={{ position: 'sticky', right: '60px', zIndex: 2, background: '#Fff', width: '30px' }}></td>

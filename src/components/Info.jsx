@@ -117,7 +117,7 @@ const Info = () => {
               <input type="file" onChange={onImageChange} style={{ display: 'none' }} ref={hiddenFileInput} />
             </a>
           </div>
-          <div class="personal__name">{`${employee?.firstName} ${employee?.lastName}`}</div>
+          <div class="personal__name">{`${employee?.lastName} ${employee?.firstName}`}</div>
           <div class="personal__post">{employee?.post}</div>
           <div class="personal__city" style={{ textAlign: 'center' }}>
             {employee?.subdivision}

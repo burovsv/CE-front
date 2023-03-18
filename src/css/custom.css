@@ -251,3 +251,10 @@
   margin-bottom: 0;
   margin-top: 0;
 }
+.cell-day-sb {
+  border-left: 2px solid #b7b7b7 !important;
+  border-right: 3px solid #b7b7b7 !important;
+}
+.cell-day-vs {
+  border-right: 3px solid #b7b7b7 !important;
+}

@@ -78,7 +78,7 @@ const AdminEmployeePage = () => {
     {
       title: 'Сотрудник',
       onChange: (val) => {
-        return ` ${val?.firstName} ${val?.lastName}`;
+        return `  ${val?.lastName} ${val?.firstName}`;
       },
     },
     {

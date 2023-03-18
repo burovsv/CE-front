@@ -519,7 +519,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       </div>
       <div onMouseMove={touchMouseMove} onMouseUp={touchMouseUp} onMouseLeave={touchMouseLeave} ref={refTableWrap} onMouseDown={touchMouseDown} class={clsx((upsertWorkCalendarLoading || loadingEmployees) && 'work-calendar-full-grid-loading', 'work-calendar-full-wrap')}>
         <table className={clsx('work-calendar-full-grid')}>
-          <tr>
+          <tr style={{ position: 'sticky', top: 0, left: 0, zIndex: 10 }}>
             <td colSpan="2" width="200" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2 }}>
               <div>
                 <SelectMonth
@@ -546,7 +546,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
                   onClick={() => {
                     setSelectedColumn(dayIndex);
                   }}>
-                  <div className={`work-calendar-full-day-of-week ${(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red'}`}>{getDayOfWeek(numberDayOfWeek)}</div>
+                  <div className={`work-calendar-full-day-of-week ${(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red cell-day-vs'} ${numberDayOfWeek === 6 ? 'cell-day-sb' : numberDayOfWeek === 0 ? 'cell-day-vs' : ''}`}>{getDayOfWeek(numberDayOfWeek)}</div>
                 </td>
               );
             })}
@@ -554,7 +554,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
               Итого
             </td>
           </tr>
-          <tr>
+          <tr style={{ position: 'sticky', top: '23.2px', left: 0, zIndex: 10 }}>
             <td width="150" class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', left: '0px', zIndex: 2 }}>
               ФИО
             </td>
@@ -571,7 +571,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
                   onClick={() => {
                     setSelectedColumn(dayIndex);
                   }}>
-                  <div class={(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red'}>{moment(day).format('D').toString()}</div>
+                  <div class={(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red ' + (numberDayOfWeek === 6 ? 'cell-day-sb' : numberDayOfWeek === 0 ? 'cell-day-vs' : '')}>{moment(day).format('D').toString()}</div>
                 </td>
               );
             })}
@@ -591,6 +591,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           {fields?.map((item, index) => {
             return (
               <WorkCalendarFullRow
+                dayList={allDays}
                 onLastCountWork={allDays?.map((itemDayInner, dayIndex) => {
                   return countWorkers(watchCalendar, dayIndex, fields[index - 1]?.post);
                 })}
@@ -612,34 +613,34 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
               />
             );
           })}
-          <tr>
+          <tr class="work-calendar-row-top" style={{ position: 'sticky', bottom: '43.9px', left: 0, zIndex: 10, borderTop: '1px solid #b7b7b7', backgroundColor: '#fff' }}>
             <td colSpan="2" class="work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
               Кол-во сотрудников в смену
             </td>
-            {totalCountWorkers?.map((item) => (
-              <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work">{item}</td>
+            {totalCountWorkers?.map((item, itemIndex) => (
+              <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', allDays[itemIndex]?.getDay() === 6 ? 'cell-day-sb' : allDays[itemIndex]?.getDay() === 0 ? 'cell-day-vs' : '')}>{item}</td>
             ))}
             <td colSpan="4" style={{ textAlign: 'center', padding: 0, textTransform: 'uppercase', position: 'sticky', right: 0, zIndex: 2 }} class="work-calendar-full-cell-small-wrap sticky-right-td">
               {totalCountWorkers.reduce((partialSum, a) => partialSum + a, 0)}
             </td>
           </tr>
-          <tr>
-            <td colSpan="2" class="work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
+          <tr style={{ position: 'sticky', bottom: '21.2px', left: 0, zIndex: 10, backgroundColor: '#fff' }}>
+            <td colSpan="2" class="work-calendar-full-cell-small-wrap work-calendar-row-top" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
               Кол-во сотрудников с открытие
             </td>
-            {totalCountMinStartTimeWorkers?.map((item2) => (
-              <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work"> {item2}</td>
+            {totalCountMinStartTimeWorkers?.map((item2, item2Index) => (
+              <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', allDays[item2Index]?.getDay() === 6 ? 'cell-day-sb' : allDays[item2Index]?.getDay() === 0 ? 'cell-day-vs' : '')}> {item2}</td>
             ))}
             <td colSpan="4" style={{ textAlign: 'center', padding: 0, position: 'sticky', right: 0, zIndex: 2 }} class="work-calendar-full-cell-small-wrap sticky-right-td">
               {totalCountMinStartTimeWorkers.reduce((partialSum, a) => partialSum + a, 0)}
             </td>
           </tr>
-          <tr>
-            <td colSpan="2" class="work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
+          <tr style={{ position: 'sticky', bottom: '-0.1px', left: 0, zIndex: 10, backgroundColor: '#fff' }}>
+            <td colSpan="2" class=" work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
               Кол-во сотрудников с закрытие
             </td>
-            {totalCountMinEndTimeWorkers?.map((item3) => (
-              <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work">{item3}</td>
+            {totalCountMinEndTimeWorkers?.map((item3, item3Index) => (
+              <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', allDays[item3Index]?.getDay() === 6 ? 'cell-day-sb' : allDays[item3Index]?.getDay() === 0 ? 'cell-day-vs' : '')}>{item3}</td>
             ))}
             <td colSpan="4" style={{ textAlign: 'center', padding: 0, position: 'sticky', right: 0, zIndex: 2 }} class="work-calendar-full-cell-small-wrap sticky-right-td">
               {totalCountMinEndTimeWorkers.reduce((partialSum, a) => partialSum + a, 0)}

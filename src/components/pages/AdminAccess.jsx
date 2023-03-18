@@ -171,7 +171,7 @@ const AdminAccessPage = () => {
                 }
 
                 if (((!findInAccess && !findInAddedAccess) || findInRemoveAccess) && item?.id !== 1) {
-                  return <option value={item?.id}>{`${item?.firstName} ${item?.lastName}`}</option>;
+                  return <option value={item?.id}>{`${item?.lastName} ${item?.firstName} `}</option>;
                 }
               })}
           </select>
@@ -233,7 +233,7 @@ const AdminAccessPage = () => {
             return (
               <>
                 <div className={`table__col ${indexItem % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{findAccessSubdivision?.label}</div>
-                <div className={`table__col ${indexItem % 2 !== 0 ? 'table-common__cell-odd' : ''}`}> {`${findInAccess.firstName} ${findInAccess.lastName}`}</div>
+                <div className={`table__col ${indexItem % 2 !== 0 ? 'table-common__cell-odd' : ''}`}> {` ${findInAccess.lastName} ${findInAccess.firstName}`}</div>
                 <div className={`table__col ${indexItem % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{findInAccess.post}</div>
                 <button
                   disabled={updateEmployeeLoading}
