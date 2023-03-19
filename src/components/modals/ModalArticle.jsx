@@ -83,6 +83,9 @@ const ModalArticle = () => {
 
     const [imageUrl, setImageUrl] = useState('');
 
+    // Проба
+    const [innerTXT, setInnerTXT] = useState('');
+
     // MAMMOTH
 
     function parseWordDocxFile(element, setValue) {
@@ -211,6 +214,8 @@ const ModalArticle = () => {
         dispatch(getSectionGroups());
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
         dispatch(getPosts());
+
+
     }, [])
 
     useEffect(() => {
@@ -642,6 +647,8 @@ const ModalArticle = () => {
                                 <CustomToolbar />
                                 <ReactQuill {...register('content')} value={articleDesc} onChange={(e) => onArticleDescChange(e)} modules={modules} formats={formats} />
                                 {/* {renderedDoc ? (<div dangerouslySetInnerHTML={{ __html: renderedDoc }} />) : ( "")} */}
+                                {/* {renderedDoc ? (<div dangerouslySetInnerHTML={{ __html: renderedDoc }} />) : ( "")} */}
+                                <div src={`${process.env.REACT_APP_SERVER_API}/api/article/files/25/`} />
                             </div>
                         </Panel>
 
