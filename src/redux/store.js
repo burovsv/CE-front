@@ -20,6 +20,7 @@ import { sectionGroupReducer } from './slices/sectionGroup.slice';
 import { employeePositionReducer } from './slices/employeePosition.slice';
 import { articlePostReducer } from './slices/articlePost.slice';
 import { articleMarkReducer } from './slices/articleMark.slice';
+import { articleFileReducer } from './slices/articleFile.slice';
 
 // загруза доков на сервер
 import { uploadArticleFileReducer } from './slices/uploadArticleFile.slice';
@@ -47,5 +48,6 @@ export const store = configureStore({
     articleMark: articleMarkReducer,
     articlePost: articlePostReducer,
     uploadArticleFile: uploadArticleFileReducer,
+    articleFile: articleFileReducer,
   },
 });

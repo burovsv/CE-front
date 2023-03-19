@@ -24,5 +24,5 @@ export const articleMarkSlice = createSlice({
       ...reducerCreateArticleMark,
     },
   });
-  export const { resetGetArticleMarkByArticle, resetGetArticles } = articleMarkSlice.actions;
+  export const { resetGetArticleMarkByArticle, resetCreateArticleMark } = articleMarkSlice.actions;
   export const articleMarkReducer = articleMarkSlice.reducer;

@@ -27,6 +27,8 @@ import { resetUploadArticleFile } from '../../redux/slices/uploadArticleFile.sli
 import { uploadArticleFile } from '../../redux/actions/knowledgeBase/uploadArticleFile.action';
 import { uploadArticleImage } from '../../redux/actions/knowledgeBase/uploadArticleImage.action';
 
+import { createArticleFile } from '../../redux/actions/knowledgeBase/createArticleFile.action';
+
 
 // import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
 import { getPosts } from '../../redux/actions/post/getPosts.action';
@@ -151,6 +153,12 @@ const ModalArticle = () => {
         uploadArticleFile: { data: uploadArticleFileData, loading: uploadArticleFileLoading },
         uploadArticleImage: { data: uploadArticleImageData, loading: uploadArticleImageLoading },
     } = useSelector((state) => state.uploadArticleFile)
+
+
+    const {
+        createArticleFile: { data: articleFileData, loading: articleFileLoading },
+    } = useSelector((state) => state.articleFile)
+
 
     const dispatch = useDispatch();
 
@@ -327,7 +335,7 @@ const ModalArticle = () => {
             let doc = {
                 file: fileText,
                 isMain: true,
-                articleId: createArticleData,
+                articleId: createArticleData.id,
                 type: 'txt'
             }
 
@@ -338,15 +346,26 @@ const ModalArticle = () => {
             dispatch(uploadArticleFile(doc));
 
             documentFilesList.forEach(el => {
-                console.log('элемент!!!!!!!!', el)
                 let fileBody = {
                     file: el.content,
                     isMain: false,
-                    articleId: createArticleData,
+                    articleId: createArticleData.id,
                     type: el.type,
                     name: el.name
                 }
                 dispatch(uploadArticleFile(fileBody));
+            })
+
+            videoFilesList.forEach(video => {
+                let videoBody = {
+                    name: video.name,
+                    url: video.url,
+                    description: video?.desc ?? '',
+                    articleId: createArticleData.id,
+                    type: 'video',
+                    isMain: false,
+                }
+                dispatch(createArticleFile(videoBody))
             })
             // получаем все файлы и их отправляем их на сервер, в запрос передаем id статьи
 
@@ -597,7 +616,7 @@ const ModalArticle = () => {
                                     <input placeholder='Наименование' value={videoFileName} onChange={(e) => setVideoFileName(e.target.value)} />
                                     <button className="modal-article__btn" onClick={onBtnAddedVideoFileClick}>Загрузить</button>
                                 </div>
-                                <textarea placeholder="Краткое описание" rows="3" onChange={(e) => setVideoFileDesc(e)}>
+                                <textarea placeholder="Краткое описание" rows="3" onChange={(e) => setVideoFileDesc(e.target.value)}>
                                     {videoFileDesc}
                                 </textarea>
                                 {(!_.isEmpty(videoFilesList))
