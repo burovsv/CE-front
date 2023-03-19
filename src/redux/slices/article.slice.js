@@ -21,7 +21,7 @@ export const articleSlice = createSlice({
         state.getArticlesUser = initStateGetArticlesUser.getArticlesUser;
       },
       resetCreateArticle(state) {
-        state.creareArticle = initStateCreateArticle.creareArticle;
+        state.createArticle = initStateCreateArticle.createArticle;
       }
     },
     extraReducers: {

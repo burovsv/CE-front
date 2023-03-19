@@ -23,13 +23,16 @@ import { resetCreateSection } from '../../redux/slices/section.slice';
 import { getSectionsByGroup } from '../../redux/actions/knowledgeBase/getSectionsByGroup.action';
 import { createSection } from '../../redux/actions/knowledgeBase/createSection.action';
 
+import { resetUploadArticleFile } from '../../redux/slices/uploadArticleFile.slice';
 import { uploadArticleFile } from '../../redux/actions/knowledgeBase/uploadArticleFile.action';
 import { uploadArticleImage } from '../../redux/actions/knowledgeBase/uploadArticleImage.action';
+
 
 // import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
 import { getPosts } from '../../redux/actions/post/getPosts.action';
 
 // создание статьи
+import { resetCreateArticle } from '../../redux/slices/article.slice';
 import { createArticle } from '../../redux/actions/knowledgeBase/createArticle.action';
 
 import ReactQuill, { Quill } from 'react-quill';
@@ -73,29 +76,29 @@ const ModalArticle = () => {
     const [videoFileDesc, setVideoFileDesc] = useState('');
     const [videoFilesList, setVideoFilesList] = useState([]);
 
-// список файлов для записи
+    // список файлов для записи
     const [documentFilesList, setDocumentFilesList] = useState([]);
 
     const [imageUrl, setImageUrl] = useState('');
 
     // MAMMOTH
-        
+
     function parseWordDocxFile(element, setValue) {
         if (!element) return;
         let file = element;
-    
+
         console.time();
         var reader = new FileReader();
         reader.onloadend = function (event) {
-          var arrayBuffer = reader.result;
-          // debugger
-          mammoth
-            .convertToHtml({ arrayBuffer: arrayBuffer })
-            .then(function (resultObject) {
-                let rendered = resultObject.value;
-                setValue(rendered)                
-            });
-          console.timeEnd();
+            var arrayBuffer = reader.result;
+            // debugger
+            mammoth
+                .convertToHtml({ arrayBuffer: arrayBuffer })
+                .then(function (resultObject) {
+                    let rendered = resultObject.value;
+                    setValue(rendered)
+                });
+            console.timeEnd();
         }
         reader.readAsArrayBuffer(file);
     }
@@ -114,7 +117,8 @@ const ModalArticle = () => {
         formState: { errors },
         getValues,
         register,
-        setValue
+        setValue,
+        reset
     } = useForm({ defaultValues });
 
 
@@ -186,6 +190,13 @@ const ModalArticle = () => {
         }
     }, [createSectionData]);
 
+    useEffect(() => {
+        if (uploadArticleFileData) {
+            console.log('jjj');
+            dispatch(resetUploadArticleFile())
+        }
+    }, [uploadArticleFileData])
+
 
     useEffect(() => {
         dispatch(getMarks());
@@ -197,6 +208,7 @@ const ModalArticle = () => {
     useEffect(() => {
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
     }, [articleSectionGroup])
+
 
     const onArticleNameChange = (e) => {
         setArticleName(e.target.value);
@@ -310,30 +322,46 @@ const ModalArticle = () => {
             console.log(createArticleData);
             console.log('createArticleData', createArticleData);
             const content = getValues('content');
-            let fileText = new File([content], "text.txt", {type: "text/plain"})
+            let fileText = new File([content], "text.txt", { type: "text/plain" })
 
             let doc = {
                 file: fileText,
-                isMain: true, 
-                articleId: createArticleData, 
+                isMain: true,
+                articleId: createArticleData,
                 type: 'txt'
             }
 
-            
-            
+
+
+
+
             dispatch(uploadArticleFile(doc));
 
+            documentFilesList.forEach(el => {
+                console.log('элемент!!!!!!!!', el)
+                let fileBody = {
+                    file: el.content,
+                    isMain: false,
+                    articleId: createArticleData,
+                    type: el.type,
+                    name: el.name
+                }
+                dispatch(uploadArticleFile(fileBody));
+            })
             // получаем все файлы и их отправляем их на сервер, в запрос передаем id статьи
-            
-            
-            console.log(createArticleData)
-            
 
+
+            console.log(createArticleData)
+
+            dispatch(resetCreateArticle());
+            reset();
             dispatch(setActiveModal(''));
+
         }
 
 
     }, [createArticleData])
+
 
     const onBtnDownloadClick = () => {
 
@@ -363,7 +391,7 @@ const ModalArticle = () => {
         parseWordDocxFile(file, setAdditionDocDesc);
     }
 
-    const onBtnUploadTextFileClick = async() => {
+    const onBtnUploadTextFileClick = async () => {
         let file = document.getElementById('textFiles').files[0] || [];
         if (!file) return;
         // определяем формат
@@ -371,9 +399,10 @@ const ModalArticle = () => {
         let el = {}
         if (format == 'docx') {
             let content = (additionDocDesc) ? additionDocDesc : file;
+            let fileContent = new File([content], "text.txt", { type: "text/plain" })
             el = {
                 name: textFileName,
-                content: content,
+                content: fileContent,
                 type: 'docx',
             }
         } else if (format == 'pdf') {
@@ -385,7 +414,7 @@ const ModalArticle = () => {
         } else {
             // console.log('не поддерживаемый формат');
         }
-        
+
         setTextFileName('');
         setAdditionDocDesc('');
         document.getElementById('textFiles').value = '';
@@ -552,7 +581,7 @@ const ModalArticle = () => {
                             <div className='modal-article__group-container'>
                                 <div className='modal-article__group-input-container'>
                                     <input id='textFiles' type="file" accept='.docx, .pdf' placeholder onChange={uploadTextFileInputChange} />
-                                    <input placeholder='Наименование'  value={textFileName} onChange={(e) => setTextFileName(e.target.value)} />
+                                    <input placeholder='Наименование' value={textFileName} onChange={(e) => setTextFileName(e.target.value)} />
                                     <button disabled={!textFileName} className="modal-article__btn" onClick={onBtnUploadTextFileClick}>Загрузить</button>
                                 </div>
                                 <ul className='modal-article__group-container__list'>
