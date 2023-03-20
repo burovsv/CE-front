@@ -1884,3 +1884,12 @@ thead th {
     width: 90%;
   }
 }
+
+.knowledge-base-single-page__main-content {
+  width: 100%;
+
+}
+
+.knowledge-base-single-page__main-content img {
+  max-width: 95%;
+}

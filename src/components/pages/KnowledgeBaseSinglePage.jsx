@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, useParams } from 'react-router';
-import { addYouTubeIframe } from '../../utils/addYouTubeIframe';
+// import { addYouTubeIframe } from '../../utils/addYouTubeIframe';
 import { Link } from 'react-router-dom';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
@@ -12,6 +12,7 @@ import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
 import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
 import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
 
+import Axios from "axios";
 
 const KnowledgeBaseSinglePage = () => {
     const [name, setName] = useState('');
@@ -20,6 +21,7 @@ const KnowledgeBaseSinglePage = () => {
     const [section, setSection] = useState('');
     const [sectionGroup, setSectionGroup] = useState('');
     const [articleMarks, setArticleMarks] = useState([]);
+    const [mainContent, setMainContent] = useState('');
 
     const { knowledgeBaseId } = useParams();
 
@@ -52,11 +54,42 @@ const KnowledgeBaseSinglePage = () => {
 
     useEffect(() => {
         if (!articles) return
+
+
+
         let article = articles.find(el => el.id == knowledgeBaseId);
         let sectionGroupId = article?.section?.sectionGroupId;
 
-        let sectionGroup = sectionGroups.find(group => group.id == sectionGroupId );
+        console.log(article);
+
+        let sectionGroup = sectionGroups?.find(group => group.id == sectionGroupId );
         let articleMarks = article?.marks ?? [];
+
+        let articleFiles = article?.articleFiles ?? [];
+
+        let mainContentUrl = _.find(articleFiles, { 'isMain': true })?.url ?? '';
+
+        let url = `${process.env.REACT_APP_SERVER_API}${mainContentUrl}`;
+
+        
+        console.log('main', `${process.env.REACT_APP_SERVER_API}${mainContentUrl}`);
+
+        // let reader = new FileReader();
+        // reader.readAsDataURL(mainContentUrl);
+        // reader.onload = function () {
+        //     console.log(reader);
+        //     setMainContent(reader.result);
+        // };
+
+        // получить файл по url
+
+        Axios(url).then(res => {
+            // setText(res.data)
+            console.log(res.data);
+            setMainContent(res.data);
+        });
+
+
 
         setName(article.name);
         setDate(article.date);
@@ -66,7 +99,13 @@ const KnowledgeBaseSinglePage = () => {
         setArticleMarks(articleMarks);
 
 
+
+
     }, [articles]);
+
+    useEffect(() => {
+        console.log('mainContent', mainContent);
+    }, [mainContent]);
 
     const element = (
         <div
@@ -101,7 +140,11 @@ const KnowledgeBaseSinglePage = () => {
                 textAlign: 'justify',
         
             }}>
-                <div dangerouslySetInnerHTML={{ __html: addYouTubeIframe(description) }} />
+                {/* <div dangerouslySetInnerHTML={{ __html: addYouTubeIframe(description) }} /> */}
+                <div className="knowledge-base-single-page__main-content" style={{width: '100%'}}> 
+
+                    {mainContent ? (<div dangerouslySetInnerHTML={{ __html: mainContent }} />) : ( "")}
+                </div>
             </div>
 
 

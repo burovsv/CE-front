@@ -10,7 +10,7 @@ export const uploadArticleFile = createAsyncThunk('/article/file/upload', async 
     let formData = new FormData();
     formData.append('file', file);
     formData.append('isMain', isMain);
-    formData.append('articleId', articleId.id);
+    formData.append('articleId', articleId);
     formData.append('type', type);
 
     return await axios
