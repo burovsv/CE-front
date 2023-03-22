@@ -44,7 +44,6 @@ import * as mammoth from 'mammoth/mammoth.browser.js';
 const { Panel } = Collapse;
 
 const ModalArticle = () => {
-
     const [articleName, setArticleName] = useState('');
     const [articleSection, setArticleSection] = useState('');
     const [articleSectionGroup, setArticleSectionGroup] = useState('');
@@ -77,17 +76,10 @@ const ModalArticle = () => {
     const [videoFileName, setVideoFileName] = useState('');
     const [videoFileDesc, setVideoFileDesc] = useState('');
     const [videoFilesList, setVideoFilesList] = useState([]);
-
     // список файлов для записи
     const [documentFilesList, setDocumentFilesList] = useState([]);
 
-    const [imageUrl, setImageUrl] = useState('');
-
-    // Проба
-    const [innerTXT, setInnerTXT] = useState('');
-
     // MAMMOTH
-
     function parseWordDocxFile(element, setValue) {
         if (!element) return;
         let file = element;
@@ -154,14 +146,12 @@ const ModalArticle = () => {
 
     const {
         uploadArticleFile: { data: uploadArticleFileData, loading: uploadArticleFileLoading },
-        uploadArticleImage: { data: uploadArticleImageData, loading: uploadArticleImageLoading },
     } = useSelector((state) => state.uploadArticleFile)
 
 
     const {
         createArticleFile: { data: articleFileData, loading: articleFileLoading },
     } = useSelector((state) => state.articleFile)
-
 
     const dispatch = useDispatch();
 
@@ -203,7 +193,6 @@ const ModalArticle = () => {
 
     useEffect(() => {
         if (uploadArticleFileData) {
-            console.log('jjj');
             dispatch(resetUploadArticleFile())
         }
     }, [uploadArticleFileData])
@@ -235,7 +224,7 @@ const ModalArticle = () => {
         let files = e.target.files || [];
         if (!files.length) return;
 
-        let file = files[0]; // solo el 1er archivo
+        let file = files[0];
 
         parseWordDocxFile(file, setArticleDesc)
     }
@@ -317,8 +306,6 @@ const ModalArticle = () => {
         const employeePosition = getValues('employeePosition');
         let newDate = date.split('.').reverse().join('-');
 
-        // dispatch(uploadArticleFile(fileText));
-
         const article = {
             name: name,
             date: newDate,
@@ -332,8 +319,6 @@ const ModalArticle = () => {
 
     useEffect(() => {
         if (createArticleData) {
-            console.log(createArticleData);
-            console.log('createArticleData', createArticleData);
             const content = getValues('content');
             let fileText = new File([content], "text.txt", { type: "text/plain" })
 
@@ -343,10 +328,6 @@ const ModalArticle = () => {
                 articleId: createArticleData.id,
                 type: 'txt'
             }
-
-
-
-
 
             dispatch(uploadArticleFile(doc));
 
@@ -374,22 +355,11 @@ const ModalArticle = () => {
             })
             // получаем все файлы и их отправляем их на сервер, в запрос передаем id статьи
 
-
-            console.log(createArticleData)
-
             dispatch(resetCreateArticle());
             reset();
             dispatch(setActiveModal(''));
-
         }
-
-
     }, [createArticleData])
-
-
-    const onBtnDownloadClick = () => {
-
-    }
 
     const onBtnAddedVideoFileClick = () => {
         const newVideo = {
@@ -436,7 +406,7 @@ const ModalArticle = () => {
                 type: 'pdf',
             }
         } else {
-            // console.log('не поддерживаемый формат');
+            console.log('не поддерживаемый формат');
         }
 
         setTextFileName('');
@@ -444,13 +414,6 @@ const ModalArticle = () => {
         document.getElementById('textFiles').value = '';
 
         if (el) setDocumentFilesList([...documentFilesList, el]);
-        // dispatch(uploadArticleFile(file));
-    }
-
-    const onBtnUploadImageClick = () => {
-        let file = document.getElementById('imageFiles').files[0];
-        if (!file) return;
-        dispatch(uploadArticleImage(file));
     }
 
     useEffect(() => {
@@ -465,18 +428,6 @@ const ModalArticle = () => {
         setTextFileName('');
 
     }, [uploadArticleFileData])
-
-    useEffect(() => {
-        if (!uploadArticleImageData) return;
-
-        const url = `${process.env.REACT_APP_SERVER_API}/article/images/${uploadArticleImageData}`
-        // console.log(url);
-
-        setImageUrl(url)
-
-    }, [uploadArticleImageData])
-
-
 
     function imageHandler() {
         var range = this.quill.getSelection();
@@ -635,18 +586,12 @@ const ModalArticle = () => {
 
                         <Panel header="Текст статьи" key="4">
                             <div className='modal-article__group-container'>
-                                {/* <div className='modal-article__group-input-container'>
-                                    <input id='imageFiles' type="file" placeholder />
-                                    <button className="modal-article__btn" onClick={onBtnUploadImageClick}>Загрузить</button>
-                                    <div className="modal-article__url">{(imageUrl) ? imageUrl : 'URL изображения'}</div>
-                                </div> */}
                                 <div>
                                     <p>Загрузить из документа:</p>
                                     <input type="file" accept='.docx' onChange={onArticleDescInputChange} />
                                 </div>
                                 <CustomToolbar />
                                 <ReactQuill {...register('content')} value={articleDesc} onChange={(e) => onArticleDescChange(e)} modules={modules} formats={formats} />
-                                {/* {renderedDoc ? (<div dangerouslySetInnerHTML={{ __html: renderedDoc }} />) : ( "")} */}
                             </div>
                         </Panel>
 
