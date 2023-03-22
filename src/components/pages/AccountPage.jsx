@@ -286,7 +286,7 @@ const AccountPage = () => {
                           </div>
 
                           <div className="table-common__head">
-                            Итоговый <br /> баланс (с <br /> учетом <br /> начисление)
+                            Итоговый <br /> баланс (с <br /> учетом <br /> начисления)
                           </div>
                           <div className="table-common__head">Аванс</div>
                           {[...dataAccountList]
