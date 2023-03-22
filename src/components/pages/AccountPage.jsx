@@ -278,7 +278,7 @@ const AccountPage = () => {
                           <div className="table-common__head">Должность</div>
                           <div className="table-common__head">Часы</div>
                           <div className="table-common__head">
-                            Текущий <br /> баланс (без <br /> начисление <br /> за текущий <br /> месяц)
+                            Текущий <br /> баланс (без <br /> начисления <br /> за текущий <br /> месяц)
                           </div>
                           <div className="table-common__head">
                             С начала <br />
@@ -375,17 +375,15 @@ const AccountPage = () => {
                                         let updatePrePaymentEmployee = { ...prePaymentEmployee };
                                         updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
                                         setPrePaymentEmployee(updatePrePaymentEmployee);
-                                      } else if (parseInt(row?.balance) > prePaymentSettings.minSum && row?.monthSum < 5000) {
+                                      } else if (parseInt(row?.balance) > prePaymentSettings.minSum && row?.monthSum < prePaymentSettings.percent) {
                                         let val = parseInt(event.target.value);
                                         let resultSum = parseInt(row?.balance) - prePaymentSettings.minSum;
                                         // let maxSum = 0;
-                                        if (resultSum >= 5000) {
-                                          resultSum = 5000;
+                                        if (resultSum >= prePaymentSettings.percent) {
+                                          resultSum = prePaymentSettings.percent;
                                         }
-                                        // maxSum = maxSum - parseInt(row?.monthSum);
-                                        // if(val >= 5000)
-                                        console.log(val <= 5000 && val > 0 && val <= 5000 - parseInt(row?.monthSum) && val <= resultSum);
-                                        if (val <= 5000 && val > 0 && val <= 5000 - parseInt(row?.monthSum) && val <= resultSum) {
+
+                                        if (val <= prePaymentSettings.percent && val > 0 && val <= prePaymentSettings.percent - parseInt(row?.monthSum) && val <= resultSum) {
                                           let updatePrePaymentEmployee = { ...prePaymentEmployee };
                                           updatePrePaymentEmployee[row?.userId] = { sum: val, name: row?.name };
                                           setPrePaymentEmployee(updatePrePaymentEmployee);
@@ -396,7 +394,7 @@ const AccountPage = () => {
                                         }
                                       }
                                     }}
-                                    disabled={parseInt(row?.balance) <= prePaymentSettings.minSum || row?.monthSum >= 5000}
+                                    disabled={parseInt(row?.balance) <= prePaymentSettings.minSum || row?.monthSum >= prePaymentSettings.percent}
                                     type="text"
                                     style={{
                                       height: '35px',
@@ -406,7 +404,7 @@ const AccountPage = () => {
                                       padding: '10px',
                                       boxSizing: 'border-box',
                                       fontFamily: 'inherit',
-                                      ...(parseInt(row?.balance) <= prePaymentSettings.minSum && row?.monthSum >= 5000 && { background: '#F2F2F2' }),
+                                      ...(parseInt(row?.balance) <= prePaymentSettings.minSum && row?.monthSum >= prePaymentSettings.percent && { background: '#F2F2F2' }),
                                     }}
                                   />
                                 </div>
@@ -466,7 +464,7 @@ const AccountPage = () => {
                               Выдать
                             </div>
                             <div>
-                              Доступно с {prePaymentSettings.startDate} по {prePaymentSettings.endDate} не более 50% от баланса
+                              Доступно с {prePaymentSettings.startDate} по {prePaymentSettings.endDate} не более {prePaymentSettings.percent} руб
                             </div>
                           </div>
                         )}
