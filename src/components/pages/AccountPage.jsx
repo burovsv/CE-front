@@ -375,23 +375,28 @@ const AccountPage = () => {
                                         let updatePrePaymentEmployee = { ...prePaymentEmployee };
                                         updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
                                         setPrePaymentEmployee(updatePrePaymentEmployee);
-                                      } else if (parseInt(row?.balance) + parseInt(row?.earned) > prePaymentSettings.minSum) {
+                                      } else if (parseInt(row?.balance) > prePaymentSettings.minSum && row?.monthSum < 5000) {
                                         let val = parseInt(event.target.value);
-                                        let resultSum = parseInt(row?.balance) + parseInt(row?.earned) - prePaymentSettings.minSum;
-                                        const percentSum = parseInt((parseInt(resultSum) / 100) * prePaymentSettings.percent);
-
-                                        if (val <= percentSum && val > 0) {
+                                        let resultSum = parseInt(row?.balance) - prePaymentSettings.minSum;
+                                        // let maxSum = 0;
+                                        if (resultSum >= 5000) {
+                                          resultSum = 5000;
+                                        }
+                                        // maxSum = maxSum - parseInt(row?.monthSum);
+                                        // if(val >= 5000)
+                                        console.log(val <= 5000 && val > 0 && val <= 5000 - parseInt(row?.monthSum) && val <= resultSum);
+                                        if (val <= 5000 && val > 0 && val <= 5000 - parseInt(row?.monthSum) && val <= resultSum) {
                                           let updatePrePaymentEmployee = { ...prePaymentEmployee };
                                           updatePrePaymentEmployee[row?.userId] = { sum: val, name: row?.name };
                                           setPrePaymentEmployee(updatePrePaymentEmployee);
                                         } else {
                                           let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                          updatePrePaymentEmployee[row?.userId] = { sum: percentSum, name: row?.name };
+                                          updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
                                           setPrePaymentEmployee(updatePrePaymentEmployee);
                                         }
                                       }
                                     }}
-                                    disabled={parseInt(row?.balance) + parseInt(row?.earned) <= prePaymentSettings.minSum}
+                                    disabled={parseInt(row?.balance) <= prePaymentSettings.minSum || row?.monthSum >= 5000}
                                     type="text"
                                     style={{
                                       height: '35px',
@@ -401,7 +406,7 @@ const AccountPage = () => {
                                       padding: '10px',
                                       boxSizing: 'border-box',
                                       fontFamily: 'inherit',
-                                      ...(parseInt(row?.balance) + parseInt(row?.earned) <= prePaymentSettings.minSum && { background: '#F2F2F2' }),
+                                      ...(parseInt(row?.balance) <= prePaymentSettings.minSum && row?.monthSum >= 5000 && { background: '#F2F2F2' }),
                                     }}
                                   />
                                 </div>
