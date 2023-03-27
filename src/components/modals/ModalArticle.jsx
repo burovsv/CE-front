@@ -83,7 +83,7 @@ const ModalArticle = () => {
     const [videoFilesList, setVideoFilesList] = useState([]);
     // список файлов для записи
     const [documentFilesList, setDocumentFilesList] = useState([]);
-    const [isLoadedArticle, setIsLoadedArticle] = useState(false);
+    const [loadedArticle, setLoadedArticle] = useState(null);
 
     // MAMMOTH
     function parseWordDocxFile(element, setValue) {
@@ -256,6 +256,11 @@ const ModalArticle = () => {
                     setValue('content', res.data);
                 });
             }
+            setLoadedArticle(oneArticleData);
+
+            return () => {
+                dispatch(resetGetOneArticle);
+            }
         }
 
     }, [oneArticleData])
@@ -373,7 +378,7 @@ const ModalArticle = () => {
             console.log(article);
             // обнуляем oneArticleData
             // добавить id 
-            article.id = oneArticleData?.id
+            article.id = loadedArticle?.id
             console.log(documentFilesList)
             console.log(videoFilesList)
             dispatch(updateArticle(article))
