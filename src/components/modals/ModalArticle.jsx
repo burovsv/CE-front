@@ -34,12 +34,17 @@ import { createArticleFile } from '../../redux/actions/knowledgeBase/createArtic
 import { getPosts } from '../../redux/actions/post/getPosts.action';
 
 // создание статьи
-import { resetCreateArticle } from '../../redux/slices/article.slice';
 import { createArticle } from '../../redux/actions/knowledgeBase/createArticle.action';
+import { getOneArticle } from '../../redux/actions/knowledgeBase/getOneArticle.action';
+import { resetCreateArticle } from '../../redux/slices/article.slice';
+import { resetGetOneArticle } from '../../redux/slices/article.slice';
+import { updateArticle } from '../../redux/actions/knowledgeBase/updateArticle.action';
 
 import ReactQuill, { Quill } from 'react-quill';
 // import { create } from 'domain';
 import * as mammoth from 'mammoth/mammoth.browser.js';
+import moment from 'moment';
+import Axios from 'axios';
 
 const { Panel } = Collapse;
 
@@ -78,6 +83,7 @@ const ModalArticle = () => {
     const [videoFilesList, setVideoFilesList] = useState([]);
     // список файлов для записи
     const [documentFilesList, setDocumentFilesList] = useState([]);
+    const [isLoadedArticle, setIsLoadedArticle] = useState(false);
 
     // MAMMOTH
     function parseWordDocxFile(element, setValue) {
@@ -140,7 +146,9 @@ const ModalArticle = () => {
     } = useSelector((state) => state.post);
 
     const {
-        createArticle: { data: createArticleData, loading: createArticleLoading }
+        createArticle: { data: createArticleData, loading: createArticleLoading },
+        getOneArticle: { data: oneArticleData, loading: oneArticleDataLoading },
+        updateArticle: { data: updateArticleData, loading: updateArticleDataLoading },
     } = useSelector((state) => state.article)
 
 
@@ -152,6 +160,7 @@ const ModalArticle = () => {
     const {
         createArticleFile: { data: articleFileData, loading: articleFileLoading },
     } = useSelector((state) => state.articleFile)
+    
 
     const dispatch = useDispatch();
 
@@ -203,13 +212,53 @@ const ModalArticle = () => {
         dispatch(getSectionGroups());
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
         dispatch(getPosts());
-
-
     }, [])
 
     useEffect(() => {
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
     }, [articleSectionGroup])
+
+    // подгрузка статьи для изменения
+    useEffect(() => {
+        if(oneArticleData) {
+            // данные получим, потом их нужно очистить?
+            console.log(oneArticleData);
+            let marks = oneArticleData?.marks?.map(el => el.id) ?? [];
+            let posts = oneArticleData?.posts?.map(el => el.id) ?? [];
+
+            const articleFiles = oneArticleData?.articleFiles??[];
+
+            let files = _.filter(articleFiles, e => e.type !== 'video' && e.isMain == false).map(el => {
+                return {name: el.name, content: el.url, type: el.type, id: el.id}
+            });
+            let videoFiles = _.filter(articleFiles, e => e.type == 'video' && e.isMain == false).map(el => {
+                return {name: el.name, url: el.url, desc: el.description, id: el.id}
+            });
+            console.log(files);
+            let mainContentUrl = _.find(articleFiles, { 'isMain': true })?.url ?? '';
+            let url = `${process.env.REACT_APP_SERVER_API}${mainContentUrl}`;
+        
+            setValue('name', oneArticleData.name)
+            setArticleName(oneArticleData.name)
+            setValue('date', moment(oneArticleData.date).format("DD.MM.YYYY"));
+            setArticleSectionGroup(oneArticleData.section.sectionGroupId);
+            setArticleSection(oneArticleData.section.id)
+            setValue('section', oneArticleData.section.id);
+            setValue('mark', marks);
+            setValue('employeePosition', posts);
+            setDocumentFilesList(files);
+            setVideoFilesList(videoFiles);
+
+            if (url) {
+                Axios(url).then(res => {
+                    // setText(res.data)
+                    setArticleDesc(res.data);
+                    setValue('content', res.data);
+                });
+            }
+        }
+
+    }, [oneArticleData])
 
 
     const onArticleNameChange = (e) => {
@@ -234,7 +283,9 @@ const ModalArticle = () => {
     }
 
     const onSectionChange = (e) => {
-        let section = sections.find((item) => item.id === e.target.value)
+        let section = sections.find((item) => item.id == e.target.value)
+        console.log(sections);
+        console.log(section);
         setArticleSection(section);
     }
 
@@ -293,9 +344,9 @@ const ModalArticle = () => {
         }
     }
 
-    const onDateChange = (e) => {
-        setValue('date', e.target.value);
-    }
+    // const onDateChange = (e) => {
+    //     setValue('date', e.target.value);
+    // }
 
     const onSaveBtnClick = () => {
         // получить все элементы
@@ -306,6 +357,8 @@ const ModalArticle = () => {
         const employeePosition = getValues('employeePosition');
         let newDate = date.split('.').reverse().join('-');
 
+        console.log(section);
+
         const article = {
             name: name,
             date: newDate,
@@ -314,7 +367,30 @@ const ModalArticle = () => {
             markIds: mark,
         }
 
-        dispatch(createArticle(article));
+        if (oneArticleData) {
+            // изменение статьи, id - oneArticleData.id
+            console.log('статью изменяем')
+            console.log(article);
+            // обнуляем oneArticleData
+            // добавить id 
+            article.id = oneArticleData?.id
+            console.log(documentFilesList)
+            console.log(videoFilesList)
+            dispatch(updateArticle(article))
+            dispatch(setActiveModal(''));
+            return () => {
+                dispatch(resetGetOneArticle())
+                reset();
+            }
+        } else {
+            // dispatch(createArticle(article));
+            console.log('статью создаем');
+
+            console.log(article);
+            console.log(documentFilesList)
+            console.log(videoFilesList)
+            
+        }
     }
 
     useEffect(() => {
@@ -341,6 +417,7 @@ const ModalArticle = () => {
                 }
                 dispatch(uploadArticleFile(fileBody));
             })
+
 
             videoFilesList.forEach(video => {
                 let videoBody = {
@@ -471,15 +548,13 @@ const ModalArticle = () => {
                             <div className="date__title">от:</div>
                             <Controller
                                 control={control}
-                                name={'datePublish'}
+                                name={'date'}
                                 rules={{ required: true, }}
-
-                                render={({ field: { onChange, name, value } }) => <NumberFormat {...register('date')} format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onDateChange} autoComplete="off" />}
+                                render={({ field: { onChange, name, value } }) => <NumberFormat format="##.##.####" mask="_" name={name} value={value} placeholder={'01.01.2022'} onChange={onChange} autoComplete="off" />}
                             />
                         </div>
                     </div>
                 </div>
-
 
                 <div className='modal__article__collapsed-group'>
                     <Collapse collapsible="header" defaultActiveKey={['1']} ghost>
@@ -506,8 +581,8 @@ const ModalArticle = () => {
                             <div className='modal__article__select-group__container'>
                                 <div className='modal__article__select-group'>
                                     <div className="modal__select">
-                                        <select {...register('section')} onChange={onSectionChange}>
-                                            <option value={''}>Выберите раздел</option>
+                                        <select value={articleSection} onChange={onSectionChange}>
+                                            <option value={''} >Выберите раздел</option>
                                             {optionsSections}
                                         </select>
                                     </div>
@@ -525,7 +600,7 @@ const ModalArticle = () => {
                             <div className='modal__article__select-group__container'>
                                 <div className='modal__article__select-group'>
                                     <div className="modal__select">
-                                        <Select  {...register('mark')} onChange={(e) => setValue('mark', e)} mode='multiple' placeholder="Выберите метки" >
+                                        <Select  {...register('mark')} value={getValues('mark')} onChange={(e) => setValue('mark', e)} mode='multiple' placeholder="Выберите метки" >
                                             <option value={''} selected>Выберите метки</option>
                                             {optionsMarks}
                                         </Select>
@@ -544,7 +619,7 @@ const ModalArticle = () => {
                             <div className='modal__article__select-group__container'>
                                 <div className='modal__article__select-group'>
                                     <div className="modal__select" style={{ width: '100%' }}>
-                                        <Select  {...register('employeePosition')} mode='multiple' onChange={(e) => setValue('employeePosition', e)} placeholder="Выберите должности" >
+                                        <Select  {...register('employeePosition')}  value={getValues('employeePosition')} mode='multiple' onChange={(e) => setValue('employeePosition', e)} placeholder="Выберите должности" >
                                             {optionsPosts}
                                         </Select>
                                     </div>

@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Table from '../Table';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { getArticles } from '../../redux/actions/knowledgeBase/getArticles.action';
+import { getOneArticle } from '../../redux/actions/knowledgeBase/getOneArticle.action';
+
 import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
 import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
 import { setActiveModal } from '../../redux/slices/app.slice';
+
 import ModalArticle from '../modals/ModalArticle';
 import ModalTesting from '../modals/ModalTesting';
+
 
 
 import moment from 'moment';
@@ -26,7 +31,8 @@ const AdminKnowledgeBasePage = () => {
   const {
     getArticles: { data: articles, loading: loadingArticles, success: successArticle, error, count: articlesCount },
     // updateArticle: { data: updateArticleData, loading: updateArticleLoading },
-    // deleteArticle: { data: deleteArticleData, loading: deleteArticleLoading },
+    getOneArticle: { data: oneArticleData, loading: oneArticleDataLoading },
+        // deleteArticle: { data: deleteArticleData, loading: deleteArticleLoading },
   } = useSelector((state) => state.article)
   const {
     getSections: { data: sections, loading: loadingSection, success: successSection, error: errorSection, count: sectionCount }
@@ -35,6 +41,7 @@ const AdminKnowledgeBasePage = () => {
   const {
     getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, success: successSectionGroup, error: errorSectionGroup, count: sectionGroupCount },
   } = useSelector((state) => state.sectionGroup);
+  
 
   // Инициализируем 
   useEffect(() => {
@@ -45,7 +52,7 @@ const AdminKnowledgeBasePage = () => {
   }, [activeModal])
 
   useEffect(() => {
-    if (articles && sections && sectionGroups) {
+    if (articles && sections && sectionGroups && !activeModal ) {
       console.log(articles)
       console.log(sections)
       console.log(sectionGroups)
@@ -104,7 +111,7 @@ const AdminKnowledgeBasePage = () => {
         // onSearch={(term) => setParamsData({ page: 1, search: term })}
         onEdit={(val) => {
           dispatch(setActiveModal('modal-knowledgeBase'));
-          //   dispatch(getAdminTestingSingle({ id: val?.id }));
+          dispatch(getOneArticle({ id: val?.id }));
         }}
         // onDelete={(val) => dispatch(deleteTesting({ testingId: val?.id }))}
         onDelete={(val) => console.log('удалаяем статью', val)}
