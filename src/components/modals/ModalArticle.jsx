@@ -160,7 +160,7 @@ const ModalArticle = () => {
     const {
         createArticleFile: { data: articleFileData, loading: articleFileLoading },
     } = useSelector((state) => state.articleFile)
-    
+
 
     const dispatch = useDispatch();
 
@@ -220,24 +220,24 @@ const ModalArticle = () => {
 
     // подгрузка статьи для изменения
     useEffect(() => {
-        if(oneArticleData) {
+        if (oneArticleData) {
             // данные получим, потом их нужно очистить?
             console.log(oneArticleData);
             let marks = oneArticleData?.marks?.map(el => el.id) ?? [];
             let posts = oneArticleData?.posts?.map(el => el.id) ?? [];
 
-            const articleFiles = oneArticleData?.articleFiles??[];
+            const articleFiles = oneArticleData?.articleFiles ?? [];
 
             let files = _.filter(articleFiles, e => e.type !== 'video' && e.isMain == false).map(el => {
-                return {name: el.name, content: el.url, type: el.type, id: el.id}
+                return { name: el.name, content: el.url, type: el.type, id: el.id }
             });
             let videoFiles = _.filter(articleFiles, e => e.type == 'video' && e.isMain == false).map(el => {
-                return {name: el.name, url: el.url, desc: el.description, id: el.id}
+                return { name: el.name, url: el.url, desc: el.description, id: el.id }
             });
             console.log(files);
             let mainContentUrl = _.find(articleFiles, { 'isMain': true })?.url ?? '';
             let url = `${process.env.REACT_APP_SERVER_API}${mainContentUrl}`;
-        
+
             setValue('name', oneArticleData.name)
             setArticleName(oneArticleData.name)
             setValue('date', moment(oneArticleData.date).format("DD.MM.YYYY"));
@@ -248,6 +248,8 @@ const ModalArticle = () => {
             setValue('employeePosition', posts);
             setDocumentFilesList(files);
             setVideoFilesList(videoFiles);
+
+            console.log(getValues('mark'));
 
             if (url) {
                 Axios(url).then(res => {
@@ -291,7 +293,8 @@ const ModalArticle = () => {
         let section = sections.find((item) => item.id == e.target.value)
         console.log(sections);
         console.log(section);
-        setArticleSection(section);
+        console.log(e.target.value);
+        setArticleSection(e.target.value);
     }
 
     const onAddMarkBtnClick = () => {
@@ -357,7 +360,8 @@ const ModalArticle = () => {
         // получить все элементы
         const name = getValues('name');
         const date = getValues('date');
-        const section = getValues('section');
+        // const section = getValues('section');
+        const section = articleSection;
         const mark = getValues('mark');
         const employeePosition = getValues('employeePosition');
         let newDate = date.split('.').reverse().join('-');
@@ -388,13 +392,13 @@ const ModalArticle = () => {
                 reset();
             }
         } else {
-            // dispatch(createArticle(article));
+            dispatch(createArticle(article));
             console.log('статью создаем');
 
             console.log(article);
             console.log(documentFilesList)
             console.log(videoFilesList)
-            
+
         }
     }
 
@@ -605,7 +609,7 @@ const ModalArticle = () => {
                             <div className='modal__article__select-group__container'>
                                 <div className='modal__article__select-group'>
                                     <div className="modal__select">
-                                        <Select  {...register('mark')} value={getValues('mark')} onChange={(e) => setValue('mark', e)} mode='multiple' placeholder="Выберите метки" >
+                                        <Select  {...register('mark')} defaultValue={getValues('mark')} onChange={(e) => setValue('mark', e)} mode='multiple' placeholder="Выберите метки" >
                                             <option value={''} selected>Выберите метки</option>
                                             {optionsMarks}
                                         </Select>
@@ -624,7 +628,7 @@ const ModalArticle = () => {
                             <div className='modal__article__select-group__container'>
                                 <div className='modal__article__select-group'>
                                     <div className="modal__select" style={{ width: '100%' }}>
-                                        <Select  {...register('employeePosition')}  value={getValues('employeePosition')} mode='multiple' onChange={(e) => setValue('employeePosition', e)} placeholder="Выберите должности" >
+                                        <Select  {...register('employeePosition')} defaultValue={getValues('employeePosition')} mode='multiple' onChange={(e) => { setValue('employeePosition', e); console.log(e) }} placeholder="Выберите должности" >
                                             {optionsPosts}
                                         </Select>
                                     </div>
