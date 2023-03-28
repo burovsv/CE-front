@@ -74,6 +74,8 @@ const ModalArticle = () => {
     const [optionsSectionGroups, setOptionsSectionGroups] = useState([]);
     const [optionsSections, setOptionsSections] = useState([]);
 
+    const [articleEmployeePosition, setArticleEmployeePosition] = useState([]);
+
     const [textFilesList, setTextFilesList] = useState([]);
     const [textFileName, setTextFileName] = useState('');
 
@@ -223,7 +225,7 @@ const ModalArticle = () => {
         if (oneArticleData) {
             // данные получим, потом их нужно очистить?
             console.log(oneArticleData);
-            let marks = oneArticleData?.marks?.map(el => el.id) ?? [];
+            let articleMarks = oneArticleData?.marks?.map(el => el.id) ?? [];
             let posts = oneArticleData?.posts?.map(el => el.id) ?? [];
 
             const articleFiles = oneArticleData?.articleFiles ?? [];
@@ -244,10 +246,13 @@ const ModalArticle = () => {
             setArticleSectionGroup(oneArticleData.section.sectionGroupId);
             setArticleSection(oneArticleData.section.id)
             setValue('section', oneArticleData.section.id);
-            setValue('mark', marks);
+            setValue('mark', articleMarks);
             setValue('employeePosition', posts);
             setDocumentFilesList(files);
             setVideoFilesList(videoFiles);
+            setArticleEmployeePosition(posts)
+
+            console.log(posts);
 
             console.log(getValues('mark'));
 
@@ -320,7 +325,12 @@ const ModalArticle = () => {
     }
 
     useEffect(() => {
-        const options = employeePositions?.map((position) => <option value={position.id}>{position.name}</option>) ?? []
+        // const options = employeePositions?.map((position) => <option value={position.id}>{position.name}</option>) ?? []
+        const options = employeePositions?.map((position) => { 
+            return {
+                value: position.id,
+                label: position.name
+            }}) ?? []
         setOptionsPosts(options);
     }, [employeePositions])
 
@@ -628,8 +638,7 @@ const ModalArticle = () => {
                             <div className='modal__article__select-group__container'>
                                 <div className='modal__article__select-group'>
                                     <div className="modal__select" style={{ width: '100%' }}>
-                                        <Select  {...register('employeePosition')} defaultValue={getValues('employeePosition')} mode='multiple' onChange={(e) => { setValue('employeePosition', e); console.log(e) }} placeholder="Выберите должности" >
-                                            {optionsPosts}
+                                        <Select options={optionsPosts}  {...register('employeePosition')} value={articleEmployeePosition} mode='multiple' onChange={(e) => setArticleEmployeePosition(e)} placeholder="Выберите должности" >
                                         </Select>
                                     </div>
                                 </div>
