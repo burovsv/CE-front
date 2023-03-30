@@ -37,6 +37,7 @@ const AdminAccessPage = () => {
   const {
     getSubdivisions: { data: subdivisions, loading: subdivisionsLoading },
   } = useSelector((state) => state.subdivision);
+
   useEffect(() => {
     if (((selectedType === 'workTable' || selectedType === 'balance') && paramsData.subdivision == 0) || selectedType == 'content') {
       dispatch(getEmployees(paramsData));

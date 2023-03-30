@@ -1,10 +1,14 @@
+import axios from 'axios';
+import fileDownload from 'js-file-download';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
+import { createCompetitionReport } from '../redux/actions/employee/createCompetitionReport.action';
 import { getCompetitionProducts } from '../redux/actions/employee/getCompetitionProducts.action';
 import { getCompetitions } from '../redux/actions/employee/getCompetitions.action';
 import { getEmployeeCompetitions } from '../redux/actions/employee/getEmployeeCompetitions.action';
+import { resetCreateCompetitionReport } from '../redux/slices/employee.slice';
 import CalendarFilter from './CalendarFilter';
 const PlanTab = ({ list }) => {
   const {
@@ -12,6 +16,7 @@ const PlanTab = ({ list }) => {
     getCompetitions: { data: dataCompetitions, loading: loadingCompetitions },
     getEmployeeCompetitions: { data: dataEmployeeCompetitions, loading: loadingEmployeeCompetitions },
     getCompetitionProducts: { data: dataCompetitionProducts, loading: loadingCompetitionProducts },
+    createCompetitionReport: { data: downloadReport, loading: loadingReport },
   } = useSelector((state) => state.employee);
 
   const {
@@ -55,6 +60,18 @@ const PlanTab = ({ list }) => {
   }, [activeDate, activeEmployee, activeSubdiv, activeCompetition]);
   const [showDateFilter, setShowDateFilter] = useState(false);
 
+  useEffect(() => {
+    if (downloadReport?.file) {
+      axios
+        .get(downloadReport?.file, {
+          responseType: 'blob',
+        })
+        .then((res) => {
+          fileDownload(res.data, downloadReport?.fileName);
+          dispatch(resetCreateCompetitionReport());
+        });
+    }
+  }, [downloadReport]);
   return (
     <>
       <div style={{ display: 'flex', alignItems: 'center', marginTop: '-20px', flexWrap: 'wrap', marginTop: '0px' }}>
@@ -71,19 +88,18 @@ const PlanTab = ({ list }) => {
             </div>
           ))}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}>
-        {selectedSubdiv && isManager && (
-          <button
-            onClick={() => {
-              setSelectedSubdiv(false);
-              setActiveEmployee(null);
-            }}
-            style={{ height: '48px', marginLeft: '10px', marginBottom: '10px', color: '#377BFF', fontWeight: '700' }}>
-            Назад к общей информации
-          </button>
-        )}
-
-        <div class="modal__select">
+      {selectedSubdiv && isManager && (
+        <button
+          onClick={() => {
+            setSelectedSubdiv(false);
+            setActiveEmployee(null);
+          }}
+          style={{ height: '48px', marginLeft: '10px', marginBottom: '10px', color: '#377BFF', fontWeight: '700' }}>
+          Назад к общей информации
+        </button>
+      )}
+      <div style={{ display: 'flex', alignItems: 'start' }}>
+        <div class="modal__select" style={{ marginRight: '20px' }}>
           <select
             value={activeSubdiv}
             style={{ width: '236px' }}
@@ -135,7 +151,16 @@ const PlanTab = ({ list }) => {
               />
             )}
           </div>{' '}
-          <button class="report__btn">Сформировать </button>
+          {dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID && (
+            <button
+              disabled={loadingReport}
+              class="report__btn"
+              onClick={() => {
+                dispatch(createCompetitionReport({ date: activeDate, subdiv: activeSubdiv }));
+              }}>
+              {!loadingReport ? 'Отчет' : 'Загрузка...'}
+            </button>
+          )}
         </div>
       </div>
       {!selectedSubdiv &&

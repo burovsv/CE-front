@@ -29,6 +29,7 @@ import { getSubdivisionWorkTimeTemplates } from '../../redux/actions/subdivision
 import { resetGetSubdivisionWorkTimeTemplates } from '../../redux/slices/subdivision.slice';
 import { getCashBoxList } from '../../redux/actions/employee/getCashBoxList.action';
 import { getPrePaymentSettings } from '../../redux/actions/employee/getPrePaymentSettings.action';
+import { getSubdivisions } from '../../redux/actions/subdivision/getSubdivisions.action';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -54,6 +55,9 @@ const AccountPage = () => {
     getCashBoxList: { data: getCashBoxListData },
     getPrePaymentSettings: { data: prePaymentSettings },
   } = useSelector((state) => state.employee);
+  const {
+    getSubdivisions: { data: subdivisions, loading: subdivisionsLoading },
+  } = useSelector((state) => state.subdivision);
   const [childActiveTab, setChildActiveTab] = useState('balance-list-tab');
   const [isManager, setIsManager] = useState(false);
   const [selectedAccessSubdivision, setSelectedAccessSubdivision] = useState(null);
@@ -118,20 +122,28 @@ const AccountPage = () => {
     getEmployeeUser: { data: employee },
   } = useSelector((state) => state.employee);
   useEffect(() => {
-    if (dataUser && listAccessSubdivision?.length == 0) {
-      setIsManager(dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID);
+    if (dataUser && listAccessSubdivision?.length == 0 && subdivisions) {
+      setIsManager(dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID);
       const selfSubdivision = { value: dataUser?.postSubdivision?.subdivisionId, label: dataUser?.subdivision, id: dataUser?.subdivisionIdService };
       let listSubdivisionData = [selfSubdivision];
+      if (dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID) {
+        subdivisions?.map((sudivItem) => {
+          if (sudivItem?.id != selfSubdivision?.value && sudivItem?.id != 1) {
+            listSubdivisionData.push({ label: sudivItem?.name, value: sudivItem?.id, id: sudivItem?.idService });
+          }
+        });
+      } else {
+        dataUser?.accessBalance?.map((itemAccess) => {
+          if (itemAccess?.subdivisionId != selfSubdivision?.value) {
+            listSubdivisionData.push({ label: itemAccess?.name, value: itemAccess?.subdivisionId, id: itemAccess?.idService });
+          }
+        });
+      }
 
-      dataUser?.accessBalance?.map((itemAccess) => {
-        if (itemAccess?.subdivisionId != selfSubdivision?.value) {
-          listSubdivisionData.push({ label: itemAccess?.name, value: itemAccess?.subdivisionId, id: itemAccess?.idService });
-        }
-      });
       setListAccessSubdivision(listSubdivisionData);
       setSelectedAccessSubdivision(selfSubdivision);
     }
-  }, [dataUser]);
+  }, [dataUser, subdivisions]);
 
   const onSubmit = (data) => {
     dispatch(getAccount({ idService: isManager ? selectedEmployeeAccount : employee?.idService, date: moment(data?.date).format('YYYY-MM-DD') }));
@@ -173,6 +185,7 @@ const AccountPage = () => {
   };
   useEffect(() => {
     dispatch(getEmployeeHistory());
+    dispatch(getSubdivisions());
     dispatch(getPrePaymentSettings());
   }, []);
   const [activeCashBox, setActiveCashBox] = useState(null);

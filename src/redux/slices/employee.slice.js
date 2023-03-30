@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { initStateAuthEmployee, reducerAuthEmployee } from '../actions/employee/auth.action';
+import { initStateCreateCompetitionReport, reducerCreateCompetitionReport } from '../actions/employee/createCompetitionReport.action';
 import { initStateDeleteEmployee, reducerDeleteEmployee } from '../actions/employee/deleteEmployee.action';
 import { initStateDownloadEmployees, reducerDownloadEmployees } from '../actions/employee/downloadEmployees.action';
 import { initStateFeedbackEmployee, reducerFeedbackEmployee } from '../actions/employee/feedback.action';
@@ -45,6 +46,7 @@ export const initialState = {
   ...initStateGetPrePayment,
   ...initStateGetCashBoxList,
   ...initStateGetPrePaymentSettings,
+  ...initStateCreateCompetitionReport,
 };
 
 export const employeeSlice = createSlice({
@@ -81,6 +83,9 @@ export const employeeSlice = createSlice({
     resetDownloadEmployees(state) {
       state.downloadEmployees = initStateDownloadEmployees.downloadEmployees;
     },
+    resetCreateCompetitionReport(state) {
+      state.createCompetitionReport = initStateCreateCompetitionReport.createCompetitionReport;
+    },
   },
   extraReducers: {
     ...reducerFeedbackEmployee,
@@ -105,7 +110,8 @@ export const employeeSlice = createSlice({
     ...reducerGetPrePayment,
     ...reducerGetCashBoxList,
     ...reducerGetPrePaymentSettings,
+    ...reducerCreateCompetitionReport,
   },
 });
-export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount, resetUpdateEmployeeAccess, resetPrePaymentCreate, resetGetPrePayment, resetGetCashBoxList } = employeeSlice.actions;
+export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount, resetUpdateEmployeeAccess, resetPrePaymentCreate, resetGetPrePayment, resetGetCashBoxList, resetCreateCompetitionReport } = employeeSlice.actions;
 export const employeeReducer = employeeSlice.reducer;
