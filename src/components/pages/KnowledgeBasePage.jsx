@@ -8,6 +8,14 @@ import { getArticlesUser } from '../../redux/actions/knowledgeBase/getArticlesUs
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
 import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
 import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
+
+import { resetGetArticlesUser } from '../../redux/slices/article.slice';
+import { resetGetMarks } from '../../redux/slices/mark.slice';
+import { resetGetSectionGroups } from '../../redux/slices/sectionGroup.slice';
+import { resetGetSections } from '../../redux/slices/section.slice';
+
+
+
 import { Link } from 'react-router-dom';
 
 
@@ -77,7 +85,7 @@ const KnowledgeBasePage = () => {
 
     const articleElement = (article) => {
         const articlesMarks = article?.data?.marks ?? [];
-  
+
         const element = (
             <div style={{
                 padding: '10px 10px 10px 60px',
@@ -163,8 +171,14 @@ const KnowledgeBasePage = () => {
         dispatch(getMarks());
         dispatch(getSections());
         dispatch(getSectionGroups());
+        return () => {
+            dispatch(resetGetArticlesUser());
+            dispatch(resetGetMarks());
+            dispatch(resetGetSections());
+            dispatch(resetGetSectionGroups());
+        }
     }, []);
-    
+
     // определяем массивы статей, разделов и групп разделов
     useEffect(() => {
         if (!articlesUser || !sections || !sectionGroups) return;
@@ -185,11 +199,6 @@ const KnowledgeBasePage = () => {
             sectionGroupsArray = sectionGroups.map((el) => initHierarchicalItem(el, 0, null, true))
             setSectionGroupsList(sectionGroupsArray);
         }
-
-        // console.log(articlesUser)
-        // console.log(sectionGroups)
-        // console.log(sections)
-        // console.log(marks)
 
         //   создать массив иерархических групп разделов
         let hierarchicalList = [];

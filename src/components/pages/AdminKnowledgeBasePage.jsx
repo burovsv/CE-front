@@ -9,6 +9,10 @@ import { getSections } from '../../redux/actions/knowledgeBase/getSections.actio
 import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
 import { setActiveModal } from '../../redux/slices/app.slice';
 
+import { resetGetSections } from '../../redux/slices/section.slice';
+import { resetGetSectionGroups } from '../../redux/slices/sectionGroup.slice';
+import { resetGetArticles } from '../../redux/slices/article.slice';
+
 import ModalArticle from '../modals/ModalArticle';
 import ModalTesting from '../modals/ModalTesting';
 
@@ -32,7 +36,7 @@ const AdminKnowledgeBasePage = () => {
     getArticles: { data: articles, loading: loadingArticles, success: successArticle, error, count: articlesCount },
     // updateArticle: { data: updateArticleData, loading: updateArticleLoading },
     getOneArticle: { data: oneArticleData, loading: oneArticleDataLoading },
-        // deleteArticle: { data: deleteArticleData, loading: deleteArticleLoading },
+    // deleteArticle: { data: deleteArticleData, loading: deleteArticleLoading },
   } = useSelector((state) => state.article)
   const {
     getSections: { data: sections, loading: loadingSection, success: successSection, error: errorSection, count: sectionCount }
@@ -41,7 +45,7 @@ const AdminKnowledgeBasePage = () => {
   const {
     getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, success: successSectionGroup, error: errorSectionGroup, count: sectionGroupCount },
   } = useSelector((state) => state.sectionGroup);
-  
+
 
   // Инициализируем 
   useEffect(() => {
@@ -49,10 +53,15 @@ const AdminKnowledgeBasePage = () => {
     dispatch(getSectionGroups());
     dispatch(getSections());
 
+    return () => {
+      dispatch(resetGetArticles());
+      dispatch(resetGetSectionGroups());
+      dispatch(resetGetSections());
+    }
   }, [activeModal])
 
   useEffect(() => {
-    if (articles && sections && sectionGroups && !activeModal ) {
+    if (articles && sections && sectionGroups && !activeModal) {
       console.log(articles)
       console.log(sections)
       console.log(sectionGroups)
