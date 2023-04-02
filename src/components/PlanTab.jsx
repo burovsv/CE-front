@@ -157,7 +157,7 @@ const PlanTab = ({ list }) => {
               disabled={loadingReport}
               class="report__btn"
               onClick={() => {
-                dispatch(createCompetitionReport({ date: activeDate, subdiv: activeSubdiv }));
+                dispatch(createCompetitionReport({ date: activeDate, subdiv: activeSubdiv, compititionId: activeCompetition }));
               }}>
               {!loadingReport ? 'Отчет' : 'Загрузка...'}
             </button>
@@ -180,7 +180,7 @@ const PlanTab = ({ list }) => {
                       {itemCompt?.use_personal_plan && <th width="100px">Факт</th>}
                       {itemCompt?.use_plan && <th width="100px">План</th>}
 
-                      {itemCompt?.use_personal_plan && <th width="100px">Процент выполнение</th>}
+                      {itemCompt?.use_plan && <th width="100px">Процент выполнение</th>}
 
                       {itemCompt?.type_result != undefined && <th width="100px">{itemCompt?.type_result ? 'Количество' : 'Сумма'}</th>}
 
@@ -201,7 +201,7 @@ const PlanTab = ({ list }) => {
                             {itemCompt?.use_personal_plan && <td>{currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
                             {itemCompt?.use_plan && <td>{currencyFormat(massItem?.plan_city) ? currencyFormat(Math.ceil(massItem?.plan_city)) : '-'}</td>}
 
-                            {itemCompt?.use_personal_plan && <td>{Math.ceil(massItem?.trade_city_percent) + '%'}</td>}
+                            {itemCompt?.use_plan && <td>{Math.ceil(massItem?.trade_city_percent) + '%'}</td>}
 
                             {itemCompt?.type_result != undefined && <td>{itemCompt?.type_result ? Math.ceil(massItem?.trade_city_quantity) : currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
 
