@@ -27,6 +27,7 @@ import { resetUploadArticleFile } from '../../redux/slices/uploadArticleFile.sli
 import { uploadArticleFile } from '../../redux/actions/knowledgeBase/uploadArticleFile.action';
 
 import { createArticleFile } from '../../redux/actions/knowledgeBase/createArticleFile.action';
+import { deleteArticleFile } from '../../redux/actions/knowledgeBase/deleteArticleFile.action';
 
 
 // import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
@@ -87,6 +88,7 @@ const ModalArticle = () => {
     const [documentFilesList, setDocumentFilesList] = useState([]);
     const [documentFilesListElement, setDocumentFilesListElement] = useState([]);
     const [loadedArticle, setLoadedArticle] = useState(null);
+    const [loadedArticleMainText, setLoadedArticleMainText] = useState(null);
 
     const [errorList, setErrorList] = useState([]);
 
@@ -166,6 +168,7 @@ const ModalArticle = () => {
 
     const {
         createArticleFile: { data: articleFileData, loading: articleFileLoading },
+        deleteArticleFile: { data: deleteArticleFileData, loading: deleteArticleFileLoading },
     } = useSelector((state) => state.articleFile)
 
 
@@ -177,10 +180,10 @@ const ModalArticle = () => {
         dispatch(getSectionGroups());
         if (articleSectionGroup) dispatch(getSectionsByGroup(articleSectionGroup));
         dispatch(getPosts());
-        console.log('первый рендер');
 
         let todayDate = new Date();
         setValue('date', moment(todayDate).format("DD.MM.YYYY"));
+        setErrorList([]);
 
         return () => {
             dispatch(resetGetMarks());
@@ -194,7 +197,6 @@ const ModalArticle = () => {
     useEffect(() => {
         if (oneArticleData) {
             // данные получим, потом их нужно очистить?
-            console.log(oneArticleData);
             let articleMarks = oneArticleData?.marks?.map(el => el.id) ?? [];
             let posts = oneArticleData?.posts?.map(el => el.id) ?? [];
 
@@ -206,7 +208,6 @@ const ModalArticle = () => {
             let videoFiles = _.filter(articleFiles, e => e.type == 'video' && e.isMain == false).map(el => {
                 return { name: el.name, url: el.url, desc: el.description, id: el.id }
             });
-            console.log(files);
             let mainContentUrl = _.find(articleFiles, { 'isMain': true })?.url ?? '';
             let url = `${process.env.REACT_APP_SERVER_API}${mainContentUrl}`;
 
@@ -221,14 +222,12 @@ const ModalArticle = () => {
             setArticleEmployeePosition(posts)
             setArticleMarks(articleMarks)
 
-            console.log(posts);
-
-
             if (url) {
                 Axios(url).then(res => {
                     // setText(res.data)
                     setArticleDesc(res.data);
                     setValue('content', res.data);
+                    setLoadedArticleMainText(res.data)
                 });
             }
             setLoadedArticle(oneArticleData);
@@ -305,9 +304,6 @@ const ModalArticle = () => {
 
     const onSectionChange = (e) => {
         let section = sections.find((item) => item.id == e.target.value)
-        console.log(sections);
-        console.log(section);
-        console.log(e.target.value);
         setArticleSection(e.target.value);
     }
 
@@ -398,40 +394,90 @@ const ModalArticle = () => {
                 <li>Не заполнено поле {name}</li>
             )
         }
-
         let errorArticleList = [];
         if (!name) errorArticleList.push(createErrorEl('наименование'));
         if (!newDate) errorArticleList.push(createErrorEl('дата'));
-        if (_.isEmpty(articleSection)) errorArticleList.push(createErrorEl('раздел'));
-        if (_.isEmpty(articleSectionGroup)) errorArticleList.push(createErrorEl('группа'));
+        if (!articleSection) errorArticleList.push(createErrorEl('раздел'));
+        if (!articleSectionGroup) errorArticleList.push(createErrorEl('группа'));
         if (_.isEmpty(employeePosition)) errorArticleList.push(createErrorEl('должность'));
         if (_.isEmpty(getValues('content'))) errorArticleList.push(createErrorEl('основная статья'));
 
         setErrorList(errorArticleList);
 
         if (oneArticleData && _.isEmpty(errorArticleList)) {
-            // изменение статьи, id - oneArticleData.id
-            console.log('статью изменяем')
-            console.log(article);
-            // обнуляем oneArticleData
-            // добавить id 
             article.id = loadedArticle?.id
-            console.log(documentFilesList)
-            console.log(videoFilesList)
+
+            let initArticleFiles = _.cloneDeep(oneArticleData?.articleFiles ?? []);
+
+            let updateDocumentFileListWidthId = []
+
+            documentFilesList?.forEach(el => {
+                if (!oneArticleData?.id) return;
+                if (!el?.id && oneArticleData?.id) {
+                    let fileBody = {
+                        file: el.content,
+                        isMain: false,
+                        articleId: oneArticleData.id,
+                        type: el.type,
+                        name: el.name
+                    }
+                    dispatch(uploadArticleFile(fileBody));
+                } else {
+                    updateDocumentFileListWidthId.push(el.id)
+                }
+            })
+
+            videoFilesList?.forEach(video => {
+                if (!oneArticleData?.id) return;
+                if (!video?.id && oneArticleData?.id) {
+                    let videoBody = {
+                        name: video.name,
+                        url: video.url,
+                        description: video?.desc ?? '',
+                        articleId: oneArticleData.id,
+                        type: 'video',
+                        isMain: false,
+                    }
+                    dispatch(createArticleFile(videoBody))
+                } else {
+                    updateDocumentFileListWidthId.push(video.id)
+                }
+            })
+
+            let isMainTextId = null;
+
+            initArticleFiles?.forEach(el => {
+                if (!updateDocumentFileListWidthId.includes(el.id) && !el.isMain) {
+                    dispatch(deleteArticleFile({ id: el.id }))
+                } else if (el.isMain) {
+                    isMainTextId = el.id
+                }
+            })
+            const content = getValues('content');
+
+            if (content !== loadedArticleMainText) {
+                if (isMainTextId) dispatch(deleteArticleFile({ id: isMainTextId }))
+                let fileText = new File([content], "text.txt", { type: "text/plain" })
+                let doc = {
+                    file: fileText,
+                    isMain: true,
+                    articleId: oneArticleData.id,
+                    type: 'txt'
+                }
+
+                dispatch(uploadArticleFile(doc));
+            }
+
             dispatch(updateArticle(article))
             dispatch(setActiveModal(''));
+
+
             return () => {
                 dispatch(resetGetOneArticle())
                 reset();
             }
-        } else if (_.isEmpty(errorArticleList)) {
+        } else if (!oneArticleData && _.isEmpty(errorArticleList)) {
             dispatch(createArticle(article));
-            console.log('статью создаем');
-
-            console.log(article);
-            console.log(documentFilesList)
-            console.log(videoFilesList)
-
         }
     }
 
@@ -532,7 +578,9 @@ const ModalArticle = () => {
         setAdditionDocDesc('');
         document.getElementById('textFiles').value = '';
 
-        if (el) setDocumentFilesList([...documentFilesList, el]);
+        if (el) {
+            setDocumentFilesList([...documentFilesList, el])
+        };
     }
 
     useEffect(() => {
@@ -630,6 +678,8 @@ const ModalArticle = () => {
         setVideoFilesList([]);
         setArticleEmployeePosition([])
         setArticleMarks([])
+
+        dispatch(resetGetOneArticle());
     }
 
 

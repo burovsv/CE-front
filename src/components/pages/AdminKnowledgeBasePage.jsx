@@ -62,9 +62,6 @@ const AdminKnowledgeBasePage = () => {
 
   useEffect(() => {
     if (articles && sections && sectionGroups && !activeModal) {
-      console.log(articles)
-      console.log(sections)
-      console.log(sectionGroups)
       let Articles = articles?.map((article) => {
         const sectionArticle = sections.find((section) => section.id === article?.sectionId);
         const sectionGroupArticle = sectionGroups?.find((sectionGroup) => sectionGroup?.id === sectionArticle.sectionGroupId);
@@ -122,8 +119,8 @@ const AdminKnowledgeBasePage = () => {
           dispatch(setActiveModal('modal-knowledgeBase'));
           dispatch(getOneArticle({ id: val?.id }));
         }}
-        // onDelete={(val) => dispatch(deleteTesting({ testingId: val?.id }))}
-        onDelete={(val) => console.log('удалаяем статью', val)}
+      // onDelete={(val) => dispatch(deleteTesting({ testingId: val?.id }))}
+      // onDelete={(val) => console.log('удалаяем статью', val)}
       />
       {activeModal === 'modal-knowledgeBase' && <ModalArticle />}
       {/* {(createTestingLoading || deleteTestingLoading || updateTestingLoading) && <Loading overlay />} */}
