@@ -10,6 +10,7 @@ import { getCompetitions } from '../redux/actions/employee/getCompetitions.actio
 import { getEmployeeCompetitions } from '../redux/actions/employee/getEmployeeCompetitions.action';
 import { resetCreateCompetitionReport } from '../redux/slices/employee.slice';
 import CalendarFilter from './CalendarFilter';
+import { currencyFormat } from '../utils/currencyFormat';
 const PlanTab = ({ list }) => {
   const {
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
@@ -23,7 +24,7 @@ const PlanTab = ({ list }) => {
     getEmployeeHistory: { data: employeeHistory },
     activeCalendarSubdivision,
   } = useSelector((state) => state.employeeHistory);
-  const isManager = dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID;
+  const isManager = dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID;
 
   const [activeTab, setActiveTab] = useState('one-tab');
   const [activeCompetition, setActiveCompetition] = useState(null);
@@ -197,12 +198,12 @@ const PlanTab = ({ list }) => {
                             }}>
                             <td>{massItem?.name_city || '-'}</td>
 
-                            {itemCompt?.use_personal_plan && <td>{Math.ceil(massItem?.trade_city_sum)}</td>}
-                            {itemCompt?.use_plan && <td>{massItem?.plan_city ? Math.ceil(massItem?.plan_city) : '-'}</td>}
+                            {itemCompt?.use_personal_plan && <td>{currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
+                            {itemCompt?.use_plan && <td>{currencyFormat(massItem?.plan_city) ? currencyFormat(Math.ceil(massItem?.plan_city)) : '-'}</td>}
 
                             {itemCompt?.use_personal_plan && <td>{Math.ceil(massItem?.trade_city_percent) + '%'}</td>}
 
-                            {itemCompt?.type_result != undefined && <td>{itemCompt?.type_result ? Math.ceil(massItem?.trade_city_quantity) : Math.ceil(massItem?.trade_city_sum)}</td>}
+                            {itemCompt?.type_result != undefined && <td>{itemCompt?.type_result ? Math.ceil(massItem?.trade_city_quantity) : currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
 
                             <td>{massItem?.place_city}</td>
                           </tr>
@@ -261,9 +262,9 @@ const PlanTab = ({ list }) => {
                               }}
                               class={`table-plan-row ${dataUser?.idService == itemEmployMass.id ? 'table-plan-row-current' : ''}`}>
                               <td>{itemEmployMass?.name}</td>
-                              <td>{Math.ceil(itemEmployMass?.trade_sum) || '-'}</td>
-                              {!!isUserPlan && <td>{Math.ceil(itemEmployMass?.user_plan) ? parseInt(itemEmployMass?.user_plan) : '-'}</td>}
-                              {!!isTradeUserPlan && <td>{Math.ceil(itemEmployMass?.trade_user_plan) || '-'}</td>}
+                              <td>{currencyFormat(Math.ceil(itemEmployMass?.trade_sum)) || '-'}</td>
+                              {!!isUserPlan && <td>{currencyFormat(Math.ceil(itemEmployMass?.user_plan)) ? currencyFormat(parseInt(itemEmployMass?.user_plan)) : '-'}</td>}
+                              {!!isTradeUserPlan && <td>{currencyFormat(Math.ceil(itemEmployMass?.trade_user_plan)) || '-'}</td>}
 
                               <td>{Math.ceil(itemEmployMass?.trade_quantity)}</td>
                               <td>{itemEmployMass?.place}</td>

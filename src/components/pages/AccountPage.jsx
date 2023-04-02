@@ -30,6 +30,7 @@ import { resetGetSubdivisionWorkTimeTemplates } from '../../redux/slices/subdivi
 import { getCashBoxList } from '../../redux/actions/employee/getCashBoxList.action';
 import { getPrePaymentSettings } from '../../redux/actions/employee/getPrePaymentSettings.action';
 import { getSubdivisions } from '../../redux/actions/subdivision/getSubdivisions.action';
+import { currencyFormat } from '../../utils/currencyFormat';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -127,11 +128,15 @@ const AccountPage = () => {
       const selfSubdivision = { value: dataUser?.postSubdivision?.subdivisionId, label: dataUser?.subdivision, id: dataUser?.subdivisionIdService };
       let listSubdivisionData = [selfSubdivision];
       if (dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID) {
-        subdivisions?.map((sudivItem) => {
-          if (sudivItem?.id != selfSubdivision?.value && sudivItem?.id != 1) {
-            listSubdivisionData.push({ label: sudivItem?.name, value: sudivItem?.id, id: sudivItem?.idService });
-          }
-        });
+        [...subdivisions]
+          .sort(function (a, b) {
+            return a?.name.localeCompare(b?.name);
+          })
+          ?.map((sudivItem) => {
+            if (sudivItem?.id != selfSubdivision?.value && sudivItem?.id != 1) {
+              listSubdivisionData.push({ label: sudivItem?.name, value: sudivItem?.id, id: sudivItem?.idService });
+            }
+          });
       } else {
         dataUser?.accessBalance?.map((itemAccess) => {
           if (itemAccess?.subdivisionId != selfSubdivision?.value) {
@@ -346,7 +351,7 @@ const AccountPage = () => {
                                       background: '#feed01',
                                     }}>
                                     {' '}
-                                    {parseInt(row?.balance) - parseInt(row?.earned)}
+                                    {currencyFormat(parseInt(row?.balance) - parseInt(row?.earned))}
                                   </div>
                                 </div>
                                 <div
@@ -355,7 +360,7 @@ const AccountPage = () => {
                                   }}
                                   className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
                                   style={{ textAlign: 'left', cursor: 'pointer' }}>
-                                  {parseInt(row?.earned)}
+                                  {currencyFormat(parseInt(row?.earned))}
                                 </div>
 
                                 <div
@@ -364,7 +369,7 @@ const AccountPage = () => {
                                   }}
                                   className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
                                   style={{ cursor: 'pointer' }}>
-                                  {parseInt(row?.balance)}
+                                  {currencyFormat(parseInt(row?.balance))}
                                 </div>
                                 <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`} style={{ padding: '5px 14px', display: 'flex', alignItems: 'center' }}>
                                   <input
@@ -617,16 +622,18 @@ const AccountPage = () => {
                         </option>
                       );
                     })}
-                    {dataUser?.subdivisions?.map((itemSubdiv) => {
-                      const findRepeat = employeeHistory?.find((emplHist) => emplHist.id == itemSubdiv?.id);
-                      if (!findRepeat) {
-                        return (
-                          <option selected={itemSubdiv?.id === activeCalendarSubdivision?.id} value={itemSubdiv?.id}>
-                            {itemSubdiv?.name}
-                          </option>
-                        );
-                      }
-                    })}
+                    {[...dataUser?.subdivisions]
+                      ?.sort((a, b) => a.name.localeCompare(b.name))
+                      ?.map((itemSubdiv) => {
+                        const findRepeat = employeeHistory?.find((emplHist) => emplHist.id == itemSubdiv?.id);
+                        if (!findRepeat) {
+                          return (
+                            <option selected={itemSubdiv?.id === activeCalendarSubdivision?.id} value={itemSubdiv?.id}>
+                              {itemSubdiv?.name}
+                            </option>
+                          );
+                        }
+                      })}
                   </select>
                 </div>
                 <div style={{ padding: '15px 20px', marginBottom: '20px', background: '#fff', marginLeft: '20px' }}>
