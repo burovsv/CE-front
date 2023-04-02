@@ -222,11 +222,13 @@ input[type='checkbox'] {
 .modal__select, .modal__create {
   width: 50%;
 }
+.modal__article__collapsed-group .modal__select .ant-select {
+  padding-bottom: 20px;
+}
 
 .modal__select .ant-select {
   width: 100%;
   height: 100%;
-  padding-bottom: 20px;
 }
 
 .modal__select .ant-select-selector, .modal__select  .ant-select-selection-search {

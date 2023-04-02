@@ -10,6 +10,8 @@ import Info from './Info';
 import Menu from './Menu';
 import ModalFeedback from './modals/ModalFeedback';
 import ModalThank from './modals/ModalThank';
+import ArticleFilter from './ArticleFilter';
+import ArticleSearch from './ArticleSearch';
 
 const MainLayout = ({ children }) => {
   const dispatch = useDispatch();
@@ -29,8 +31,14 @@ const MainLayout = ({ children }) => {
         <div class="container">
           <div class="content__inner">
             <Menu />
-            <div className={clsx('content', pathname.substring(0, 6) === '/admin' && 'content-admin')}>{children}</div>
-            <div className="">{pathname.substring(0, 6) !== '/admin' && <Info />}</div>
+            <div className={clsx('content', pathname.substring(0, 6) === '/admin' && 'content-admin')}>
+              {pathname.substring(0, 6) !== '/admin' && pathname.includes('/knowledgeBase') && <ArticleSearch />}
+              {children}
+            </div>
+            <div className="" style={{ display: 'flex', flexDirection: 'column' }}>
+              {pathname.substring(0, 6) !== '/admin' && <Info />}
+              {pathname.substring(0, 6) !== '/admin' && pathname.includes('/knowledgeBase') && <ArticleFilter />}
+            </div>
           </div>
         </div>
       </div>

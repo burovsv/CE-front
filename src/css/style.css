@@ -909,7 +909,7 @@ input[type='search']::-webkit-search-results-decoration {
   min-width: 250px;
   margin: 20px;
   width: 300px;
-  height: 100%;
+  /* height: 100%; */ 
 }
 
 /*personal*/
@@ -1892,4 +1892,53 @@ thead th {
 
 .knowledge-base-single-page__main-content img {
   max-width: 95%;
+}
+
+/*info*/
+
+.article-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 250px;
+  padding: 20px;
+  width: 100%;
+}
+
+.article-filter__name {
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.article-filter .modal__select {
+  width: 100%;
+  height: 40px;
+}
+
+.article-filter__multiple-select:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+.article-search {
+  position: relative;
+  width: 225px;
+  height: 29px;
+  background: #ffffff;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.article-search__input {
+    position: absolute;
+    top: 5px;
+    left: 20px;
+    width: 100%;
+    height: 20px;
+    font-family: 'Arial';
+    font-size: 0.8rem;
+    background: none;
+    border: none;
+    appearance: none;
+    outline: none;
 }
