@@ -22,6 +22,9 @@ import { initStateSync1C, reducerSync1C } from '../actions/employee/sync1C.actio
 import { initStateUpdateEmployee, reducerUpdateEmployee } from '../actions/employee/updateEmployee.action';
 import { initStateUpdateEmployeeAccess, reducerUpdateEmployeeAccess } from '../actions/employee/updateEmployeesAccess.action';
 import { initStateUploadAvatar, reducerUploadAvatar } from '../actions/employee/uploadAvatar.action';
+import { initStateGetStaffList, reducerGetStaffList } from '../actions/employee/getStaffList.action';
+import { initStateGetStaffListBySubdivision, reducerGetStaffListBySubdivision } from '../actions/employee/getStaffListBySubdivision.action';
+import { initStateSaveStaffList, reducerSaveStaffList } from '../actions/employee/saveStaffList.action';
 
 export const initialState = {
   ...initStateAuthEmployee,
@@ -47,6 +50,9 @@ export const initialState = {
   ...initStateGetCashBoxList,
   ...initStateGetPrePaymentSettings,
   ...initStateCreateCompetitionReport,
+  ...initStateGetStaffList,
+  ...initStateGetStaffListBySubdivision,
+  ...initStateSaveStaffList,
 };
 
 export const employeeSlice = createSlice({
@@ -86,6 +92,12 @@ export const employeeSlice = createSlice({
     resetCreateCompetitionReport(state) {
       state.createCompetitionReport = initStateCreateCompetitionReport.createCompetitionReport;
     },
+    resetGetStaffListBySubdivision(state) {
+      state.getStaffListBySubdivision = initStateGetStaffListBySubdivision.getStaffListBySubdivision;
+    },
+    resetSaveStaffList(state) {
+      state.saveStaffList = initStateSaveStaffList.saveStaffList;
+    },
   },
   extraReducers: {
     ...reducerFeedbackEmployee,
@@ -111,7 +123,24 @@ export const employeeSlice = createSlice({
     ...reducerGetCashBoxList,
     ...reducerGetPrePaymentSettings,
     ...reducerCreateCompetitionReport,
+    ...reducerGetStaffList,
+    ...reducerGetStaffListBySubdivision,
+    ...reducerSaveStaffList,
   },
 });
-export const { resetGetEmployees, resetGetEmployee, resetLoginEmployee, resetFeedbackEmployee, resetDownloadEmployees, resetGetAccount, resetUpdateEmployeeAccess, resetPrePaymentCreate, resetGetPrePayment, resetGetCashBoxList, resetCreateCompetitionReport } = employeeSlice.actions;
+export const {
+  resetGetEmployees,
+  resetGetEmployee,
+  resetLoginEmployee,
+  resetFeedbackEmployee,
+  resetDownloadEmployees,
+  resetGetAccount,
+  resetUpdateEmployeeAccess,
+  resetPrePaymentCreate,
+  resetGetPrePayment,
+  resetGetCashBoxList,
+  resetCreateCompetitionReport,
+  resetGetStaffListBySubdivision,
+  resetSaveStaffList,
+} = employeeSlice.actions;
 export const employeeReducer = employeeSlice.reducer;

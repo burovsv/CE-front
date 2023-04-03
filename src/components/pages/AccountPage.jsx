@@ -31,6 +31,7 @@ import { getCashBoxList } from '../../redux/actions/employee/getCashBoxList.acti
 import { getPrePaymentSettings } from '../../redux/actions/employee/getPrePaymentSettings.action';
 import { getSubdivisions } from '../../redux/actions/subdivision/getSubdivisions.action';
 import { currencyFormat } from '../../utils/currencyFormat';
+import StaffList from '../StaffList';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -169,6 +170,7 @@ const AccountPage = () => {
   //   dataAccount && (
   // const [showFullCalendar, setShowFullCalendar] = useState(false);
   const [activeTab, setActiveTab] = useState('balance-tab');
+  const [activeSubTab, setActiveSubTab] = useState('graphic-subtab');
   const [showDateFilter, setShowDateFilter] = useState(false);
 
   // useEffect(() => {
@@ -241,7 +243,7 @@ const AccountPage = () => {
               setActiveTab('graphic-tab');
             }}
             class={`filter__item tablinks ${activeTab === 'graphic-tab' && 'active'}`}>
-            График
+            График работы
           </button>
         </div>
       </div>
@@ -597,98 +599,125 @@ const AccountPage = () => {
       ) : activeTab == 'plan-tab' ? (
         <PlanTab list={listAccessSubdivision} />
       ) : (
-        <div class="tabcontent">
-          {
-            <>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div class="modal__select">
-                  <select
-                    style={{ width: '218px' }}
-                    onChange={(event) => {
-                      if (event.target.value) {
-                        const findCurrentSubdiv = employeeHistory?.find((historyItem) => historyItem?.id == event.target.value);
-                        const findAccessSubdiv = dataUser?.subdivisions?.find((accessSubdiv) => accessSubdiv?.id == event.target.value);
-                        if (findCurrentSubdiv) {
-                          dispatch(setActiveCalendarSubdivision(findCurrentSubdiv));
-                        } else if (findAccessSubdiv) {
-                          dispatch(setActiveCalendarSubdivision({ id: findAccessSubdiv?.id, name: findAccessSubdiv?.name }));
-                        }
-                      }
-                    }}>
-                    {employeeHistory.map((value) => {
-                      return (
-                        <option selected={value?.id === activeCalendarSubdivision?.id} value={value?.id}>
-                          {value?.name}
-                        </option>
-                      );
-                    })}
-                    {[...dataUser?.subdivisions]
-                      ?.sort((a, b) => a.name.localeCompare(b.name))
-                      ?.map((itemSubdiv) => {
-                        const findRepeat = employeeHistory?.find((emplHist) => emplHist.id == itemSubdiv?.id);
-                        if (!findRepeat) {
-                          return (
-                            <option selected={itemSubdiv?.id === activeCalendarSubdivision?.id} value={itemSubdiv?.id}>
-                              {itemSubdiv?.name}
-                            </option>
-                          );
-                        }
-                      })}
-                  </select>
-                </div>
-                <div style={{ padding: '15px 20px', marginBottom: '20px', background: '#fff', marginLeft: '20px' }}>
-                  Рабочие часы:&nbsp;{' '}
-                  <b>
-                    {convertMinsToHrsMins(
-                      workCalendarData?.workCalendars
-                        ?.map((item1) => {
-                          return moment(item1?.endTime).set('seconds', 0).diff(moment(item1?.startTime).set('seconds', 0), 'minutes');
-                        })
-                        .reduce((partialSum, a) => partialSum + a, 0),
-                    )}
-                  </b>
-                </div>
-                {
-                  <button onClick={handleClickOpenFullCalendar} class="report__btn" style={{ marginBottom: '20px', marginLeft: '20px' }}>
-                    {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : isAccessEditCalendar() ? 'Редактировать' : 'Просмотреть'}
-                  </button>
-                }
-              </div>
-
-              <WorkCalendar />
-              {showFullCalendar && (
-                <WorkCalendarFull
-                  onOpenAccept={() => {
-                    setShowAccept(true);
+        <>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div class="tab" style={{ marginTop: 0 }}>
+              <button
+                onClick={() => {
+                  setActiveSubTab('graphic-subtab');
+                }}
+                class={`filter__item tablinks ${activeSubTab === 'graphic-subtab' && 'active'}`}>
+                График
+              </button>
+            </div>
+            {dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID && (
+              <div class="tab" style={{ marginTop: 0 }}>
+                <button
+                  onClick={() => {
+                    setActiveSubTab('staff-subtab');
                   }}
-                  onClose={(isEdited) => {
-                    if (isEdited) {
+                  class={`filter__item tablinks ${activeSubTab === 'staff-subtab' && 'active'}`}>
+                  Штатное расписание
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div class="tabcontent">
+            {activeSubTab == 'graphic-subtab' ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div class="modal__select">
+                    <select
+                      style={{ width: '218px' }}
+                      onChange={(event) => {
+                        if (event.target.value) {
+                          const findCurrentSubdiv = employeeHistory?.find((historyItem) => historyItem?.id == event.target.value);
+                          const findAccessSubdiv = dataUser?.subdivisions?.find((accessSubdiv) => accessSubdiv?.id == event.target.value);
+                          if (findCurrentSubdiv) {
+                            dispatch(setActiveCalendarSubdivision(findCurrentSubdiv));
+                          } else if (findAccessSubdiv) {
+                            dispatch(setActiveCalendarSubdivision({ id: findAccessSubdiv?.id, name: findAccessSubdiv?.name }));
+                          }
+                        }
+                      }}>
+                      {employeeHistory.map((value) => {
+                        return (
+                          <option selected={value?.id === activeCalendarSubdivision?.id} value={value?.id}>
+                            {value?.name}
+                          </option>
+                        );
+                      })}
+                      {[...dataUser?.subdivisions]
+                        ?.sort((a, b) => a.name.localeCompare(b.name))
+                        ?.map((itemSubdiv) => {
+                          const findRepeat = employeeHistory?.find((emplHist) => emplHist.id == itemSubdiv?.id);
+                          if (!findRepeat) {
+                            return (
+                              <option selected={itemSubdiv?.id === activeCalendarSubdivision?.id} value={itemSubdiv?.id}>
+                                {itemSubdiv?.name}
+                              </option>
+                            );
+                          }
+                        })}
+                    </select>
+                  </div>
+                  <div style={{ padding: '15px 20px', marginBottom: '20px', background: '#fff', marginLeft: '20px' }}>
+                    Рабочие часы:&nbsp;{' '}
+                    <b>
+                      {convertMinsToHrsMins(
+                        workCalendarData?.workCalendars
+                          ?.map((item1) => {
+                            return moment(item1?.endTime).set('seconds', 0).diff(moment(item1?.startTime).set('seconds', 0), 'minutes');
+                          })
+                          .reduce((partialSum, a) => partialSum + a, 0),
+                      )}
+                    </b>
+                  </div>
+                  {
+                    <button onClick={handleClickOpenFullCalendar} class="report__btn" style={{ marginBottom: '20px', marginLeft: '20px' }}>
+                      {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : isAccessEditCalendar() ? 'Редактировать' : 'Просмотреть'}
+                    </button>
+                  }
+                </div>
+
+                <WorkCalendar />
+                {showFullCalendar && (
+                  <WorkCalendarFull
+                    onOpenAccept={() => {
                       setShowAccept(true);
-                    } else {
+                    }}
+                    onClose={(isEdited) => {
+                      if (isEdited) {
+                        setShowAccept(true);
+                      } else {
+                        dispatch(setShowFullCalendar(false));
+                        dispatch(resetGetEmployees());
+                        dispatch(resetGetSubdivisionWorkTimeTemplates());
+                        dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), subdivision: activeCalendarSubdivision?.id }));
+                      }
+                    }}
+                  />
+                )}
+                {showAccept && (
+                  <ModalAcceptTable
+                    onClose={() => {
+                      setShowAccept(false);
+                    }}
+                    onSave={() => {
+                      setShowAccept(false);
                       dispatch(setShowFullCalendar(false));
                       dispatch(resetGetEmployees());
-                      dispatch(resetGetSubdivisionWorkTimeTemplates());
                       dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), subdivision: activeCalendarSubdivision?.id }));
-                    }
-                  }}
-                />
-              )}
-              {showAccept && (
-                <ModalAcceptTable
-                  onClose={() => {
-                    setShowAccept(false);
-                  }}
-                  onSave={() => {
-                    setShowAccept(false);
-                    dispatch(setShowFullCalendar(false));
-                    dispatch(resetGetEmployees());
-                    dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), subdivision: activeCalendarSubdivision?.id }));
-                  }}
-                />
-              )}
-            </>
-          }
-        </div>
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              <StaffList />
+            )}
+          </div>
+        </>
       )}
       {showSuccessPrePayment && (
         <Modal
