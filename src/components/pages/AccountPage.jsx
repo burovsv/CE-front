@@ -125,10 +125,10 @@ const AccountPage = () => {
   } = useSelector((state) => state.employee);
   useEffect(() => {
     if (dataUser && listAccessSubdivision?.length == 0 && subdivisions) {
-      setIsManager(dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID);
+      setIsManager(dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166);
       const selfSubdivision = { value: dataUser?.postSubdivision?.subdivisionId, label: dataUser?.subdivision, id: dataUser?.subdivisionIdService };
       let listSubdivisionData = [selfSubdivision];
-      if (dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID) {
+      if (dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166) {
         [...subdivisions]
           .sort(function (a, b) {
             return a?.name.localeCompare(b?.name);
@@ -610,7 +610,7 @@ const AccountPage = () => {
                 График
               </button>
             </div>
-            {dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID && (
+            {(dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166) && (
               <div class="tab" style={{ marginTop: 0 }}>
                 <button
                   onClick={() => {

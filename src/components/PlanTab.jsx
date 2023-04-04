@@ -24,7 +24,7 @@ const PlanTab = ({ list }) => {
     getEmployeeHistory: { data: employeeHistory },
     activeCalendarSubdivision,
   } = useSelector((state) => state.employeeHistory);
-  const isManager = dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID;
+  const isManager = dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166;
 
   const [activeTab, setActiveTab] = useState('one-tab');
   const [activeCompetition, setActiveCompetition] = useState(null);
@@ -152,7 +152,7 @@ const PlanTab = ({ list }) => {
               />
             )}
           </div>{' '}
-          {dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID && (
+          {(dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166) && (
             <button
               disabled={loadingReport}
               class="report__btn"
@@ -180,10 +180,9 @@ const PlanTab = ({ list }) => {
                       {itemCompt?.use_personal_plan && <th width="100px">Факт</th>}
                       {itemCompt?.use_plan && <th width="100px">План</th>}
 
-                      {itemCompt?.use_plan && <th width="100px">Процент выполнение</th>}
-
                       {itemCompt?.type_result != undefined && <th width="100px">{itemCompt?.type_result ? 'Количество' : 'Сумма'}</th>}
 
+                      {itemCompt?.use_plan && <th width="100px">Процент выполнение</th>}
                       <th width="100%">Место</th>
                     </tr>
                     {itemCompt?.mass_city?.map(
@@ -201,9 +200,9 @@ const PlanTab = ({ list }) => {
                             {itemCompt?.use_personal_plan && <td>{currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
                             {itemCompt?.use_plan && <td>{currencyFormat(massItem?.plan_city) ? currencyFormat(Math.ceil(massItem?.plan_city)) : '-'}</td>}
 
-                            {itemCompt?.use_plan && <td>{Math.ceil(massItem?.trade_city_percent) + '%'}</td>}
-
                             {itemCompt?.type_result != undefined && <td>{itemCompt?.type_result ? Math.ceil(massItem?.trade_city_quantity) : currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
+
+                            {itemCompt?.use_plan && <td>{Math.ceil(massItem?.trade_city_percent) + '%'}</td>}
 
                             <td>{massItem?.place_city}</td>
                           </tr>
