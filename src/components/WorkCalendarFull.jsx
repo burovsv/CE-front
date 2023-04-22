@@ -10,7 +10,7 @@ import { getEmployees } from '../redux/actions/employee/getEmployees.action';
 import { upsertWorkCalendarFull } from '../redux/actions/workCalendar/upsertWorkCalendarFull.slice';
 import { setActiveCalendarDates } from '../redux/slices/news.slice';
 import { setWorkTimeTemplate } from '../redux/slices/subdivision.slice';
-import { resetUpsertWorkCalendarFull, setActiveMonthYear } from '../redux/slices/workCalendar.slice';
+import { resetExportWorkCalendarToExcel, resetUpsertWorkCalendarFull, setActiveMonthYear } from '../redux/slices/workCalendar.slice';
 import { getDayOfWeek } from '../utils/getDayofWeek';
 import { getDaysInMonth } from '../utils/getDaysInMouth';
 import { randomInt } from '../utils/randomInt';
@@ -18,6 +18,11 @@ import SelectMonth from './calendarFull/SelectMonth';
 import WorkCalendarFullItem from './calendarFull/WorkCalendarFullItem';
 import WorkCalendarFullRow from './calendarFull/WorkCalendarFullRow';
 import TimeTableFull from './TimeTableFull';
+import { DownloadTableExcel } from 'react-export-table-to-excel';
+import { workTableToExcelFormat } from '../utils/workTableToExcelFormat';
+import { exportWorkCalendarToExcel } from '../redux/actions/workCalendar/exportWorkCalendarToExcel.slice';
+import fileDownload from 'js-file-download';
+import axios from 'axios';
 const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   const {
     auth: { role, editorWorkTable },
@@ -41,6 +46,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
 
     getWorkCalendarMonth: { loading: workCalendarMonthLoading },
     upsertWorkCalendarFull: { data: upsertWorkCalendarData, loading: upsertWorkCalendarLoading, error: upsertWorkCalendarError },
+    exportWorkCalendarToExcel: { data: downloadData },
   } = useSelector((state) => state.workCalendar);
   console.log(workTimeTemplates);
   useEffect(() => {
@@ -136,6 +142,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           firstName: employee.firstName,
           lastName: employee.lastName,
           post: employee.post,
+          groupPost: employee.groupPost,
           existWorkCalendarId: employee?.workCalendars?.[0]?.id,
           calendarData: [],
         };
@@ -172,7 +179,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       setValue('calendar', formatEmployees);
     }
   }, [employees]);
-  console.log(watch());
+
   const handleContextMenu = useCallback((event) => {
     event.preventDefault();
   }, []);
@@ -205,10 +212,10 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     }
   };
 
-  const countWorkers = (val, day, post) => {
+  const countWorkers = (val, day, groupPost) => {
     return val
       ?.map((workers) => {
-        return workers?.calendarData[day]?.type === 'work' && (!post ? true : workers.post == post ? true : false) ? true : false;
+        return workers?.calendarData[day]?.type === 'work' && (!groupPost ? true : workers.groupPost == groupPost ? true : false) ? true : false;
       })
       .filter((workers) => workers).length;
   };
@@ -267,11 +274,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     }
   };
   const watchCalendar = watch('calendar');
-  console.log(
-    allDays?.map((itemDayInner, dayIndex) => {
-      return countWorkers(watchCalendar, dayIndex);
-    }),
-  );
+
   React.useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       let totalWorkers1 = [];
@@ -314,7 +317,19 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     refTableWrap.current.scrollLeft = scrollLeft - walk;
   };
   const [selectedColumn, setSelectedColumn] = useState(-1);
-
+  const tableRef = useRef(null);
+  useEffect(() => {
+    if (downloadData?.file) {
+      axios
+        .get(downloadData?.file, {
+          responseType: 'blob',
+        })
+        .then((res) => {
+          fileDownload(res.data, downloadData?.fileName);
+          dispatch(resetExportWorkCalendarToExcel());
+        });
+    }
+  }, [downloadData]);
   return (
     <div class="work-calendar-full">
       {/* <button onClick={() => onClose(isEdited)} className="work-calendar-full-close"></button> */}
@@ -326,9 +341,164 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         {upsertWorkCalendarError && <span style={{ color: 'red' }}>&nbsp;Ошибка!</span>}
         {isEdited && <span style={{ color: 'red' }}>&nbsp;был изменен, сохраните!</span>}
       </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '50px' }}>
+        {isAccessEditCalendar() && (
+          <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '0px' }} disabled={upsertWorkCalendarLoading || loadingEmployees}>
+            {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Сохранить'}
+          </button>
+        )}
+        <button
+          onClick={() => {
+            const tableData = workTableToExcelFormat(tableRef.current.querySelectorAll('tr'));
+            dispatch(exportWorkCalendarToExcel({ tableData }));
+          }}
+          class="report__btn"
+          style={{ marginLeft: '20px' }}
+          disabled={upsertWorkCalendarLoading || loadingEmployees}>
+          {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Скачать'}
+        </button>
+
+        <button onClick={() => onClose(isEdited)} class="report__btn" style={{ marginLeft: '20px', background: '#FC0000', color: '#fff' }}>
+          Закрыть
+        </button>
+        {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', maxWidth: '310px', marginLeft: '20px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
+      </div>
+      <div onMouseMove={touchMouseMove} onMouseUp={touchMouseUp} onMouseLeave={touchMouseLeave} ref={refTableWrap} onMouseDown={touchMouseDown} class={clsx((upsertWorkCalendarLoading || loadingEmployees) && 'work-calendar-full-grid-loading', 'work-calendar-full-wrap')}>
+        <table ref={tableRef} className={clsx('work-calendar-full-grid')}>
+          <tr style={{ position: 'sticky', top: 0, left: 0, zIndex: 10 }}>
+            <td colSpan="2" width="200" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2 }}>
+              <div>
+                <SelectMonth
+                  isEdited={isEdited}
+                  currentMonth={activeMonthYear}
+                  onNextMonth={() => {
+                    setIsEdited(false);
+                    dispatch(setActiveMonthYear(moment(activeMonthYear).add(1, 'months').toString()));
+                  }}
+                  onPrevMonth={() => {
+                    setIsEdited(false);
+                    dispatch(setActiveMonthYear(moment(activeMonthYear).subtract(1, 'months').toString()));
+                  }}
+                />
+              </div>
+            </td>
+            {allDays?.map((day, dayIndex) => {
+              const numberDayOfWeek = day?.getDay();
+              return (
+                <td
+                  width="75"
+                  style={{ width: '75px' }}
+                  className="work-calendar-full-cell-small-wrap "
+                  onClick={() => {
+                    setSelectedColumn(dayIndex);
+                  }}>
+                  <div className={`work-calendar-full-day-of-week ${(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red cell-day-vs'} ${numberDayOfWeek === 6 ? 'cell-day-sb' : numberDayOfWeek === 0 ? 'cell-day-vs' : ''}`}>{getDayOfWeek(numberDayOfWeek)}</div>
+                </td>
+              );
+            })}
+            <td width="120" colSpan="4" className="work-calendar-full-cell-small-wrap sticky-right-td" style={{ textTransform: 'uppercase', position: 'sticky', right: 0, zIndex: 2 }}>
+              Итого
+            </td>
+          </tr>
+          <tr style={{ position: 'sticky', top: '23.2px', left: 0, zIndex: 10 }}>
+            <td width="150" class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', left: '0px', zIndex: 2 }}>
+              ФИО
+            </td>
+            <td width="150" class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', left: '100px', zIndex: 2 }}>
+              Должность
+            </td>
+            {allDays?.map((day, dayIndex) => {
+              const numberDayOfWeek = day?.getDay();
+              return (
+                <td
+                  width="75"
+                  style={{ width: '75px' }}
+                  className={`work-calendar-full-cell-small-wrap work-calendar-full-day-of-week `}
+                  onClick={() => {
+                    setSelectedColumn(dayIndex);
+                  }}>
+                  <div class={(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red ' + (numberDayOfWeek === 6 ? 'cell-day-sb' : numberDayOfWeek === 0 ? 'cell-day-vs' : '')}>{moment(day).format('D').toString()}</div>
+                </td>
+              );
+            })}
+            <td width="30" className="work-calendar-full-cell-small-wrap sticky-right-td" style={{ position: 'sticky', right: '90px', zIndex: 2, fontWeight: 600 }}>
+              Часы
+            </td>{' '}
+            <td width="30" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '60px', zIndex: 2, width: '30px', fontWeight: 600 }}>
+              Вых
+            </td>{' '}
+            <td width="30" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '30px', zIndex: 2, fontWeight: 600 }}>
+              Отп
+            </td>
+            <td width="30" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '0px', zIndex: 2, fontWeight: 600 }}>
+              Бол
+            </td>
+          </tr>
+          {fields?.map((item, index) => {
+            return (
+              <WorkCalendarFullRow
+                dayList={allDays}
+                onLastCountWork={allDays?.map((itemDayInner, dayIndex) => {
+                  return countWorkers(watchCalendar, dayIndex, fields[index - 1]?.groupPost);
+                })}
+                onLastCountWorkLast={allDays?.map((itemDayInner, dayIndex) => {
+                  return countWorkers(watchCalendar, dayIndex, fields[index]?.groupPost);
+                })}
+                lastIndex={fields?.length}
+                lastPostRow={item.isLastPost}
+                resetSelectedColumn={() => {
+                  setSelectedColumn(-1);
+                }}
+                selectedColumn={selectedColumn}
+                timeTableRow={employees?.[index]?.timeTable}
+                isAccessEdit={isAccessEditCalendar()}
+                setIsEdited={setIsEdited}
+                item={item}
+                index={index}
+                control={control}
+              />
+            );
+          })}
+          <tr class="work-calendar-row-top" style={{ position: 'sticky', bottom: '43.9px', left: 0, zIndex: 10, borderTop: '1px solid #b7b7b7', backgroundColor: '#fff' }}>
+            <td colSpan="2" class="work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
+              Кол-во сотрудников в смену
+            </td>
+            {totalCountWorkers?.map((item, itemIndex) => (
+              <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', allDays[itemIndex]?.getDay() === 6 ? 'cell-day-sb' : allDays[itemIndex]?.getDay() === 0 ? 'cell-day-vs' : '')}>{item}</td>
+            ))}
+            <td colSpan="4" style={{ textAlign: 'center', padding: 0, textTransform: 'uppercase', position: 'sticky', right: 0, zIndex: 2 }} class="work-calendar-full-cell-small-wrap sticky-right-td">
+              {totalCountWorkers.reduce((partialSum, a) => partialSum + a, 0)}
+            </td>
+          </tr>
+          <tr style={{ position: 'sticky', bottom: '21.2px', left: 0, zIndex: 10, backgroundColor: '#fff' }}>
+            <td colSpan="2" class="work-calendar-full-cell-small-wrap work-calendar-row-top" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
+              Кол-во сотрудников с открытие
+            </td>
+            {totalCountMinStartTimeWorkers?.map((item2, item2Index) => (
+              <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', allDays[item2Index]?.getDay() === 6 ? 'cell-day-sb' : allDays[item2Index]?.getDay() === 0 ? 'cell-day-vs' : '')}> {item2}</td>
+            ))}
+            <td colSpan="4" style={{ textAlign: 'center', padding: 0, position: 'sticky', right: 0, zIndex: 2 }} class="work-calendar-full-cell-small-wrap sticky-right-td">
+              {totalCountMinStartTimeWorkers.reduce((partialSum, a) => partialSum + a, 0)}
+            </td>
+          </tr>
+          <tr style={{ position: 'sticky', bottom: '-0.1px', left: 0, zIndex: 10, backgroundColor: '#fff' }}>
+            <td colSpan="2" class=" work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
+              Кол-во сотрудников с закрытие
+            </td>
+            {totalCountMinEndTimeWorkers?.map((item3, item3Index) => (
+              <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', allDays[item3Index]?.getDay() === 6 ? 'cell-day-sb' : allDays[item3Index]?.getDay() === 0 ? 'cell-day-vs' : '')}>{item3}</td>
+            ))}
+            <td colSpan="4" style={{ textAlign: 'center', padding: 0, position: 'sticky', right: 0, zIndex: 2 }} class="work-calendar-full-cell-small-wrap sticky-right-td">
+              {totalCountMinEndTimeWorkers.reduce((partialSum, a) => partialSum + a, 0)}
+            </td>
+          </tr>
+        </table>
+      </div>
+
       {isAccessEditCalendar() && (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', marginTop: '20px' }}>
             <label>
               <input
                 defaultChecked={workTimeTemplate.active1}
@@ -506,148 +676,6 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           </div>
         </>
       )}
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '50px' }}>
-        {isAccessEditCalendar() && (
-          <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '0px' }} disabled={upsertWorkCalendarLoading || loadingEmployees}>
-            {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Сохранить'}
-          </button>
-        )}
-        <button onClick={() => onClose(isEdited)} class="report__btn" style={{ marginLeft: '20px', background: '#FC0000', color: '#fff' }}>
-          Закрыть
-        </button>
-        {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', maxWidth: '310px', marginLeft: '20px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
-      </div>
-      <div onMouseMove={touchMouseMove} onMouseUp={touchMouseUp} onMouseLeave={touchMouseLeave} ref={refTableWrap} onMouseDown={touchMouseDown} class={clsx((upsertWorkCalendarLoading || loadingEmployees) && 'work-calendar-full-grid-loading', 'work-calendar-full-wrap')}>
-        <table className={clsx('work-calendar-full-grid')}>
-          <tr style={{ position: 'sticky', top: 0, left: 0, zIndex: 10 }}>
-            <td colSpan="2" width="200" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2 }}>
-              <div>
-                <SelectMonth
-                  isEdited={isEdited}
-                  currentMonth={activeMonthYear}
-                  onNextMonth={() => {
-                    setIsEdited(false);
-                    dispatch(setActiveMonthYear(moment(activeMonthYear).add(1, 'months').toString()));
-                  }}
-                  onPrevMonth={() => {
-                    setIsEdited(false);
-                    dispatch(setActiveMonthYear(moment(activeMonthYear).subtract(1, 'months').toString()));
-                  }}
-                />
-              </div>
-            </td>
-            {allDays?.map((day, dayIndex) => {
-              const numberDayOfWeek = day?.getDay();
-              return (
-                <td
-                  width="75"
-                  style={{ width: '75px' }}
-                  className="work-calendar-full-cell-small-wrap "
-                  onClick={() => {
-                    setSelectedColumn(dayIndex);
-                  }}>
-                  <div className={`work-calendar-full-day-of-week ${(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red cell-day-vs'} ${numberDayOfWeek === 6 ? 'cell-day-sb' : numberDayOfWeek === 0 ? 'cell-day-vs' : ''}`}>{getDayOfWeek(numberDayOfWeek)}</div>
-                </td>
-              );
-            })}
-            <td width="120" colSpan="4" className="work-calendar-full-cell-small-wrap sticky-right-td" style={{ textTransform: 'uppercase', position: 'sticky', right: 0, zIndex: 2 }}>
-              Итого
-            </td>
-          </tr>
-          <tr style={{ position: 'sticky', top: '23.2px', left: 0, zIndex: 10 }}>
-            <td width="150" class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', left: '0px', zIndex: 2 }}>
-              ФИО
-            </td>
-            <td width="150" class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', left: '100px', zIndex: 2 }}>
-              Должность
-            </td>
-            {allDays?.map((day, dayIndex) => {
-              const numberDayOfWeek = day?.getDay();
-              return (
-                <td
-                  width="75"
-                  style={{ width: '75px' }}
-                  className={`work-calendar-full-cell-small-wrap work-calendar-full-day-of-week `}
-                  onClick={() => {
-                    setSelectedColumn(dayIndex);
-                  }}>
-                  <div class={(numberDayOfWeek === 6 || numberDayOfWeek === 0) && 'work-calendar-full-day-of-week--red ' + (numberDayOfWeek === 6 ? 'cell-day-sb' : numberDayOfWeek === 0 ? 'cell-day-vs' : '')}>{moment(day).format('D').toString()}</div>
-                </td>
-              );
-            })}
-            <td width="30" className="work-calendar-full-cell-small-wrap sticky-right-td" style={{ position: 'sticky', right: '90px', zIndex: 2, fontWeight: 600 }}>
-              Часы
-            </td>{' '}
-            <td width="30" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '60px', zIndex: 2, width: '30px', fontWeight: 600 }}>
-              Вых
-            </td>{' '}
-            <td width="30" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '30px', zIndex: 2, fontWeight: 600 }}>
-              Отп
-            </td>
-            <td width="30" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', right: '0px', zIndex: 2, fontWeight: 600 }}>
-              Бол
-            </td>
-          </tr>
-          {fields?.map((item, index) => {
-            return (
-              <WorkCalendarFullRow
-                dayList={allDays}
-                onLastCountWork={allDays?.map((itemDayInner, dayIndex) => {
-                  return countWorkers(watchCalendar, dayIndex, fields[index - 1]?.post);
-                })}
-                onLastCountWorkLast={allDays?.map((itemDayInner, dayIndex) => {
-                  return countWorkers(watchCalendar, dayIndex, fields[index]?.post);
-                })}
-                lastIndex={fields?.length}
-                lastPostRow={item.isLastPost}
-                resetSelectedColumn={() => {
-                  setSelectedColumn(-1);
-                }}
-                selectedColumn={selectedColumn}
-                timeTableRow={employees?.[index]?.timeTable}
-                isAccessEdit={isAccessEditCalendar()}
-                setIsEdited={setIsEdited}
-                item={item}
-                index={index}
-                control={control}
-              />
-            );
-          })}
-          <tr class="work-calendar-row-top" style={{ position: 'sticky', bottom: '43.9px', left: 0, zIndex: 10, borderTop: '1px solid #b7b7b7', backgroundColor: '#fff' }}>
-            <td colSpan="2" class="work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
-              Кол-во сотрудников в смену
-            </td>
-            {totalCountWorkers?.map((item, itemIndex) => (
-              <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', allDays[itemIndex]?.getDay() === 6 ? 'cell-day-sb' : allDays[itemIndex]?.getDay() === 0 ? 'cell-day-vs' : '')}>{item}</td>
-            ))}
-            <td colSpan="4" style={{ textAlign: 'center', padding: 0, textTransform: 'uppercase', position: 'sticky', right: 0, zIndex: 2 }} class="work-calendar-full-cell-small-wrap sticky-right-td">
-              {totalCountWorkers.reduce((partialSum, a) => partialSum + a, 0)}
-            </td>
-          </tr>
-          <tr style={{ position: 'sticky', bottom: '21.2px', left: 0, zIndex: 10, backgroundColor: '#fff' }}>
-            <td colSpan="2" class="work-calendar-full-cell-small-wrap work-calendar-row-top" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
-              Кол-во сотрудников с открытие
-            </td>
-            {totalCountMinStartTimeWorkers?.map((item2, item2Index) => (
-              <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', allDays[item2Index]?.getDay() === 6 ? 'cell-day-sb' : allDays[item2Index]?.getDay() === 0 ? 'cell-day-vs' : '')}> {item2}</td>
-            ))}
-            <td colSpan="4" style={{ textAlign: 'center', padding: 0, position: 'sticky', right: 0, zIndex: 2 }} class="work-calendar-full-cell-small-wrap sticky-right-td">
-              {totalCountMinStartTimeWorkers.reduce((partialSum, a) => partialSum + a, 0)}
-            </td>
-          </tr>
-          <tr style={{ position: 'sticky', bottom: '-0.1px', left: 0, zIndex: 10, backgroundColor: '#fff' }}>
-            <td colSpan="2" class=" work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
-              Кол-во сотрудников с закрытие
-            </td>
-            {totalCountMinEndTimeWorkers?.map((item3, item3Index) => (
-              <td class={clsx('work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work', allDays[item3Index]?.getDay() === 6 ? 'cell-day-sb' : allDays[item3Index]?.getDay() === 0 ? 'cell-day-vs' : '')}>{item3}</td>
-            ))}
-            <td colSpan="4" style={{ textAlign: 'center', padding: 0, position: 'sticky', right: 0, zIndex: 2 }} class="work-calendar-full-cell-small-wrap sticky-right-td">
-              {totalCountMinEndTimeWorkers.reduce((partialSum, a) => partialSum + a, 0)}
-            </td>
-          </tr>
-        </table>
-      </div>
       {/* <div style={{ display: 'flex', marginTop: '50px', justifyContent: 'space-between', alignItems: 'center', maxWidth: 'min-content' }}>
         <div style={{ display: 'flex' }}>
           {exampleCalendar?.map((dayItem) => {

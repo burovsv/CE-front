@@ -42,7 +42,6 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
   const [editEndTime, setEditEndTime] = useState(false);
   const testRef = useRef(null);
   // const numberDayOfWeek = item?.getDay();
-  console.log(item);
   return (
     <td onContextMenu={handleContextMenu} className={clsx('work-calendar-full-cell-wrap', className)} style={style} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove}>
       <OutsideClickHandler
