@@ -12,10 +12,12 @@ import { subdivisionReducer } from './slices/subdivision.slice';
 import { testingReducer } from './slices/testing.slice';
 import { testingFilterReducer } from './slices/testingFilter.slice';
 import { workCalendarReducer } from './slices/workCalendar.slice';
+import { employeeHiddenReducer } from './slices/employeeHidden.slice';
 
 export const store = configureStore({
   reducer: {
     employeeHistory: employeeHistoryReducer,
+    employeeHidden: employeeHiddenReducer,
     employee: employeeReducer,
     app: appReducer,
     news: newsReducer,

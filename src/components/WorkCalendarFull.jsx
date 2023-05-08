@@ -23,6 +23,8 @@ import { workTableToExcelFormat } from '../utils/workTableToExcelFormat';
 import { exportWorkCalendarToExcel } from '../redux/actions/workCalendar/exportWorkCalendarToExcel.slice';
 import fileDownload from 'js-file-download';
 import axios from 'axios';
+import { getEmployeeHiddenList } from '../redux/actions/employeeHidden/getEmployeeHiddenList.action';
+import { resetEmployeeToHiddenList } from '../redux/slices/employee.slice';
 const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   const {
     auth: { role, editorWorkTable },
@@ -30,6 +32,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   const {
     getEmployees: { data: employees, loading: loadingEmployees, error: errorEmployees },
     getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
+    hiddenEmployeeList,
   } = useSelector((state) => state.employee);
   const {
     getSubdivisionWorkTimeTemplates: { data: workTimeTemplates },
@@ -39,7 +42,11 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     getEmployeeHistory: { data: employeeHistory },
     activeCalendarSubdivision,
   } = useSelector((state) => state.employeeHistory);
+  const {
+    getEmployeeHiddenList: { data: getEmployeeHiddenData, loading: getEmployeeHiddenLoading },
+  } = useSelector((state) => state.employeeHidden);
   const [isEdited, setIsEdited] = useState(false);
+  const [showHiddenEmployees, setShowHiddenEmployees] = useState(false);
   const [allDays, setAllDays] = useState([]);
   const {
     activeMonthYear,
@@ -124,10 +131,12 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     reset();
     const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: moment(activeMonthYear).format('YYYY-MM-DD').toString() };
     dispatch(getEmployees(paramsEmployees));
+    dispatch(getEmployeeHiddenList(activeCalendarSubdivision?.id));
+    dispatch(resetEmployeeToHiddenList());
   }, [activeMonthYear]);
   const onSubmit = (data) => {
     setIsEdited(false);
-    dispatch(upsertWorkCalendarFull({ calendar: data?.calendar, monthYear: activeMonthYear, subdivision: activeCalendarSubdivision?.id, workTimeTemplate }));
+    dispatch(upsertWorkCalendarFull({ calendar: data?.calendar, monthYear: activeMonthYear, subdivision: activeCalendarSubdivision?.id, workTimeTemplate, hiddenEmployees: hiddenEmployeeList }));
   };
   useEffect(() => {
     if (employees?.length >= 1) {
@@ -330,13 +339,14 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         });
     }
   }, [downloadData]);
+
   return (
     <div class="work-calendar-full">
       {/* <button onClick={() => onClose(isEdited)} className="work-calendar-full-close"></button> */}
       <div className="work-calendar-full-title">
         <div>График работы {activeCalendarSubdivision?.name}</div>
         {upsertWorkCalendarLoading && <div className="loading-account">&nbsp;Идет сохранение...</div>}
-        {loadingEmployees && <div className="loading-account">&nbsp;Идет загрузка...</div>}
+        {(loadingEmployees || getEmployeeHiddenLoading) && <div className="loading-account">&nbsp;Идет загрузка...</div>}
         {showSaved && <span style={{ color: 'green' }}>&nbsp;Сохранено!</span>}
         {upsertWorkCalendarError && <span style={{ color: 'red' }}>&nbsp;Ошибка!</span>}
         {isEdited && <span style={{ color: 'red' }}>&nbsp;был изменен, сохраните!</span>}
@@ -344,8 +354,8 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
 
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '50px' }}>
         {isAccessEditCalendar() && (
-          <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '0px' }} disabled={upsertWorkCalendarLoading || loadingEmployees}>
-            {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Сохранить'}
+          <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '0px' }} disabled={upsertWorkCalendarLoading || loadingEmployees || getEmployeeHiddenLoading}>
+            {loadingEmployees || getEmployeeHiddenLoading ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Сохранить'}
           </button>
         )}
         <button
@@ -355,8 +365,8 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           }}
           class="report__btn"
           style={{ marginLeft: '20px' }}
-          disabled={upsertWorkCalendarLoading || loadingEmployees}>
-          {loadingEmployees ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Скачать'}
+          disabled={upsertWorkCalendarLoading || loadingEmployees || getEmployeeHiddenLoading}>
+          {loadingEmployees || getEmployeeHiddenLoading ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Скачать'}
         </button>
 
         <button onClick={() => onClose(isEdited)} class="report__btn" style={{ marginLeft: '20px', background: '#FC0000', color: '#fff' }}>
@@ -364,7 +374,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         </button>
         {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', maxWidth: '310px', marginLeft: '20px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
       </div>
-      <div onMouseMove={touchMouseMove} onMouseUp={touchMouseUp} onMouseLeave={touchMouseLeave} ref={refTableWrap} onMouseDown={touchMouseDown} class={clsx((upsertWorkCalendarLoading || loadingEmployees) && 'work-calendar-full-grid-loading', 'work-calendar-full-wrap')}>
+      <div onMouseMove={touchMouseMove} onMouseUp={touchMouseUp} onMouseLeave={touchMouseLeave} ref={refTableWrap} onMouseDown={touchMouseDown} class={clsx((upsertWorkCalendarLoading || loadingEmployees || getEmployeeHiddenLoading) && 'work-calendar-full-grid-loading', 'work-calendar-full-wrap')}>
         <table ref={tableRef} className={clsx('work-calendar-full-grid')}>
           <tr style={{ position: 'sticky', top: 0, left: 0, zIndex: 10 }}>
             <td colSpan="2" width="200" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2 }}>
@@ -438,6 +448,10 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           {fields?.map((item, index) => {
             return (
               <WorkCalendarFullRow
+                showHiddenList={showHiddenEmployees}
+                onShowHiddenList={() => {
+                  setShowHiddenEmployees(true);
+                }}
                 dayList={allDays}
                 onLastCountWork={allDays?.map((itemDayInner, dayIndex) => {
                   return countWorkers(watchCalendar, dayIndex, fields[index - 1]?.groupPost);

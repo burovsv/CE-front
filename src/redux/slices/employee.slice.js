@@ -53,6 +53,7 @@ export const initialState = {
   ...initStateGetStaffList,
   ...initStateGetStaffListBySubdivision,
   ...initStateSaveStaffList,
+  hiddenEmployeeList: [],
 };
 
 export const employeeSlice = createSlice({
@@ -61,6 +62,12 @@ export const employeeSlice = createSlice({
   reducers: {
     resetGetEmployees(state) {
       state.getEmployees = initStateGetEmployees.getEmployees;
+    },
+    addEmployeeToHiddenList(state, action) {
+      state.hiddenEmployeeList.push(action.payload);
+    },
+    resetEmployeeToHiddenList(state, action) {
+      state.hiddenEmployeeList = [];
     },
     resetGetCashBoxList(state) {
       state.getCashBoxList = initStateGetCashBoxList.getCashBoxList;
@@ -142,5 +149,7 @@ export const {
   resetCreateCompetitionReport,
   resetGetStaffListBySubdivision,
   resetSaveStaffList,
+  addEmployeeToHiddenList,
+  resetEmployeeToHiddenList,
 } = employeeSlice.actions;
 export const employeeReducer = employeeSlice.reducer;
