@@ -84,7 +84,7 @@ const WorkCalendarFullRow = ({ dayList, isTimeTable, setIsEdited, item, control,
   };
   const dispatch = useDispatch();
   const [showMenuHidden, setShowMenuHidden] = useState(false);
-  return (
+  return (showHiddenList ? true : !hiddenEmployeeList?.find((hiddenEmployeeItem) => hiddenEmployeeItem == item.userId)) && (
     <>
       {lastPostRow && (
         <tr class="last-post-row">
@@ -379,7 +379,7 @@ const WorkCalendarFullRow = ({ dayList, isTimeTable, setIsEdited, item, control,
           <td class="work-calendar-full-cell-no-border work-calendar-full-cell-small-wrap work" style={{ position: 'sticky', right: '0px', zIndex: 2, background: '#Fff', width: '30px' }}></td>
         </tr>
       )}
-    </>
+    </>,
   );
 };
 
