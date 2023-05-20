@@ -140,29 +140,29 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
           <div
             style={{
               position: 'absolute',
-              top: lastRowIndex <= 2 ? '-14px' : rowIndex == lastRowIndex - 1 ? '-400%' : rowIndex == lastRowIndex - 2 ? '-300%' : rowIndex == lastRowIndex - 3 ? '-200%' : rowIndex == lastRowIndex - 4 ? '-100%' : '50%',
+              top: lastRowIndex <= 4 ? '-14px' : rowIndex == lastRowIndex - 1 ? '-400%' : rowIndex == lastRowIndex - 2 ? '-300%' : rowIndex == lastRowIndex - 3 ? '-200%' : rowIndex == lastRowIndex - 4 ? '-100%' : '50%',
               left:
-                lastRowIndex <= 2 && itemIndex == 23
+                lastRowIndex <= 4 && itemIndex == 23
                   ? 'calc(50% - 70px)'
-                  : lastRowIndex <= 2 && itemIndex == 24
+                  : lastRowIndex <= 4 && itemIndex == 24
                   ? 'calc(50% - 140px)'
-                  : lastRowIndex <= 2 && itemIndex == 25
+                  : lastRowIndex <= 4 && itemIndex == 25
                   ? 'calc(50% - 210px)'
-                  : lastRowIndex <= 2 && itemIndex == 26
+                  : lastRowIndex <= 4 && itemIndex == 26
                   ? 'calc(50% - 280px)'
-                  : lastRowIndex <= 2 && itemIndex == 27
+                  : lastRowIndex <= 4 && itemIndex == 27
                   ? 'calc(50% - 350px)'
-                  : lastRowIndex <= 2 && itemIndex == 28
+                  : lastRowIndex <= 4 && itemIndex == 28
                   ? 'calc(50% - 425px)'
-                  : lastRowIndex <= 2 && itemIndex == 29
+                  : lastRowIndex <= 4 && itemIndex == 29
                   ? 'calc(50% - 500px)'
-                  : lastRowIndex <= 2 && itemIndex == 30
+                  : lastRowIndex <= 4 && itemIndex == 30
                   ? 'calc(50% - 575px)'
                   : '50%',
               border: '1px solid #000',
               display: 'flex',
-              flexDirection: lastRowIndex <= 2 ? 'row' : 'column',
-              width: lastRowIndex <= 2 ? 'auto' : '100px',
+              flexDirection: lastRowIndex <= 4 ? 'row' : 'column',
+              width: lastRowIndex <= 4 ? 'auto' : '100px',
               userSelect: 'none',
               cursor: 'pointer',
               zIndex: '10',
@@ -180,7 +180,7 @@ const WorkCalendarFullItem = ({ onChangeEndTime, onClickMenu = () => {}, onChang
               <div
                 style={{
                   display: 'flex',
-                  flexDirection: lastRowIndex <= 2 ? 'row' : 'column',
+                  flexDirection: lastRowIndex <= 4 ? 'row' : 'column',
                 }}>
                 <div
                   onClick={() => {

@@ -18,7 +18,6 @@ import SelectMonth from './calendarFull/SelectMonth';
 import WorkCalendarFullItem from './calendarFull/WorkCalendarFullItem';
 import WorkCalendarFullRow from './calendarFull/WorkCalendarFullRow';
 import TimeTableFull from './TimeTableFull';
-import { DownloadTableExcel } from 'react-export-table-to-excel';
 import { workTableToExcelFormat } from '../utils/workTableToExcelFormat';
 import { exportWorkCalendarToExcel } from '../redux/actions/workCalendar/exportWorkCalendarToExcel.slice';
 import fileDownload from 'js-file-download';
@@ -122,11 +121,12 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   const [totalCountWorkers, setTotalCountWorkers] = useState([]);
   const [totalCountMinEndTimeWorkers, setTotalCountMinEndTimeWorkers] = useState([]);
   const [totalCountMinStartTimeWorkers, setTotalCountMinStartTimeWorkers] = useState([]);
-  const { control, register, setValue, watch, handleSubmit, reset } = useForm({ defaultValues: { calendar: [] } });
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+  const { getValues, control, register, setValue, watch, handleSubmit, reset } = useForm({ defaultValues: { calendar: [] } });
+  const { fields, append, prepend, remove, swap, move, insert, update } = useFieldArray({
     control,
     name: 'calendar',
   });
+  console.log(fields);
   useEffect(() => {
     reset();
     const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: moment(activeMonthYear).format('YYYY-MM-DD').toString() };
@@ -150,6 +150,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           userId: employee.id,
           firstName: employee.firstName,
           lastName: employee.lastName,
+          orderEmployee: employee.orderEmployee,
           post: employee.post,
           groupPost: employee.groupPost,
           existWorkCalendarId: employee?.workCalendars?.[0]?.id,
@@ -224,7 +225,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   const countWorkers = (val, day, groupPost) => {
     return val
       ?.map((workers) => {
-        return workers?.calendarData[day]?.type === 'work' && (!groupPost ? true : workers.groupPost == groupPost ? true : false) ? true : false;
+        return workers?.calendarData?.[day]?.type === 'work' && (!groupPost ? true : workers?.groupPost == groupPost ? true : false) ? true : false;
       })
       .filter((workers) => workers).length;
   };
@@ -352,7 +353,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         {isEdited && <span style={{ color: 'red' }}>&nbsp;был изменен, сохраните!</span>}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '50px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
         {isAccessEditCalendar() && (
           <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '0px' }} disabled={upsertWorkCalendarLoading || loadingEmployees || getEmployeeHiddenLoading}>
             {loadingEmployees || getEmployeeHiddenLoading ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Сохранить'}
@@ -374,9 +375,189 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         </button>
         {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', maxWidth: '310px', marginLeft: '20px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
       </div>
+      {isAccessEditCalendar() && (
+        <div style={{ display: 'inline-flex', alignItems: 'center', marginTop: '20px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', marginRight: '20px' }}>
+            <label>
+              <input
+                defaultChecked={workTimeTemplate.active1}
+                checked={workTimeTemplate.active1}
+                type="checkbox"
+                onChange={(event) => {
+                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active1: event.target.checked }));
+                }}
+              />
+              <span></span>
+            </label>
+            <div style={{ whiteSpace: 'nowrap' }}>Рабочий день 1 смена:</div>
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeStartTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
+              }}
+              style={{ marginLeft: '20px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeStart1}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeEndTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
+              }}
+              style={{ marginLeft: '20px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeEnd1}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', marginRight: '20px' }}>
+            <label>
+              <input
+                defaultChecked={workTimeTemplate.active2}
+                checked={workTimeTemplate.active2}
+                type="checkbox"
+                onChange={(event) => {
+                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active2: event.target.checked }));
+                }}
+              />
+              <span></span>
+            </label>
+            <div style={{ whiteSpace: 'nowrap' }}>Рабочий день 2 смена:</div>
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeStartTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
+              }}
+              style={{ marginLeft: '20px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeStart2}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeEndTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
+              }}
+              style={{ marginLeft: '20px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeEnd2}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', marginRight: '20px' }}>
+            <label>
+              <input
+                defaultChecked={workTimeTemplate.active3}
+                checked={workTimeTemplate.active3}
+                type="checkbox"
+                onChange={(event) => {
+                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active3: event.target.checked }));
+                }}
+              />
+              <span></span>
+            </label>
+            <div style={{ whiteSpace: 'nowrap' }}>Рабочий день 3 смена:</div>
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeStartTime(e.target.value, 'workTimeStart3', 'workTimeEnd3');
+              }}
+              style={{ marginLeft: '20px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeStart3}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeEndTime(e.target.value, 'workTimeStart3', 'workTimeEnd3');
+              }}
+              style={{ marginLeft: '20px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeEnd3}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', marginRight: '20px' }}>
+            <label>
+              <input
+                defaultChecked={workTimeTemplate.active4}
+                checked={workTimeTemplate.active4}
+                type="checkbox"
+                onChange={(event) => {
+                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active4: event.target.checked }));
+                }}
+              />
+              <span></span>
+            </label>
+            <div style={{ whiteSpace: 'nowrap' }}>Рабочий день магазина:</div>
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeStartTime(e.target.value, 'workTimeStart4', 'workTimeEnd4');
+              }}
+              style={{ marginLeft: '20px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeStart4}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+            <NumberFormat
+              onBlur={(e) => {
+                onChangeEndTime(e.target.value, 'workTimeStart4', 'workTimeEnd4');
+              }}
+              style={{ marginLeft: '20px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
+              format="##:##"
+              mask="_"
+              value={workTimeTemplate?.workTimeEnd4}
+              autoComplete="off"
+              onKeyPress={(event) => {
+                if (event.key === 'Enter') {
+                  // onSaveStartTime(event);
+                }
+              }}
+            />
+          </div>
+        </div>
+      )}
       <div onMouseMove={touchMouseMove} onMouseUp={touchMouseUp} onMouseLeave={touchMouseLeave} ref={refTableWrap} onMouseDown={touchMouseDown} class={clsx((upsertWorkCalendarLoading || loadingEmployees || getEmployeeHiddenLoading) && 'work-calendar-full-grid-loading', 'work-calendar-full-wrap')}>
         <table ref={tableRef} className={clsx('work-calendar-full-grid')}>
-          <tr style={{ position: 'sticky', top: 0, left: 0, zIndex: 10 }}>
+          <tr style={{ position: 'sticky', top: 0, left: 0, zIndex: 110 }}>
             <td colSpan="2" width="200" className="work-calendar-full-cell-small-wrap " style={{ position: 'sticky', left: '0px', zIndex: 2 }}>
               <div>
                 <SelectMonth
@@ -411,7 +592,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
               Итого
             </td>
           </tr>
-          <tr style={{ position: 'sticky', top: '23.2px', left: 0, zIndex: 10 }}>
+          <tr style={{ position: 'sticky', top: '23.2px', left: 0, zIndex: 110 }}>
             <td width="150" class="work-calendar-full-cell-small-wrap work-calendar-full-cell-bold" style={{ position: 'sticky', left: '0px', zIndex: 2 }}>
               ФИО
             </td>
@@ -445,36 +626,45 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
               Бол
             </td>
           </tr>
-          {fields?.map((item, index) => {
-            return (
-              <WorkCalendarFullRow
-                showHiddenList={showHiddenEmployees}
-                onShowHiddenList={() => {
-                  setShowHiddenEmployees(true);
-                }}
-                dayList={allDays}
-                onLastCountWork={allDays?.map((itemDayInner, dayIndex) => {
-                  return countWorkers(watchCalendar, dayIndex, fields[index - 1]?.groupPost);
-                })}
-                onLastCountWorkLast={allDays?.map((itemDayInner, dayIndex) => {
-                  return countWorkers(watchCalendar, dayIndex, fields[index]?.groupPost);
-                })}
-                lastIndex={fields?.length}
-                lastPostRow={item.isLastPost}
-                resetSelectedColumn={() => {
-                  setSelectedColumn(-1);
-                }}
-                selectedColumn={selectedColumn}
-                timeTableRow={employees?.[index]?.timeTable}
-                isAccessEdit={isAccessEditCalendar()}
-                setIsEdited={setIsEdited}
-                item={item}
-                index={index}
-                control={control}
-              />
-            );
-          })}
-          <tr class="work-calendar-row-top" style={{ position: 'sticky', bottom: '43.9px', left: 0, zIndex: 10, borderTop: '1px solid #b7b7b7', backgroundColor: '#fff' }}>
+          {[...fields]
+            .sort(function (a, b) {
+              return a.groupPost - b.groupPost || a.orderEmployee - b.orderEmployee;
+            })
+            ?.map((item, index) => {
+              return (
+                <WorkCalendarFullRow
+                  showHiddenList={showHiddenEmployees}
+                  onShowHiddenList={() => {
+                    setShowHiddenEmployees(true);
+                  }}
+                  dayList={allDays}
+                  onLastCountWork={allDays?.map((itemDayInner, dayIndex) => {
+                    return countWorkers(watchCalendar, dayIndex, fields[index - 1]?.groupPost);
+                  })}
+                  onLastCountWorkLast={allDays?.map((itemDayInner, dayIndex) => {
+                    return countWorkers(watchCalendar, dayIndex, fields[index]?.groupPost);
+                  })}
+                  lastIndex={fields?.length}
+                  lastPostRow={item.isLastPost}
+                  resetSelectedColumn={() => {
+                    setSelectedColumn(-1);
+                  }}
+                  selectedColumn={selectedColumn}
+                  timeTableRow={employees?.[index]?.timeTable}
+                  isAccessEdit={isAccessEditCalendar()}
+                  setIsEdited={setIsEdited}
+                  item={item}
+                  index={index}
+                  control={control}
+                  realIndex={fields?.findIndex((findItem) => findItem?.userId == item?.userId)}
+                  update={update}
+                  firstItemGroupIndex={fields?.findIndex((findItem) => findItem?.groupPost == item?.groupPost)}
+                  firstItemGroup={fields?.find((findItem) => findItem?.groupPost == item?.groupPost)}
+                  getValues={getValues}
+                />
+              );
+            })}
+          <tr class="work-calendar-row-top" style={{ position: 'sticky', bottom: '43.9px', left: 0, zIndex: 110, borderTop: '1px solid #b7b7b7', backgroundColor: '#fff' }}>
             <td colSpan="2" class="work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
               Кол-во сотрудников в смену
             </td>
@@ -485,7 +675,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
               {totalCountWorkers.reduce((partialSum, a) => partialSum + a, 0)}
             </td>
           </tr>
-          <tr style={{ position: 'sticky', bottom: '21.2px', left: 0, zIndex: 10, backgroundColor: '#fff' }}>
+          <tr style={{ position: 'sticky', bottom: '21.2px', left: 0, zIndex: 110, backgroundColor: '#fff' }}>
             <td colSpan="2" class="work-calendar-full-cell-small-wrap work-calendar-row-top" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
               Кол-во сотрудников с открытие
             </td>
@@ -496,7 +686,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
               {totalCountMinStartTimeWorkers.reduce((partialSum, a) => partialSum + a, 0)}
             </td>
           </tr>
-          <tr style={{ position: 'sticky', bottom: '-0.1px', left: 0, zIndex: 10, backgroundColor: '#fff' }}>
+          <tr style={{ position: 'sticky', bottom: '-0.1px', left: 0, zIndex: 110, backgroundColor: '#fff' }}>
             <td colSpan="2" class=" work-calendar-full-cell-small-wrap" style={{ padding: '0 10px', textAlign: 'left', position: 'sticky', left: '0px', zIndex: 2, backgroundColor: '#fff' }}>
               Кол-во сотрудников с закрытие
             </td>
@@ -510,186 +700,6 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         </table>
       </div>
 
-      {isAccessEditCalendar() && (
-        <>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', marginTop: '20px' }}>
-            <label>
-              <input
-                defaultChecked={workTimeTemplate.active1}
-                checked={workTimeTemplate.active1}
-                type="checkbox"
-                onChange={(event) => {
-                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active1: event.target.checked }));
-                }}
-              />
-              <span></span>
-            </label>
-            <div>Рабочий день 1 смена:</div>
-            <NumberFormat
-              onBlur={(e) => {
-                onChangeStartTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
-              }}
-              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-              format="##:##"
-              mask="_"
-              value={workTimeTemplate?.workTimeStart1}
-              autoComplete="off"
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  // onSaveStartTime(event);
-                }
-              }}
-            />
-            <NumberFormat
-              onBlur={(e) => {
-                onChangeEndTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
-              }}
-              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-              format="##:##"
-              mask="_"
-              value={workTimeTemplate?.workTimeEnd1}
-              autoComplete="off"
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  // onSaveStartTime(event);
-                }
-              }}
-            />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-            <label>
-              <input
-                defaultChecked={workTimeTemplate.active2}
-                checked={workTimeTemplate.active2}
-                type="checkbox"
-                onChange={(event) => {
-                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active2: event.target.checked }));
-                }}
-              />
-              <span></span>
-            </label>
-            <div>Рабочий день 2 смена:</div>
-            <NumberFormat
-              onBlur={(e) => {
-                onChangeStartTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
-              }}
-              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-              format="##:##"
-              mask="_"
-              value={workTimeTemplate?.workTimeStart2}
-              autoComplete="off"
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  // onSaveStartTime(event);
-                }
-              }}
-            />
-            <NumberFormat
-              onBlur={(e) => {
-                onChangeEndTime(e.target.value, 'workTimeStart2', 'workTimeEnd2');
-              }}
-              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-              format="##:##"
-              mask="_"
-              value={workTimeTemplate?.workTimeEnd2}
-              autoComplete="off"
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  // onSaveStartTime(event);
-                }
-              }}
-            />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-            <label>
-              <input
-                defaultChecked={workTimeTemplate.active3}
-                checked={workTimeTemplate.active3}
-                type="checkbox"
-                onChange={(event) => {
-                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active3: event.target.checked }));
-                }}
-              />
-              <span></span>
-            </label>
-            <div>Рабочий день 3 смена:</div>
-            <NumberFormat
-              onBlur={(e) => {
-                onChangeStartTime(e.target.value, 'workTimeStart3', 'workTimeEnd3');
-              }}
-              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-              format="##:##"
-              mask="_"
-              value={workTimeTemplate?.workTimeStart3}
-              autoComplete="off"
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  // onSaveStartTime(event);
-                }
-              }}
-            />
-            <NumberFormat
-              onBlur={(e) => {
-                onChangeEndTime(e.target.value, 'workTimeStart3', 'workTimeEnd3');
-              }}
-              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-              format="##:##"
-              mask="_"
-              value={workTimeTemplate?.workTimeEnd3}
-              autoComplete="off"
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  // onSaveStartTime(event);
-                }
-              }}
-            />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-            <label>
-              <input
-                defaultChecked={workTimeTemplate.active4}
-                checked={workTimeTemplate.active4}
-                type="checkbox"
-                onChange={(event) => {
-                  dispatch(setWorkTimeTemplate({ ...workTimeTemplate, active4: event.target.checked }));
-                }}
-              />
-              <span></span>
-            </label>
-            <div>Рабочий день магазина:</div>
-            <NumberFormat
-              onBlur={(e) => {
-                onChangeStartTime(e.target.value, 'workTimeStart4', 'workTimeEnd4');
-              }}
-              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-              format="##:##"
-              mask="_"
-              value={workTimeTemplate?.workTimeStart4}
-              autoComplete="off"
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  // onSaveStartTime(event);
-                }
-              }}
-            />
-            <NumberFormat
-              onBlur={(e) => {
-                onChangeEndTime(e.target.value, 'workTimeStart4', 'workTimeEnd4');
-              }}
-              style={{ marginLeft: '10px', padding: 0, textAlign: 'center', width: '40px', height: '20px', paddingTop: '1px', marginTop: '0px', border: 'none', outline: 'none', fontSize: '10px', paddingBottom: '1px', backgroundColor: '#c9ffcb' }}
-              format="##:##"
-              mask="_"
-              value={workTimeTemplate?.workTimeEnd4}
-              autoComplete="off"
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  // onSaveStartTime(event);
-                }
-              }}
-            />
-          </div>
-        </>
-      )}
       {/* <div style={{ display: 'flex', marginTop: '50px', justifyContent: 'space-between', alignItems: 'center', maxWidth: 'min-content' }}>
         <div style={{ display: 'flex' }}>
           {exampleCalendar?.map((dayItem) => {
