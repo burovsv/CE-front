@@ -3,7 +3,6 @@ import '../../css/knowledgeBase.css';
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { getArticles } from '../../redux/actions/knowledgeBase/getArticles.action';
 import { getArticlesUser } from '../../redux/actions/knowledgeBase/getArticlesUser.action';
 import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
 import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
@@ -17,6 +16,7 @@ import { resetGetSections } from '../../redux/slices/section.slice';
 
 
 import { Link } from 'react-router-dom';
+import { log } from 'util';
 
 
 
@@ -26,8 +26,11 @@ const KnowledgeBasePage = () => {
     const [marksList, setMarksList] = useState([]);
     const [sectionsList, setSectionsList] = useState([]);
     const [sectionGroupsList, setSectionGroupsList] = useState([]);
-    let [sectionGroupsElement, setSectionGroupsElement] = useState([]);
-    let [initHierarchicalList, setInitHierarchicalList] = useState([]);
+    const [sectionGroupsElement, setSectionGroupsElement] = useState([]);
+    const [initHierarchicalList, setInitHierarchicalList] = useState([]);
+
+    const [filterMarks, setFilterMarks] = useState([])
+
 
     const onSectionGroupClick = (e, group) => {
         let hierarchicalList = _.cloneDeep(initHierarchicalList);
@@ -58,24 +61,11 @@ const KnowledgeBasePage = () => {
     const sectionElement = (section) => {
         let result = (section?.children) ? section.children.length : 0;
         const element = (
-            <div onClick={(e) => onSectionGroupClick(e, section)} style={{
-                backgroundColor: '#E7E7E7',
-                padding: '10px 40px',
-                display: 'flex',
-            }}>
-                <div style={{
-                    fontWeight: 700,
-                    fontSize: '12px'
-                }}>
+            <div className="knowledge-page__section-container" onClick={(e) => onSectionGroupClick(e, section)} >
+                <div className="knowledge-page__section-name">
                     {section?.name}
                 </div>
-                <div style={{
-                    fontWeight: 400,
-                    color: '#00000080',
-                    fontSize: '12px',
-                    paddingLeft: '10px',
-
-                }}>
+                <div className="knowledge-page__section-result" >
                     Результаты: {result}
                 </div>
             </div>
@@ -87,39 +77,19 @@ const KnowledgeBasePage = () => {
         const articlesMarks = article?.data?.marks ?? [];
 
         const element = (
-            <div style={{
-                padding: '10px 10px 10px 60px',
-            }}>
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    marginBottom: '10px',
-                }}>
-                    <Link to={`/knowledgeBase/${article?.id}`} style={{
-                        fontWeight: 700,
-                        color: 'blue',
-                    }}>
+            <div className="knowledge-page__article_container">
+                <div className="knowledge-page__article_name" >
+                    <Link className="knowledge-page__article_link" to={`/knowledgeBase/${article?.id}`} >
                         {article?.name ?? ''}
                     </Link>
-                    <div style={{
-                        color: '#00000080',
-                    }}>
+                    <div className="knowledge-page__article_date">
                         26.12.2022
                     </div>
                 </div>
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                }}>
-                    <div>
-                        Метки:
-                    </div>
-                    <div style={{
-                        color: '#00000080',
-                        marginLeft: '5px',
-                    }}>
+                <div className="knowledge-page__article_mark-container">
+                    <div> Метки: </div>
+                    <div className="knowledge-page__article_mark">
                         {articlesMarks.map((mark, index) => {
-                            // на последний элемент не ставим запятую
                             return (
                                 <span>
                                     {mark?.name}{(index === articlesMarks.length - 1) ? '' : ', '}
@@ -147,7 +117,6 @@ const KnowledgeBasePage = () => {
     }
 
     const {
-        getArticles: { data: articles, loading: loadingArticles, error: errorArticles, count: articlesCount },
         getArticlesUser: { data: articlesUser, loading: loadingArticlesUser, error: errorArticlesUser }
     } = useSelector((state) => state.article);
 
@@ -163,14 +132,23 @@ const KnowledgeBasePage = () => {
         getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
     } = useSelector((state) => state.sectionGroup);
 
+    const getfilterMarks = useSelector((state) => state.articleFilterByMarks)
+
+
     const dispatch = useDispatch();
 
+    // getfilterMarks.subscribe(() => console.log(getfilterMarks))
     useEffect(() => {
         // инициализируем данные из бд
         dispatch(getArticlesUser());
         dispatch(getMarks());
         dispatch(getSections());
         dispatch(getSectionGroups());
+
+        setFilterMarks(getfilterMarks);
+        console.log(getfilterMarks);
+
+
         return () => {
             dispatch(resetGetArticlesUser());
             dispatch(resetGetMarks());
@@ -178,6 +156,10 @@ const KnowledgeBasePage = () => {
             dispatch(resetGetSectionGroups());
         }
     }, []);
+
+    useEffect(() => {
+        console.log('subscribe', getfilterMarks)
+    }, [getfilterMarks])
 
     // определяем массивы статей, разделов и групп разделов
     useEffect(() => {

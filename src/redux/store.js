@@ -22,6 +22,8 @@ import { articlePostReducer } from './slices/articlePost.slice';
 import { articleMarkReducer } from './slices/articleMark.slice';
 import { articleFileReducer } from './slices/articleFile.slice';
 
+import { articleFilterByMarksReducer } from './slices/articleFilterByMarks';
+
 // загруза доков на сервер
 import { uploadArticleFileReducer } from './slices/uploadArticleFile.slice';
 
@@ -49,5 +51,6 @@ export const store = configureStore({
     articlePost: articlePostReducer,
     uploadArticleFile: uploadArticleFileReducer,
     articleFile: articleFileReducer,
+    articleFilterByMarks: articleFilterByMarksReducer,
   },
 });
