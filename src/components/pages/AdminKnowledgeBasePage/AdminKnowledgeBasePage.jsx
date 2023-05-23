@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import Table from '../Table';
+import Table from '../../Table';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getArticles } from '../../redux/actions/knowledgeBase/getArticles.action';
-import { getOneArticle } from '../../redux/actions/knowledgeBase/getOneArticle.action';
+import { getArticles } from '../../../redux/actions/knowledgeBase/getArticles.action';
+import { getOneArticle } from '../../../redux/actions/knowledgeBase/getOneArticle.action';
 
-import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
-import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
-import { setActiveModal } from '../../redux/slices/app.slice';
+import { getSections } from '../../../redux/actions/knowledgeBase/getSections.action';
+import { getSectionGroups } from '../../../redux/actions/knowledgeBase/getSectionGroups.action';
+import { setActiveModal } from '../../../redux/slices/app.slice';
 
-import { resetGetSections } from '../../redux/slices/section.slice';
-import { resetGetSectionGroups } from '../../redux/slices/sectionGroup.slice';
-import { resetGetArticles } from '../../redux/slices/article.slice';
+import { resetGetSections } from '../../../redux/slices/section.slice';
+import { resetGetSectionGroups } from '../../../redux/slices/sectionGroup.slice';
+import { resetGetArticles } from '../../../redux/slices/article.slice';
 
-import ModalArticle from '../modals/ModalArticle';
-import ModalTesting from '../modals/ModalTesting';
+import ModalArticle from '../../modals/ModalArticle/ModalArticle';
+import ModalTesting from '../../modals/ModalTesting';
 
 
 
 import moment from 'moment';
-import { resetCreateTesting, resetGetAdminTesting, resetUpdateTesting } from '../../redux/slices/testing.slice';
-import Loading from '../Loading';
-import { getAdminTestingSingle } from '../../redux/actions/testing/getAdminTestingSingle.action';
-import { deleteTesting } from '../../redux/actions/testing/deleteTesting.action';
+import { resetCreateTesting, resetGetAdminTesting, resetUpdateTesting } from '../../../redux/slices/testing.slice';
+import Loading from '../../Loading';
+import { getAdminTestingSingle } from '../../../redux/actions/testing/getAdminTestingSingle.action';
+import { deleteTesting } from '../../../redux/actions/testing/deleteTesting.action';
 
 const AdminKnowledgeBasePage = () => {
   const [paramsData, setParamsData] = useState({ page: 1, search: '' });

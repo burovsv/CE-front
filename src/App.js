@@ -16,15 +16,15 @@ import AdminEmployeePage from './components/pages/AdminEmployeePage';
 import NewsSinglePage from './components/pages/NewsSinglePage';
 import TestingPage from './components/pages/TestingPage';
 import StudyPage from './components/pages/StudyPage';
-import KnowledgeBasePage from './components/pages/KnowledgeBasePage';
-import KnowledgeBaseSinglePage from './components/pages/KnowledgeBaseSinglePage';
+import KnowledgeBasePage from './components/pages/KnowledgeBasePage/KnowledgeBasePage';
+import KnowledgeBaseSinglePage from './components/pages/KnowledgeBaseSinglePage/KnowledgeBaseSinglePage';
 import SearchPage from './components/pages/SearchPage';
 import axios from 'axios';
 import { resetLoginEmployee } from './redux/slices/employee.slice';
 import AdminReportsPage from './components/pages/AdminReports';
 import NewsResultPage from './components/pages/NewsResultPage';
 import AccountPage from './components/pages/AccountPage';
-import AdminKnowledgeBasePage from './components/pages/AdminKnowledgeBasePage';
+import AdminKnowledgeBasePage from './components/pages/AdminKnowledgeBasePage/AdminKnowledgeBasePage';
 function App() {
   const dispatch = useDispatch();
   const location = useLocation();

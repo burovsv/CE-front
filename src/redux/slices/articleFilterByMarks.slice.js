@@ -8,8 +8,8 @@ const articleFilterByMarksSlice = createSlice({
     name: 'articleFilterByMarks',
     initialState,
     reducers: {
-        setArticleFilterMarks(state, newValue) {
-            state.value = newValue;
+        setArticleFilterMarks(state, action) {
+            state.value = action.payload;
         }
     }
 })

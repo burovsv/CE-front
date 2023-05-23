@@ -3,47 +3,47 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Select, Collapse } from 'antd';
 import * as _ from 'lodash';
 
-import Modal from './Modal';
+import Modal from '../Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
 import NumberFormat from 'react-number-format';
-import CustomToolbar from '../CustomToolbar';
+import CustomToolbar from '../../CustomToolbar';
 
-import { setActiveModal } from '../../redux/slices/app.slice';
+import { setActiveModal } from '../../../redux/slices/app.slice';
 
-import { resetCreateMark, resetGetMarks } from '../../redux/slices/mark.slice';
-import { createMark } from '../../redux/actions/knowledgeBase/createMark.action';
-import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
+import { resetCreateMark, resetGetMarks } from '../../../redux/slices/mark.slice';
+import { createMark } from '../../../redux/actions/knowledgeBase/createMark.action';
+import { getMarks } from '../../../redux/actions/knowledgeBase/getMarks.action';
 
-import { resetCreateSectionGroup, resetGetSectionGroups } from '../../redux/slices/sectionGroup.slice';
-import { createSectionGroup } from '../../redux/actions/knowledgeBase/createSectionGroup.action';
-import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
+import { resetCreateSectionGroup, resetGetSectionGroups } from '../../../redux/slices/sectionGroup.slice';
+import { createSectionGroup } from '../../../redux/actions/knowledgeBase/createSectionGroup.action';
+import { getSectionGroups } from '../../../redux/actions/knowledgeBase/getSectionGroups.action';
 
-import { resetCreateSection, resetGetSectionsByGroup } from '../../redux/slices/section.slice';
-import { getSectionsByGroup } from '../../redux/actions/knowledgeBase/getSectionsByGroup.action';
-import { createSection } from '../../redux/actions/knowledgeBase/createSection.action';
+import { resetCreateSection, resetGetSectionsByGroup } from '../../../redux/slices/section.slice';
+import { getSectionsByGroup } from '../../../redux/actions/knowledgeBase/getSectionsByGroup.action';
+import { createSection } from '../../../redux/actions/knowledgeBase/createSection.action';
 
-import { resetUploadArticleFile } from '../../redux/slices/uploadArticleFile.slice';
-import { uploadArticleFile } from '../../redux/actions/knowledgeBase/uploadArticleFile.action';
+import { resetUploadArticleFile } from '../../../redux/slices/uploadArticleFile.slice';
+import { uploadArticleFile } from '../../../redux/actions/knowledgeBase/uploadArticleFile.action';
 
-import { createArticleFile } from '../../redux/actions/knowledgeBase/createArticleFile.action';
-import { deleteArticleFile } from '../../redux/actions/knowledgeBase/deleteArticleFile.action';
+import { createArticleFile } from '../../../redux/actions/knowledgeBase/createArticleFile.action';
+import { deleteArticleFile } from '../../../redux/actions/knowledgeBase/deleteArticleFile.action';
 
 
 // import { getEmployeePositions } from '../../redux/actions/employeePosition/getEmployeePositions.action';
-import { getPosts } from '../../redux/actions/post/getPosts.action';
+import { getPosts } from '../../../redux/actions/post/getPosts.action';
 
 // создание статьи
-import { createArticle } from '../../redux/actions/knowledgeBase/createArticle.action';
-import { resetCreateArticle } from '../../redux/slices/article.slice';
-import { resetGetOneArticle } from '../../redux/slices/article.slice';
-import { updateArticle } from '../../redux/actions/knowledgeBase/updateArticle.action';
+import { createArticle } from '../../../redux/actions/knowledgeBase/createArticle.action';
+import { resetCreateArticle } from '../../../redux/slices/article.slice';
+import { resetGetOneArticle } from '../../../redux/slices/article.slice';
+import { updateArticle } from '../../../redux/actions/knowledgeBase/updateArticle.action';
 
 import ReactQuill, { Quill } from 'react-quill';
 import * as mammoth from 'mammoth/mammoth.browser.js';
 import moment from 'moment';
 import Axios from 'axios';
-import { resetGetPosts } from '../../redux/slices/post.slice';
+import { resetGetPosts } from '../../../redux/slices/post.slice';
 
 const { Panel } = Collapse;
 

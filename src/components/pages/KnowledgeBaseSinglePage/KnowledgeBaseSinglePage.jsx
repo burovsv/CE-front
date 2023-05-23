@@ -11,15 +11,15 @@ import { Collapse } from "antd";
 import PDFViewer from 'pdf-viewer-reactjs'
 import ReactPlayer from 'react-player'
 
-import { getArticlesUser } from '../../redux/actions/knowledgeBase/getArticlesUser.action';
-import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
-import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
-import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
+import { getArticlesUser } from '../../../redux/actions/knowledgeBase/getArticlesUser.action';
+import { getMarks } from '../../../redux/actions/knowledgeBase/getMarks.action';
+import { getSections } from '../../../redux/actions/knowledgeBase/getSections.action';
+import { getSectionGroups } from '../../../redux/actions/knowledgeBase/getSectionGroups.action';
 
-import { resetGetArticlesUser } from "../../redux/slices/article.slice";
-import { resetGetMarks } from "../../redux/slices/mark.slice";
-import { resetGetSections } from "../../redux/slices/section.slice";
-import { resetGetSectionGroups } from "../../redux/slices/sectionGroup.slice";
+import { resetGetArticlesUser } from "../../../redux/slices/article.slice";
+import { resetGetMarks } from "../../../redux/slices/mark.slice";
+import { resetGetSections } from "../../../redux/slices/section.slice";
+import { resetGetSectionGroups } from "../../../redux/slices/sectionGroup.slice";
 
 import Axios from "axios";
 

@@ -22,7 +22,9 @@ import { articlePostReducer } from './slices/articlePost.slice';
 import { articleMarkReducer } from './slices/articleMark.slice';
 import { articleFileReducer } from './slices/articleFile.slice';
 
-import { articleFilterByMarksReducer } from './slices/articleFilterByMarks';
+import { articleFilterByMarksReducer } from './slices/articleFilterByMarks.slice';
+import { articleFilterByEmployeePositionsReducer } from './slices/articleFilterByEmployeePositions.slice';
+import { articleSearchReducer } from './slices/articleSearch.slice';
 
 // загруза доков на сервер
 import { uploadArticleFileReducer } from './slices/uploadArticleFile.slice';
@@ -52,5 +54,7 @@ export const store = configureStore({
     uploadArticleFile: uploadArticleFileReducer,
     articleFile: articleFileReducer,
     articleFilterByMarks: articleFilterByMarksReducer,
+    articleFilterByEmployeePositions: articleFilterByEmployeePositionsReducer,
+    articleSearch: articleSearchReducer,
   },
 });

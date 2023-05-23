@@ -1,19 +1,19 @@
 import * as _ from 'lodash';
-import '../../css/knowledgeBase.css';
+import '../../../css/knowledgeBase.css';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { getArticlesUser } from '../../redux/actions/knowledgeBase/getArticlesUser.action';
-import { getMarks } from '../../redux/actions/knowledgeBase/getMarks.action';
-import { getSections } from '../../redux/actions/knowledgeBase/getSections.action';
-import { getSectionGroups } from '../../redux/actions/knowledgeBase/getSectionGroups.action';
+import { getArticlesUser } from '../../../redux/actions/knowledgeBase/getArticlesUser.action';
+import { getMarks } from '../../../redux/actions/knowledgeBase/getMarks.action';
+import { getSections } from '../../../redux/actions/knowledgeBase/getSections.action';
+import { getSectionGroups } from '../../../redux/actions/knowledgeBase/getSectionGroups.action';
 
-import { resetGetArticlesUser } from '../../redux/slices/article.slice';
-import { resetGetMarks } from '../../redux/slices/mark.slice';
-import { resetGetSectionGroups } from '../../redux/slices/sectionGroup.slice';
-import { resetGetSections } from '../../redux/slices/section.slice';
+import { resetGetArticlesUser } from '../../../redux/slices/article.slice';
+import { resetGetMarks } from '../../../redux/slices/mark.slice';
+import { resetGetSectionGroups } from '../../../redux/slices/sectionGroup.slice';
+import { resetGetSections } from '../../../redux/slices/section.slice';
 
-
+import createHierarchicalList from "./scripts/createHierarchicalList"
 
 import { Link } from 'react-router-dom';
 import { log } from 'util';
@@ -27,10 +27,8 @@ const KnowledgeBasePage = () => {
     const [sectionsList, setSectionsList] = useState([]);
     const [sectionGroupsList, setSectionGroupsList] = useState([]);
     const [sectionGroupsElement, setSectionGroupsElement] = useState([]);
+
     const [initHierarchicalList, setInitHierarchicalList] = useState([]);
-
-    const [filterMarks, setFilterMarks] = useState([])
-
 
     const onSectionGroupClick = (e, group) => {
         let hierarchicalList = _.cloneDeep(initHierarchicalList);
@@ -132,22 +130,17 @@ const KnowledgeBasePage = () => {
         getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
     } = useSelector((state) => state.sectionGroup);
 
-    const getfilterMarks = useSelector((state) => state.articleFilterByMarks)
-
+    const getFilterMarks = useSelector((state) => state.articleFilterByMarks)
+    const getFilterEmployeePositions = useSelector((state) => state.articleFilterByEmployeePositions)
 
     const dispatch = useDispatch();
 
-    // getfilterMarks.subscribe(() => console.log(getfilterMarks))
     useEffect(() => {
         // инициализируем данные из бд
         dispatch(getArticlesUser());
         dispatch(getMarks());
         dispatch(getSections());
         dispatch(getSectionGroups());
-
-        setFilterMarks(getfilterMarks);
-        console.log(getfilterMarks);
-
 
         return () => {
             dispatch(resetGetArticlesUser());
@@ -157,13 +150,11 @@ const KnowledgeBasePage = () => {
         }
     }, []);
 
-    useEffect(() => {
-        console.log('subscribe', getfilterMarks)
-    }, [getfilterMarks])
-
     // определяем массивы статей, разделов и групп разделов
     useEffect(() => {
-        if (!articlesUser || !sections || !sectionGroups) return;
+        if (!articlesUser || !sections || !sectionGroups || !_.isEmpty(initHierarchicalItem)) {
+            return;
+        }
 
         let articlesArray = (!_.isEmpty(articlesList)) ? articlesList : [];
         let sectionsArray = (!_.isEmpty(sectionsList)) ? sectionsList : [];
@@ -182,53 +173,53 @@ const KnowledgeBasePage = () => {
             setSectionGroupsList(sectionGroupsArray);
         }
 
-        //   создать массив иерархических групп разделов
-        let hierarchicalList = [];
-
-        _.forEach(sectionGroupsArray, (sectionGroup) => {
-            let id = sectionGroup.id;
-            let sectionGroupChildren = [];
-            _.forEach(sectionsArray, (section) => {
-                if (section.parent == id) {
-                    let sectionChildren = [];
-                    _.forEach(articlesArray, (article) => {
-                        if (article.parent == section.id) sectionChildren.push(article);
-                    })
-                    if (!_.isEmpty(sectionChildren)) {
-                        section.children = sectionChildren;
-                        sectionGroupChildren.push(section, ...sectionChildren)
-                        sectionGroup.children = sectionGroupChildren;
-                    };
-                }
-            });
-            if (!_.isEmpty(sectionGroupChildren)) hierarchicalList.push(sectionGroup, ...sectionGroupChildren);
-
-        });
-
+        let hierarchicalList = createHierarchicalList(sectionGroupsArray, sectionsArray, articlesArray);
         setInitHierarchicalList(hierarchicalList);
     }, [articlesUser, sections, sectionGroups, marks])
 
-
     useEffect(() => {
-        function createHierarchicalList() {
-            let hierarchicalList = [];
-            hierarchicalList = initHierarchicalList.map((el) => {
-                if (el?.isCollapsed && el?.isHide) return null;
-                switch (el.level) {
-                    case 0:
-                        return sectionGroupElement(el);
-                    case 1:
-                        return sectionElement(el);
-                    case 2:
-                        return articleElement(el);
-                    default:
-                        return null;
-                }
+        let marksForFilter = getFilterMarks.value.map(el => ({ id: el }));
+        let employeePositionsForFilter = getFilterEmployeePositions.value.map(el => ({ id: el }));
+
+        let filteringArticlesArray = _.cloneDeep(articlesList);
+
+        if (marksForFilter) {
+            filteringArticlesArray = _.filter(articlesList, el => {
+                return _.intersectionBy(marksForFilter, el.data.marks, "id").length === marksForFilter.length;
             });
-            return hierarchicalList;
         }
 
-        setSectionGroupsElement(createHierarchicalList())
+        if (employeePositionsForFilter) {
+            filteringArticlesArray = _.filter(filteringArticlesArray, el => {
+                return _.intersectionBy(employeePositionsForFilter, el.data.posts, "id").length === employeePositionsForFilter.length;
+            });
+        }
+
+        let hierarchicalList = createHierarchicalList(sectionGroupsList, sectionsList, filteringArticlesArray);
+        setInitHierarchicalList(hierarchicalList);
+
+    }, [getFilterMarks, getFilterEmployeePositions])
+
+    const createHierarchicalElementList = useCallback(() => {
+        let newHierarchicalList = [];
+        newHierarchicalList = initHierarchicalList.map((el) => {
+            if (el?.isCollapsed && el?.isHide) return null;
+            switch (el.level) {
+                case 0:
+                    return sectionGroupElement(el);
+                case 1:
+                    return sectionElement(el);
+                case 2:
+                    return articleElement(el);
+                default:
+                    return null;
+            }
+        });
+        return newHierarchicalList;
+    }, [initHierarchicalList])
+
+    useEffect(() => {
+        setSectionGroupsElement(createHierarchicalElementList());
     }, [initHierarchicalList])
 
     let element = (
