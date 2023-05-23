@@ -23,7 +23,6 @@ import { log } from 'util';
 const KnowledgeBasePage = () => {
 
     const [articlesList, setArticlesList] = useState([]);
-    const [marksList, setMarksList] = useState([]);
     const [sectionsList, setSectionsList] = useState([]);
     const [sectionGroupsList, setSectionGroupsList] = useState([]);
     const [sectionGroupsElement, setSectionGroupsElement] = useState([]);
@@ -132,6 +131,7 @@ const KnowledgeBasePage = () => {
 
     const getFilterMarks = useSelector((state) => state.articleFilterByMarks)
     const getFilterEmployeePositions = useSelector((state) => state.articleFilterByEmployeePositions)
+    const getArticleSearch = useSelector((state) => state.articleSearch)
 
     const dispatch = useDispatch();
 
@@ -195,10 +195,15 @@ const KnowledgeBasePage = () => {
             });
         }
 
+        if (!_.isEmpty(getArticleSearch)) {
+            let text = getArticleSearch.value.toUpperCase();
+            filteringArticlesArray = _.filter(filteringArticlesArray, el => el.name.toUpperCase().includes(text));
+        }
+
         let hierarchicalList = createHierarchicalList(sectionGroupsList, sectionsList, filteringArticlesArray);
         setInitHierarchicalList(hierarchicalList);
 
-    }, [getFilterMarks, getFilterEmployeePositions])
+    }, [getFilterMarks, getFilterEmployeePositions, getArticleSearch])
 
     const createHierarchicalElementList = useCallback(() => {
         let newHierarchicalList = [];
