@@ -138,30 +138,21 @@ const WorkCalendarFullRow = ({
             style={{ position: 'sticky', left: '0px', zIndex: 100, backgroundColor: '#fff', paddingLeft: '32px' }}>
             <div style={{ width: '32px', top: 0, left: '0', position: 'absolute', height: '100%', borderRight: '0.2px solid rgb(183, 183, 183)' }}>
               <NumberFormat
-                onBlur={(e) => {
-                  let updateOrderItem;
-                  if (item?.isLastPost) {
-                    updateOrderItem = { ...item, orderEmployee: parseInt(e.target.value), isLastPost: false };
-                    updateRow(realIndex, updateOrderItem);
-                    const firstInGroup = [...getValues('calendar')?.filter((filter) => filter?.groupPost == item?.groupPost)].sort(function (a, b) {
-                      return a.orderEmployee - b.orderEmployee;
-                    })[0];
-                    const firstInGroupIndex = getValues('calendar')?.findIndex((findItem) => findItem?.userId == firstInGroup?.userId);
-                    updateRow(firstInGroupIndex, { ...firstInGroup, isLastPost: true });
-                    // console.log(firstInGroup);
-                    // console.log(firstItemGroup);
-                    // console.log(firstItemGroupIndex);
-                    // setTimeout(() => {
-
-                    // }, 100);
-                  } else {
-                    updateOrderItem = { ...item, orderEmployee: parseInt(e.target.value) };
-                    updateRow(realIndex, updateOrderItem);
-                  }
-
-                  // setValue('')
-                  // onChangeStartTime(e.target.value, 'workTimeStart1', 'workTimeEnd1');
-                }}
+                // onBlur={(e) => {
+                //   let updateOrderItem;
+                //   if (item?.isLastPost) {
+                //     updateOrderItem = { ...item, orderEmployee: parseInt(e.target.value), isLastPost: false };
+                //     updateRow(realIndex, updateOrderItem);
+                //     const firstInGroup = [...getValues('calendar')?.filter((filter) => filter?.groupPost == item?.groupPost)].sort(function (a, b) {
+                //       return a.orderEmployee - b.orderEmployee;
+                //     })[0];
+                //     const firstInGroupIndex = getValues('calendar')?.findIndex((findItem) => findItem?.userId == firstInGroup?.userId);
+                //     updateRow(firstInGroupIndex, { ...firstInGroup, isLastPost: true });
+                //   } else {
+                //     updateOrderItem = { ...item, orderEmployee: parseInt(e.target.value) };
+                //     updateRow(realIndex, updateOrderItem);
+                //   }
+                // }}
                 // isAllowed={(values) => {
                 //   const { floatValue } = values;
                 //   return floatValue >= 1 && floatValue <= 9;
@@ -169,9 +160,21 @@ const WorkCalendarFullRow = ({
                 value={item?.orderEmployee}
                 style={{ top: '50%', left: '50%', position: 'absolute', transform: 'translate(-50%,-50%)', padding: 0, textAlign: 'center', width: '20px', height: '16px', outline: 'none', fontSize: '8px', border: '1px solid rgb(183, 183, 183)' }}
                 autoComplete="off"
-                onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
-                    // onSaveStartTime(event);
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    let updateOrderItem;
+                    if (item?.isLastPost) {
+                      updateOrderItem = { ...item, orderEmployee: parseInt(e.target.value), isLastPost: false };
+                      updateRow(realIndex, updateOrderItem);
+                      const firstInGroup = [...getValues('calendar')?.filter((filter) => filter?.groupPost == item?.groupPost)].sort(function (a, b) {
+                        return a.orderEmployee - b.orderEmployee;
+                      })[0];
+                      const firstInGroupIndex = getValues('calendar')?.findIndex((findItem) => findItem?.userId == firstInGroup?.userId);
+                      updateRow(firstInGroupIndex, { ...firstInGroup, isLastPost: true });
+                    } else {
+                      updateOrderItem = { ...item, orderEmployee: parseInt(e.target.value) };
+                      updateRow(realIndex, updateOrderItem);
+                    }
                   }
                 }}
               />

@@ -353,7 +353,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         {isEdited && <span style={{ color: 'red' }}>&nbsp;был изменен, сохраните!</span>}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         {isAccessEditCalendar() && (
           <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '0px' }} disabled={upsertWorkCalendarLoading || loadingEmployees || getEmployeeHiddenLoading}>
             {loadingEmployees || getEmployeeHiddenLoading ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Сохранить'}
@@ -633,6 +633,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
             ?.map((item, index) => {
               return (
                 <WorkCalendarFullRow
+                  key={item?.userId}
                   showHiddenList={showHiddenEmployees}
                   onShowHiddenList={() => {
                     setShowHiddenEmployees(true);
