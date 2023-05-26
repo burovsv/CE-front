@@ -153,6 +153,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           orderEmployee: employee.orderEmployee,
           post: employee.post,
           groupPost: employee.groupPost,
+          timeTable: employee.timeTable,
           existWorkCalendarId: employee?.workCalendars?.[0]?.id,
           calendarData: [],
         };
@@ -353,7 +354,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         {isEdited && <span style={{ color: 'red' }}>&nbsp;был изменен, сохраните!</span>}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
         {isAccessEditCalendar() && (
           <button onClick={handleSubmit(onSubmit)} class="report__btn" style={{ marginLeft: '0px' }} disabled={upsertWorkCalendarLoading || loadingEmployees || getEmployeeHiddenLoading}>
             {loadingEmployees || getEmployeeHiddenLoading ? <div className="loading-account">Идет загрузка...</div> : upsertWorkCalendarLoading ? <div className="loading-account">Идет сохранение...</div> : 'Сохранить'}
@@ -376,7 +377,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', maxWidth: '310px', marginLeft: '20px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
       </div>
       {isAccessEditCalendar() && (
-        <div style={{ display: 'inline-flex', alignItems: 'center', marginTop: '20px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', marginRight: '20px' }}>
             <label>
               <input
@@ -651,7 +652,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
                     setSelectedColumn(-1);
                   }}
                   selectedColumn={selectedColumn}
-                  timeTableRow={employees?.[index]?.timeTable}
+                  timeTableRow={item?.timeTable}
                   isAccessEdit={isAccessEditCalendar()}
                   setIsEdited={setIsEdited}
                   item={item}
