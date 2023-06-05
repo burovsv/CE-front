@@ -1908,3 +1908,8 @@ thead th {
 .work-calendar-hide .react-calendar__viewContainer {
   display: none !important;
 }
+.react-calendar__navigation__label,
+.calendar-title,
+.event {
+  font-family: 'Arial';
+}

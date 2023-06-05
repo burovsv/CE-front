@@ -629,7 +629,7 @@ const AccountPage = () => {
               dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166 ? (
                 <>
                   <WorkCalendar hideCalendar />
-                  <AcceptedList />
+                  <AcceptedList onClick={handleClickOpenFullCalendar} />
                 </>
               ) : (
                 <>

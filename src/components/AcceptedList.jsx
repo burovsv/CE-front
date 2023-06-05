@@ -7,7 +7,7 @@ import { getStaffListBySubdivision } from '../redux/actions/employee/getStaffLis
 import ModalStaff from './modals/ModalStaff';
 import AcceptedCheckbox from './AcceptedCheckbox';
 import { setActiveCalendarSubdivision } from '../redux/slices/employeeHistory.slice';
-const AcceptedList = () => {
+const AcceptedList = ({ onClick }) => {
   const dispatch = useDispatch();
   const {
     getStaffList: { loading, data, error },
@@ -41,6 +41,7 @@ const AcceptedList = () => {
                   } else if (findAccessSubdiv) {
                     dispatch(setActiveCalendarSubdivision({ id: findAccessSubdiv?.id, name: findAccessSubdiv?.name }));
                   }
+                  onClick();
                 }
               }}>
               <td>{value?.name}</td>
@@ -70,6 +71,7 @@ const AcceptedList = () => {
                       } else if (findAccessSubdiv) {
                         dispatch(setActiveCalendarSubdivision({ id: findAccessSubdiv?.id, name: findAccessSubdiv?.name }));
                       }
+                      onClick();
                     }
                   }}>
                   <td>{itemSubdiv?.name}</td>
