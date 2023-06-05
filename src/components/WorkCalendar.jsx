@@ -25,7 +25,7 @@ const dataCalendar = [
   },
 ];
 
-const WorkCalendar = () => {
+const WorkCalendar = ({ hideCalendar }) => {
   const {
     activeMonthYear,
     showFullCalendar,
@@ -58,7 +58,7 @@ const WorkCalendar = () => {
         minDetail="month"
         maxDetail="month"
         defaultView="month"
-        className={clsx('work-calendar', workCalendarMonthLoading && 'work-calendar-loading')}
+        className={clsx('work-calendar', workCalendarMonthLoading && 'work-calendar-loading', hideCalendar && 'work-calendar-hide')}
         activeStartDate={moment(activeMonthYear).toDate()}
         onActiveStartDateChange={(monthYear) => {
           console.log(monthYear);

@@ -1905,3 +1905,6 @@ thead th {
     width: 90%;
   }
 }
+.work-calendar-hide .react-calendar__viewContainer {
+  display: none !important;
+}
