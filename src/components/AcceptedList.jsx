@@ -41,7 +41,9 @@ const AcceptedList = ({ onClick }) => {
                   } else if (findAccessSubdiv) {
                     dispatch(setActiveCalendarSubdivision({ id: findAccessSubdiv?.id, name: findAccessSubdiv?.name }));
                   }
-                  onClick();
+                  setTimeout(() => {
+                    onClick();
+                  }, 300);
                 }
               }}>
               <td>{value?.name}</td>
@@ -71,7 +73,9 @@ const AcceptedList = ({ onClick }) => {
                       } else if (findAccessSubdiv) {
                         dispatch(setActiveCalendarSubdivision({ id: findAccessSubdiv?.id, name: findAccessSubdiv?.name }));
                       }
-                      onClick();
+                      setTimeout(() => {
+                        onClick();
+                      }, 300);
                     }
                   }}>
                   <td>{itemSubdiv?.name}</td>
