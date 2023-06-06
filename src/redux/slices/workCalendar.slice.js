@@ -3,11 +3,15 @@ import moment from 'moment';
 import { initStateGetWorkCalendarMonth, reducerGetWorkCalendarMonth } from '../actions/workCalendar/getWorkCalendarMonth.slice';
 import { initStateUpsertWorkCalendarFull, reducerUpsertWorkCalendarFull } from '../actions/workCalendar/upsertWorkCalendarFull.slice';
 import { initStateExportWorkCalendarToExcel, reducerExportWorkCalendarToExcel } from '../actions/workCalendar/exportWorkCalendarToExcel.slice';
+import { initStateGetAcceptWorkTable, reducerGetAcceptWorkTable } from '../actions/workCalendar/getAcceptWorkTable.slice';
+import { initStateSwitchAcceptWorkTable, reducerSwitchAcceptWorkTable } from '../actions/workCalendar/switchAcceptWorkTable.slice';
 
 export const initialState = {
   ...initStateGetWorkCalendarMonth,
   ...initStateUpsertWorkCalendarFull,
   ...initStateExportWorkCalendarToExcel,
+  ...initStateGetAcceptWorkTable,
+  ...initStateSwitchAcceptWorkTable,
   activeMonthYear: moment().set('date', 1).toDate(),
   showFullCalendar: false,
 };
@@ -36,6 +40,8 @@ export const workCalendarSlice = createSlice({
     ...reducerGetWorkCalendarMonth,
     ...reducerUpsertWorkCalendarFull,
     ...reducerExportWorkCalendarToExcel,
+    ...reducerGetAcceptWorkTable,
+    ...reducerSwitchAcceptWorkTable,
   },
 });
 export const { resetgetTestingFilters, resetCreateTestingFilter, setActiveMonthYear, setShowFullCalendar, resetUpsertWorkCalendarFull, resetExportWorkCalendarToExcel } = workCalendarSlice.actions;

@@ -47,8 +47,8 @@ const WorkCalendar = ({ hideCalendar }) => {
     return findDate ? findDate : false;
   };
   return (
-    <div style={{ position: 'relative', ...(workCalendarMonthLoading && { paddingBottom: '20px' }) }}>
-      {workCalendarMonthLoading && (
+    <div style={{ position: 'relative', ...(workCalendarMonthLoading && !hideCalendar && { paddingBottom: '20px' }) }}>
+      {workCalendarMonthLoading && !hideCalendar && (
         <div style={{ position: 'absolute', paddingLeft: '10px', bottom: '-60px', left: '50%', transform: 'translateX(-50%)' }} className="loading-account">
           Идет загрузка...
         </div>
