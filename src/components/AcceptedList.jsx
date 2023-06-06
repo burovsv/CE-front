@@ -62,6 +62,7 @@ const AcceptedList = ({ onClick }) => {
           {[...dataUser?.subdivisions]
             ?.sort((a, b) => a.name.localeCompare(b.name))
             ?.map((itemSubdiv) => {
+              const findExistAcceptWorkTable = acceptWorkTableData?.find((acceptItem) => acceptItem?.subdivisionId == itemSubdiv?.id);
               const findRepeat = employeeHistory?.find((emplHist) => emplHist.id == itemSubdiv?.id);
               if (!findRepeat) {
                 return (
@@ -86,7 +87,7 @@ const AcceptedList = ({ onClick }) => {
                     <td></td>
                     <td></td>
                     <td>
-                      <AcceptedCheckbox />
+                      <AcceptedCheckbox defaultChecked={findExistAcceptWorkTable ? !!findExistAcceptWorkTable?.accept : false} />
                     </td>
                   </tr>
                 );
