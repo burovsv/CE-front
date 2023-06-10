@@ -7,7 +7,7 @@ import { getStaffListBySubdivision } from '../redux/actions/employee/getStaffLis
 import ModalStaff from './modals/ModalStaff';
 import { switchAcceptWorkTable } from '../redux/actions/workCalendar/switchAcceptWorkTable.slice';
 import moment from 'moment';
-const AcceptedCheckbox = ({ onClick = () => {}, defaultChecked = false }) => {
+const AcceptedCheckbox = ({ subdivisionId, onClick = () => {}, defaultChecked = false }) => {
   const [checked, setChecked] = useState(defaultChecked);
   const dispatch = useDispatch();
   const { activeCalendarSubdivision } = useSelector((state) => state.employeeHistory);
@@ -23,7 +23,7 @@ const AcceptedCheckbox = ({ onClick = () => {}, defaultChecked = false }) => {
         e.stopPropagation();
         let switchChecked = !checked;
         setChecked(switchChecked);
-        dispatch(switchAcceptWorkTable({ subdivisionId: activeCalendarSubdivision?.id, date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), status: switchChecked ? 'accept' : '' }));
+        dispatch(switchAcceptWorkTable({ subdivisionId, date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), status: switchChecked ? 'accept' : '' }));
       }}>
       <div>{!checked ? <div style={{ width: '17px', height: '10px', background: '#FF0000' }}></div> : <div style={{ marginLeft: 'auto', width: '17px', height: '10px', background: '#3F9F04' }}></div>}</div>
     </div>

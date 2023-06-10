@@ -7,6 +7,7 @@ import { getStaffListBySubdivision } from '../redux/actions/employee/getStaffLis
 import ModalStaff from './modals/ModalStaff';
 import AcceptedCheckbox from './AcceptedCheckbox';
 import { setActiveCalendarSubdivision } from '../redux/slices/employeeHistory.slice';
+import { resetSwitchAcceptWorkTable } from '../redux/slices/workCalendar.slice';
 const AcceptedList = ({ onClick }) => {
   const dispatch = useDispatch();
   const {
@@ -37,6 +38,7 @@ const AcceptedList = ({ onClick }) => {
                 <td
                   onClick={() => {
                     if (value.id) {
+                      dispatch(resetSwitchAcceptWorkTable());
                       const findCurrentSubdiv = employeeHistory?.find((historyItem) => historyItem?.id == value.id);
                       const findAccessSubdiv = dataUser?.subdivisions?.find((accessSubdiv) => accessSubdiv?.id == value.id);
                       if (findCurrentSubdiv) {
@@ -54,7 +56,7 @@ const AcceptedList = ({ onClick }) => {
                 <td></td>
                 <td></td>
                 <td>
-                  <AcceptedCheckbox defaultChecked={findExistAcceptWorkTable ? (findExistAcceptWorkTable?.status == 'accept' ? true : false) : false} />
+                  <AcceptedCheckbox subdivisionId={value.id} defaultChecked={findExistAcceptWorkTable ? (findExistAcceptWorkTable?.status == 'accept' ? true : false) : false} />
                 </td>
               </tr>
             );
@@ -70,6 +72,7 @@ const AcceptedList = ({ onClick }) => {
                     <td
                       onClick={() => {
                         if (itemSubdiv?.id) {
+                          dispatch(resetSwitchAcceptWorkTable());
                           const findCurrentSubdiv = employeeHistory?.find((historyItem) => historyItem?.id == itemSubdiv?.id);
                           const findAccessSubdiv = dataUser?.subdivisions?.find((accessSubdiv) => accessSubdiv?.id == itemSubdiv?.id);
                           if (findCurrentSubdiv) {
@@ -87,7 +90,7 @@ const AcceptedList = ({ onClick }) => {
                     <td></td>
                     <td></td>
                     <td>
-                      <AcceptedCheckbox defaultChecked={findExistAcceptWorkTable ? !!findExistAcceptWorkTable?.accept : false} />
+                      <AcceptedCheckbox subdivisionId={itemSubdiv?.id} defaultChecked={findExistAcceptWorkTable ? !!findExistAcceptWorkTable?.accept : false} />
                     </td>
                   </tr>
                 );
