@@ -82,12 +82,15 @@ const AccountPage = () => {
     const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: moment(activeMonthYear).format('YYYY-MM-DD').toString() };
     dispatch(getSubdivisionWorkTimeTemplates(activeCalendarSubdivision?.id));
     dispatch(getEmployees(paramsEmployees));
-    dispatch(
-      getAcceptWorkTableSingle({
-        date: moment(activeMonthYear).format('YYYY-MM-DD').toString(),
-        subdivisionId: activeCalendarSubdivision?.id,
-      }),
-    );
+    if (!(dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166)) {
+      dispatch(
+        getAcceptWorkTableSingle({
+          date: moment(activeMonthYear).format('YYYY-MM-DD').toString(),
+          subdivisionId: activeCalendarSubdivision?.id,
+        }),
+      );
+    }
+
     setClickEditWorkTable(true);
   };
   useEffect(() => {

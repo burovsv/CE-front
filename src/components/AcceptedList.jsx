@@ -21,6 +21,7 @@ const AcceptedList = ({ onClick }) => {
   } = useSelector((state) => state.employeeHistory);
   const {
     getAcceptWorkTable: { data: acceptWorkTableData, loading: acceptWorkTableLoading },
+    activeMonthYear,
   } = useSelector((state) => state.workCalendar);
   return (
     <>
@@ -40,6 +41,12 @@ const AcceptedList = ({ onClick }) => {
                   onClick={() => {
                     if (value.id) {
                       dispatch(resetSwitchAcceptWorkTable());
+                      dispatch(
+                        getAcceptWorkTableSingle({
+                          date: moment(activeMonthYear).format('YYYY-MM-DD').toString(),
+                          subdivisionId: value.id,
+                        }),
+                      );
                       const findCurrentSubdiv = employeeHistory?.find((historyItem) => historyItem?.id == value.id);
                       const findAccessSubdiv = dataUser?.subdivisions?.find((accessSubdiv) => accessSubdiv?.id == value.id);
                       if (findCurrentSubdiv) {
@@ -76,6 +83,12 @@ const AcceptedList = ({ onClick }) => {
                       onClick={() => {
                         if (itemSubdiv?.id) {
                           dispatch(resetSwitchAcceptWorkTable());
+                          dispatch(
+                            getAcceptWorkTableSingle({
+                              date: moment(activeMonthYear).format('YYYY-MM-DD').toString(),
+                              subdivisionId: itemSubdiv?.id,
+                            }),
+                          );
                           const findCurrentSubdiv = employeeHistory?.find((historyItem) => historyItem?.id == itemSubdiv?.id);
                           const findAccessSubdiv = dataUser?.subdivisions?.find((accessSubdiv) => accessSubdiv?.id == itemSubdiv?.id);
                           if (findCurrentSubdiv) {
