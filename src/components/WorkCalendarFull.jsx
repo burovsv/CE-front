@@ -414,50 +414,56 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           Закрыть
         </button>
         {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', maxWidth: '310px', marginLeft: '20px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
-        {dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166 ? (
+        {isAccessEditCalendar() && (
           <>
-            <input style={{ height: '44.22px', border: '1px solid #C0C0C0', padding: '0 10px', width: '205px', marginLeft: '20px' }} {...acceptForm.register('directorComment')} />
-            <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitDirectorAccept)} class="report__btn" style={{ backgroundColor: '#2D7700', color: '#fff', marginLeft: '20px' }}>
-              Согласованно
-            </button>{' '}
-            <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitDirectorCancel)} class="report__btn" style={{ backgroundColor: 'rgb(252, 0, 0)', color: '#fff', marginLeft: '20px' }}>
-              Отказать
-            </button>
-            {acceptForm.watch('managerComment') && (
-              <div style={{ marginLeft: '20px' }}>
-                Коментарий управляющего: <b>{acceptForm.watch('managerComment')}</b>
-              </div>
+            {' '}
+            {dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166 ? (
+              <>
+                <input style={{ height: '44.22px', border: '1px solid #C0C0C0', padding: '0 10px', width: '205px', marginLeft: '20px' }} {...acceptForm.register('directorComment')} />
+                <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitDirectorAccept)} class="report__btn" style={{ backgroundColor: '#2D7700', color: '#fff', marginLeft: '20px' }}>
+                  Согласованно
+                </button>{' '}
+                <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitDirectorCancel)} class="report__btn" style={{ backgroundColor: 'rgb(252, 0, 0)', color: '#fff', marginLeft: '20px' }}>
+                  Отказать
+                </button>
+                {acceptForm.watch('managerComment') && (
+                  <div style={{ marginLeft: '20px' }}>
+                    Коментарий управляющего: <b>{acceptForm.watch('managerComment')}</b>
+                  </div>
+                )}
+              </>
+            ) : getAcceptWorkTableSingleData?.status == 'accept' ? (
+              <>
+                <div style={{ color: '#007D32', marginLeft: '20px' }}>Согласованно</div>
+                {acceptForm.watch('directorComment') && (
+                  <div style={{ marginLeft: '20px' }}>
+                    Коментарий директора: <b>{acceptForm.watch('directorComment')}</b>
+                  </div>
+                )}
+              </>
+            ) : getAcceptWorkTableSingleData?.status == 'waiting' ? (
+              <>
+                <button class="report__btn" style={{ backgroundColor: '#B4B4B4', color: '#fff', marginLeft: '20px' }} disabled={true}>
+                  Ожидание согласование
+                </button>
+              </>
+            ) : (
+              <>
+                <input style={{ height: '44.22px', border: '1px solid #C0C0C0', padding: '0 10px', width: '205px', marginLeft: '20px' }} {...acceptForm.register('managerComment')} />
+                <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitManagerAccept)} class="report__btn" style={{ backgroundColor: 'rgb(252, 0, 0)', color: '#fff', marginLeft: '20px' }}>
+                  {switchAcceptWorkTableLoading ? 'Отправка...' : 'Отправить на согласование'}
+                </button>{' '}
+                {acceptForm.watch('directorComment') && (
+                  <div style={{ marginLeft: '20px' }}>
+                    Коментарий директора: <b>{acceptForm.watch('directorComment')}</b>
+                  </div>
+                )}
+              </>
             )}
-          </>
-        ) : getAcceptWorkTableSingleData?.status == 'accept' ? (
-          <>
-            <div style={{ color: '#007D32', marginLeft: '20px' }}>Согласованно</div>
-            {acceptForm.watch('directorComment') && (
-              <div style={{ marginLeft: '20px' }}>
-                Коментарий директора: <b>{acceptForm.watch('directorComment')}</b>
-              </div>
-            )}
-          </>
-        ) : getAcceptWorkTableSingleData?.status == 'waiting' ? (
-          <>
-            <button class="report__btn" style={{ backgroundColor: '#B4B4B4', color: '#fff', marginLeft: '20px' }} disabled={true}>
-              Ожидание согласование
-            </button>
-          </>
-        ) : (
-          <>
-            <input style={{ height: '44.22px', border: '1px solid #C0C0C0', padding: '0 10px', width: '205px', marginLeft: '20px' }} {...acceptForm.register('managerComment')} />
-            <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitManagerAccept)} class="report__btn" style={{ backgroundColor: 'rgb(252, 0, 0)', color: '#fff', marginLeft: '20px' }}>
-              {switchAcceptWorkTableLoading ? 'Отправка...' : 'Отправить на согласование'}
-            </button>{' '}
-            {acceptForm.watch('directorComment') && (
-              <div style={{ marginLeft: '20px' }}>
-                Коментарий директора: <b>{acceptForm.watch('directorComment')}</b>
-              </div>
-            )}
+            {showSavedAccept && <span style={{ marginLeft: '20px', color: 'green' }}>&nbsp;Отправленно!</span>}
           </>
         )}
-        {showSavedAccept && <span style={{ marginLeft: '20px', color: 'green' }}>&nbsp;Отправленно!</span>}
+
         {/* {acceptForm.watch('directorComment') && } */}
       </div>
       {isAccessEditCalendar() && (
