@@ -259,13 +259,14 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   useEffect(() => {
     if (switchAcceptWorkTableData) {
       setShowSavedAccept(true);
-      dispatch(resetSwitchAcceptWorkTable());
+
       dispatch(
         getAcceptWorkTableSingle({
           date: moment(activeMonthYear).format('YYYY-MM-DD').toString(),
           subdivisionId: activeCalendarSubdivision?.id,
         }),
       );
+      dispatch(resetSwitchAcceptWorkTable());
       setTimeout(() => {
         setShowSavedAccept(false);
       }, 3000);

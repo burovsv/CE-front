@@ -719,6 +719,7 @@ const AccountPage = () => {
                         dispatch(setShowFullCalendar(false));
                         dispatch(resetGetEmployees());
                         dispatch(resetGetSubdivisionWorkTimeTemplates());
+                        dispatch(getAcceptWorkTable({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
                         dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), subdivision: activeCalendarSubdivision?.id }));
                       }
                     }}
@@ -731,6 +732,7 @@ const AccountPage = () => {
                     }}
                     onSave={() => {
                       setShowAccept(false);
+                      dispatch(getAcceptWorkTable({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
                       dispatch(setShowFullCalendar(false));
                       dispatch(resetGetEmployees());
                       dispatch(getWorkCalendarMonth({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), subdivision: activeCalendarSubdivision?.id }));
