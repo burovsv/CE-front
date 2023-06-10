@@ -5,6 +5,7 @@ import { initStateUpsertWorkCalendarFull, reducerUpsertWorkCalendarFull } from '
 import { initStateExportWorkCalendarToExcel, reducerExportWorkCalendarToExcel } from '../actions/workCalendar/exportWorkCalendarToExcel.slice';
 import { initStateGetAcceptWorkTable, reducerGetAcceptWorkTable } from '../actions/workCalendar/getAcceptWorkTable.slice';
 import { initStateSwitchAcceptWorkTable, reducerSwitchAcceptWorkTable } from '../actions/workCalendar/switchAcceptWorkTable.slice';
+import { initStateGetAcceptWorkTableSingle, reducerGetAcceptWorkTableSingle } from '../actions/workCalendar/getAcceptWorkTableSingle.slice';
 
 export const initialState = {
   ...initStateGetWorkCalendarMonth,
@@ -12,6 +13,7 @@ export const initialState = {
   ...initStateExportWorkCalendarToExcel,
   ...initStateGetAcceptWorkTable,
   ...initStateSwitchAcceptWorkTable,
+  ...initStateGetAcceptWorkTableSingle,
   activeMonthYear: moment().set('date', 1).toDate(),
   showFullCalendar: false,
 };
@@ -22,6 +24,9 @@ export const workCalendarSlice = createSlice({
   reducers: {
     resetGetWorkCalendarMonth(state) {
       state.getWorkCalendarMonth = initStateGetWorkCalendarMonth.getWorkCalendarMonth;
+    },
+    resetSwitchAcceptWorkTable(state) {
+      state.switchAcceptWorkTable = initStateSwitchAcceptWorkTable.switchAcceptWorkTable;
     },
     setActiveMonthYear(state, action) {
       state.activeMonthYear = action.payload;
@@ -42,7 +47,8 @@ export const workCalendarSlice = createSlice({
     ...reducerExportWorkCalendarToExcel,
     ...reducerGetAcceptWorkTable,
     ...reducerSwitchAcceptWorkTable,
+    ...reducerGetAcceptWorkTableSingle,
   },
 });
-export const { resetgetTestingFilters, resetCreateTestingFilter, setActiveMonthYear, setShowFullCalendar, resetUpsertWorkCalendarFull, resetExportWorkCalendarToExcel } = workCalendarSlice.actions;
+export const { resetgetTestingFilters, resetCreateTestingFilter, setActiveMonthYear, setShowFullCalendar, resetUpsertWorkCalendarFull, resetExportWorkCalendarToExcel, resetSwitchAcceptWorkTable } = workCalendarSlice.actions;
 export const workCalendarReducer = workCalendarSlice.reducer;

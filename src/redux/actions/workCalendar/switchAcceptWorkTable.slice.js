@@ -2,16 +2,12 @@ import { createAsyncThunk, current } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const initStateSwitchAcceptWorkTable = {
-  switchAcceptWorkTable: { data: [], loading: false, error: null },
+  switchAcceptWorkTable: { data: null, loading: false, error: null },
 };
 
 export const switchAcceptWorkTable = createAsyncThunk('testingFilter/switchAcceptWorkTable', async (data, { rejectWithValue, fulfillWithValue }) => {
   return await axios
-    .post(`${process.env.REACT_APP_SERVER_API}/work-calendar/accept`, {
-      date: data?.date,
-      subdivisionId: data?.subdivisionId,
-      accept: data?.accept,
-    })
+    .post(`${process.env.REACT_APP_SERVER_API}/work-calendar/accept`, data)
     .then((res) => {
       return fulfillWithValue(res.data);
     })

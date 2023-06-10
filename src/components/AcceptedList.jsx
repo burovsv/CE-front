@@ -54,7 +54,7 @@ const AcceptedList = ({ onClick }) => {
                 <td></td>
                 <td></td>
                 <td>
-                  <AcceptedCheckbox defaultChecked={findExistAcceptWorkTable ? !!findExistAcceptWorkTable?.accept : false} />
+                  <AcceptedCheckbox defaultChecked={findExistAcceptWorkTable ? (findExistAcceptWorkTable?.status == 'accept' ? true : false) : false} />
                 </td>
               </tr>
             );

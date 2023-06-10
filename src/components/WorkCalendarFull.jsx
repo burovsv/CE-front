@@ -10,7 +10,7 @@ import { getEmployees } from '../redux/actions/employee/getEmployees.action';
 import { upsertWorkCalendarFull } from '../redux/actions/workCalendar/upsertWorkCalendarFull.slice';
 import { setActiveCalendarDates } from '../redux/slices/news.slice';
 import { setWorkTimeTemplate } from '../redux/slices/subdivision.slice';
-import { resetExportWorkCalendarToExcel, resetUpsertWorkCalendarFull, setActiveMonthYear } from '../redux/slices/workCalendar.slice';
+import { resetExportWorkCalendarToExcel, resetSwitchAcceptWorkTable, resetUpsertWorkCalendarFull, setActiveMonthYear } from '../redux/slices/workCalendar.slice';
 import { getDayOfWeek } from '../utils/getDayofWeek';
 import { getDaysInMonth } from '../utils/getDaysInMouth';
 import { randomInt } from '../utils/randomInt';
@@ -24,6 +24,8 @@ import fileDownload from 'js-file-download';
 import axios from 'axios';
 import { getEmployeeHiddenList } from '../redux/actions/employeeHidden/getEmployeeHiddenList.action';
 import { resetEmployeeToHiddenList } from '../redux/slices/employee.slice';
+import { switchAcceptWorkTable } from '../redux/actions/workCalendar/switchAcceptWorkTable.slice';
+import { getAcceptWorkTableSingle } from '../redux/actions/workCalendar/getAcceptWorkTableSingle.slice';
 const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
   const {
     auth: { role, editorWorkTable },
@@ -53,7 +55,20 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
     getWorkCalendarMonth: { loading: workCalendarMonthLoading },
     upsertWorkCalendarFull: { data: upsertWorkCalendarData, loading: upsertWorkCalendarLoading, error: upsertWorkCalendarError },
     exportWorkCalendarToExcel: { data: downloadData },
+    getAcceptWorkTableSingle: { data: getAcceptWorkTableSingleData },
+    switchAcceptWorkTable: { data: switchAcceptWorkTableData, loading: switchAcceptWorkTableLoading },
   } = useSelector((state) => state.workCalendar);
+  const acceptForm = useForm();
+  useEffect(() => {
+    if (getAcceptWorkTableSingleData) {
+      acceptForm.setValue('directorComment', getAcceptWorkTableSingleData?.directorComment);
+      acceptForm.setValue('managerComment', getAcceptWorkTableSingleData?.managerComment);
+    } else {
+      acceptForm.setValue('directorComment', '');
+      acceptForm.setValue('managerComment', '');
+    }
+  }, [getAcceptWorkTableSingleData]);
+
   console.log(workTimeTemplates);
   useEffect(() => {
     if (workTimeTemplates) {
@@ -240,6 +255,22 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       }, 3000);
     }
   }, [upsertWorkCalendarData]);
+  const [showSavedAccept, setShowSavedAccept] = useState(false);
+  useEffect(() => {
+    if (switchAcceptWorkTableData) {
+      setShowSavedAccept(true);
+      dispatch(resetSwitchAcceptWorkTable());
+      dispatch(
+        getAcceptWorkTableSingle({
+          date: moment(activeMonthYear).format('YYYY-MM-DD').toString(),
+          subdivisionId: activeCalendarSubdivision?.id,
+        }),
+      );
+      setTimeout(() => {
+        setShowSavedAccept(false);
+      }, 3000);
+    }
+  }, [switchAcceptWorkTableData]);
   const validateTime = (time) => {
     if (!time) {
       return false;
@@ -341,7 +372,15 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         });
     }
   }, [downloadData]);
-
+  const onSubmitManagerAccept = (data) => {
+    dispatch(switchAcceptWorkTable({ subdivisionId: activeCalendarSubdivision?.id, date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), status: 'waiting', managerComment: data?.managerComment }));
+  };
+  const onSubmitDirectorAccept = (data) => {
+    dispatch(switchAcceptWorkTable({ subdivisionId: activeCalendarSubdivision?.id, date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), status: 'accept', directorComment: data?.directorComment }));
+  };
+  const onSubmitDirectorCancel = (data) => {
+    dispatch(switchAcceptWorkTable({ subdivisionId: activeCalendarSubdivision?.id, date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), status: '', directorComment: data?.directorComment }));
+  };
   return (
     <div class="work-calendar-full">
       {/* <button onClick={() => onClose(isEdited)} className="work-calendar-full-close"></button> */}
@@ -375,6 +414,51 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           Закрыть
         </button>
         {isEdited && <div style={{ fontWeight: '600', color: '#fc0000', maxWidth: '310px', marginLeft: '20px' }}>Вы сделали изминение в графике, если хотите сохранить нажмите на кнопку сохранить</div>}
+        {dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166 ? (
+          <>
+            <input style={{ height: '44.22px', border: '1px solid #C0C0C0', padding: '0 10px', width: '205px', marginLeft: '20px' }} {...acceptForm.register('directorComment')} />
+            <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitDirectorAccept)} class="report__btn" style={{ backgroundColor: '#2D7700', color: '#fff', marginLeft: '20px' }}>
+              Согласованно
+            </button>{' '}
+            <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitDirectorCancel)} class="report__btn" style={{ backgroundColor: 'rgb(252, 0, 0)', color: '#fff', marginLeft: '20px' }}>
+              Отказать
+            </button>
+            {acceptForm.watch('managerComment') && (
+              <div style={{ marginLeft: '20px' }}>
+                Коментарий управляющего: <b>{acceptForm.watch('managerComment')}</b>
+              </div>
+            )}
+          </>
+        ) : getAcceptWorkTableSingleData?.status == 'accept' ? (
+          <>
+            <div style={{ color: '#007D32', marginLeft: '20px' }}>Согласованно</div>
+            {acceptForm.watch('directorComment') && (
+              <div style={{ marginLeft: '20px' }}>
+                Коментарий директора: <b>{acceptForm.watch('directorComment')}</b>
+              </div>
+            )}
+          </>
+        ) : getAcceptWorkTableSingleData?.status == 'waiting' ? (
+          <>
+            <button class="report__btn" style={{ backgroundColor: '#B4B4B4', color: '#fff', marginLeft: '20px' }} disabled={true}>
+              Ожидание согласование
+            </button>
+          </>
+        ) : (
+          <>
+            <input style={{ height: '44.22px', border: '1px solid #C0C0C0', padding: '0 10px', width: '205px', marginLeft: '20px' }} {...acceptForm.register('managerComment')} />
+            <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitManagerAccept)} class="report__btn" style={{ backgroundColor: 'rgb(252, 0, 0)', color: '#fff', marginLeft: '20px' }}>
+              {switchAcceptWorkTableLoading ? 'Отправка...' : 'Отправить на согласование'}
+            </button>{' '}
+            {acceptForm.watch('directorComment') && (
+              <div style={{ marginLeft: '20px' }}>
+                Коментарий директора: <b>{acceptForm.watch('directorComment')}</b>
+              </div>
+            )}
+          </>
+        )}
+        {showSavedAccept && <span style={{ marginLeft: '20px', color: 'green' }}>&nbsp;Отправленно!</span>}
+        {/* {acceptForm.watch('directorComment') && } */}
       </div>
       {isAccessEditCalendar() && (
         <div style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap' }}>

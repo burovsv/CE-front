@@ -34,6 +34,7 @@ import { currencyFormat } from '../../utils/currencyFormat';
 import StaffList from '../StaffList';
 import AcceptedList from '../AcceptedList';
 import { getAcceptWorkTable } from '../../redux/actions/workCalendar/getAcceptWorkTable.slice';
+import { getAcceptWorkTableSingle } from '../../redux/actions/workCalendar/getAcceptWorkTableSingle.slice';
 const AccountPage = () => {
   const defaultValues = { date: new Date() };
   const {
@@ -81,6 +82,12 @@ const AccountPage = () => {
     const paramsEmployees = { page: 0, search: '', subdivision: activeCalendarSubdivision?.id, dateCalendar: moment(activeMonthYear).format('YYYY-MM-DD').toString() };
     dispatch(getSubdivisionWorkTimeTemplates(activeCalendarSubdivision?.id));
     dispatch(getEmployees(paramsEmployees));
+    dispatch(
+      getAcceptWorkTableSingle({
+        date: moment(activeMonthYear).format('YYYY-MM-DD').toString(),
+        subdivisionId: activeCalendarSubdivision?.id,
+      }),
+    );
     setClickEditWorkTable(true);
   };
   useEffect(() => {

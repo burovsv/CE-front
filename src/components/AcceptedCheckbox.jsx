@@ -23,9 +23,9 @@ const AcceptedCheckbox = ({ onClick = () => {}, defaultChecked = false }) => {
         e.stopPropagation();
         let switchChecked = !checked;
         setChecked(switchChecked);
-        dispatch(switchAcceptWorkTable({ subdivisionId: activeCalendarSubdivision?.id, date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), accept: switchChecked }));
+        dispatch(switchAcceptWorkTable({ subdivisionId: activeCalendarSubdivision?.id, date: moment(activeMonthYear).format('YYYY-MM-DD').toString(), status: switchChecked ? 'accept' : '' }));
       }}>
-      <div>{checked ? <div style={{ width: '17px', height: '10px', background: '#3F9F04' }}></div> : <div style={{ marginLeft: 'auto', width: '17px', height: '10px', background: '#FF0000' }}></div>}</div>
+      <div>{!checked ? <div style={{ width: '17px', height: '10px', background: '#FF0000' }}></div> : <div style={{ marginLeft: 'auto', width: '17px', height: '10px', background: '#3F9F04' }}></div>}</div>
     </div>
   );
 };
