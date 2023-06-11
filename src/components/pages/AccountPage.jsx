@@ -101,10 +101,10 @@ const AccountPage = () => {
   }, [employees, clickEditWorkTable]);
 
   useEffect(() => {
-    if ((activeMonthYear && dataUser && dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID) || dataUser?.id == 166) {
+    if (((activeMonthYear && dataUser && dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID) || dataUser?.id == 166) && activeSubTab === 'graphic-subtab' && activeTab === 'graphic-tab') {
       dispatch(getAcceptWorkTable({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
     }
-  }, [activeMonthYear, dataUser]);
+  }, [activeMonthYear, dataUser, activeTab, activeSubTab]);
 
   const [showSuccessPrePayment, setShowSuccessPrePayment] = useState(false);
   const [prePaymentEmployee, setPrePaymentEmployee] = useState({});

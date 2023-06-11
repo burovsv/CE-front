@@ -9,6 +9,7 @@ import AcceptedCheckbox from './AcceptedCheckbox';
 import { setActiveCalendarSubdivision } from '../redux/slices/employeeHistory.slice';
 import { resetSwitchAcceptWorkTable } from '../redux/slices/workCalendar.slice';
 import moment from 'moment';
+import { getAcceptWorkTableSingle } from '../redux/actions/workCalendar/getAcceptWorkTableSingle.slice';
 const AcceptedList = ({ onClick }) => {
   const dispatch = useDispatch();
   const {
@@ -103,8 +104,10 @@ const AcceptedList = ({ onClick }) => {
                       }}>
                       {itemSubdiv?.name}
                     </td>
-                    <td></td>
-                    <td></td>
+                    <td>
+                      <div style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{findExistAcceptWorkTable?.managerComment && `${findExistAcceptWorkTable?.managerComment}`}</div>
+                    </td>
+                    <td>{findExistAcceptWorkTable && moment(findExistAcceptWorkTable?.updateAt).format('DD.MM.YYYY в HH:mm').toString()}</td>
                     <td>
                       <AcceptedCheckbox subdivisionId={itemSubdiv?.id} defaultChecked={findExistAcceptWorkTable ? (findExistAcceptWorkTable?.status == 'accept' ? true : false) : false} />
                     </td>
