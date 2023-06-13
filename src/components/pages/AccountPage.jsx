@@ -99,9 +99,10 @@ const AccountPage = () => {
       setClickEditWorkTable(false);
     }
   }, [employees, clickEditWorkTable]);
-
+  const [activeTab, setActiveTab] = useState('balance-tab');
+  const [activeSubTab, setActiveSubTab] = useState('graphic-subtab');
   useEffect(() => {
-    if (((activeMonthYear && dataUser && dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID) || dataUser?.id == 166) && activeSubTab === 'graphic-subtab' && activeTab === 'graphic-tab') {
+    if ((dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166) && activeMonthYear && dataUser && activeSubTab === 'graphic-subtab' && activeTab === 'graphic-tab') {
       dispatch(getAcceptWorkTable({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
     }
   }, [activeMonthYear, dataUser, activeTab, activeSubTab]);
@@ -188,8 +189,7 @@ const AccountPage = () => {
   //  (
   //   dataAccount && (
   // const [showFullCalendar, setShowFullCalendar] = useState(false);
-  const [activeTab, setActiveTab] = useState('balance-tab');
-  const [activeSubTab, setActiveSubTab] = useState('graphic-subtab');
+
   const [showDateFilter, setShowDateFilter] = useState(false);
 
   // useEffect(() => {

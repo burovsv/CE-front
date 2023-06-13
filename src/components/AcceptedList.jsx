@@ -10,6 +10,7 @@ import { setActiveCalendarSubdivision } from '../redux/slices/employeeHistory.sl
 import { resetSwitchAcceptWorkTable } from '../redux/slices/workCalendar.slice';
 import moment from 'moment';
 import { getAcceptWorkTableSingle } from '../redux/actions/workCalendar/getAcceptWorkTableSingle.slice';
+import { getAcceptWorkTable } from '../redux/actions/workCalendar/getAcceptWorkTable.slice';
 const AcceptedList = ({ onClick }) => {
   const dispatch = useDispatch();
   const {
@@ -24,6 +25,11 @@ const AcceptedList = ({ onClick }) => {
     getAcceptWorkTable: { data: acceptWorkTableData, loading: acceptWorkTableLoading },
     activeMonthYear,
   } = useSelector((state) => state.workCalendar);
+  useEffect(() => {
+    dispatch(getAcceptWorkTable({ date: moment(activeMonthYear).format('YYYY-MM-DD').toString() }));
+    return () => {};
+  }, []);
+
   return (
     <>
       {!acceptWorkTableLoading && (
@@ -63,9 +69,9 @@ const AcceptedList = ({ onClick }) => {
                   {value?.name}
                 </td>
                 <td>
-                  <div style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{findExistAcceptWorkTable?.managerComment && `${findExistAcceptWorkTable?.managerComment}`}</div>
+                  <div style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{findExistAcceptWorkTable?.managerComment && `${findExistAcceptWorkTable?.managerComment}`}</div>
                 </td>
-                <td>{findExistAcceptWorkTable && moment(findExistAcceptWorkTable?.updateAt).format('DD.MM.YYYY в HH:mm').toString()}</td>
+                <td>{findExistAcceptWorkTable && moment(findExistAcceptWorkTable?.updatedAt).format('DD.MM.YYYY в HH:mm').toString()}</td>
                 <td>
                   <AcceptedCheckbox subdivisionId={value.id} defaultChecked={findExistAcceptWorkTable ? (findExistAcceptWorkTable?.status == 'accept' ? true : false) : false} />
                 </td>
@@ -105,9 +111,9 @@ const AcceptedList = ({ onClick }) => {
                       {itemSubdiv?.name}
                     </td>
                     <td>
-                      <div style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{findExistAcceptWorkTable?.managerComment && `${findExistAcceptWorkTable?.managerComment}`}</div>
+                      <div style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '200px' }}>{findExistAcceptWorkTable?.managerComment && `${findExistAcceptWorkTable?.managerComment}`}</div>
                     </td>
-                    <td>{findExistAcceptWorkTable && moment(findExistAcceptWorkTable?.updateAt).format('DD.MM.YYYY в HH:mm').toString()}</td>
+                    <td>{findExistAcceptWorkTable && moment(findExistAcceptWorkTable?.updatedAt).format('DD.MM.YYYY в HH:mm').toString()}</td>
                     <td>
                       <AcceptedCheckbox subdivisionId={itemSubdiv?.id} defaultChecked={findExistAcceptWorkTable ? (findExistAcceptWorkTable?.status == 'accept' ? true : false) : false} />
                     </td>
