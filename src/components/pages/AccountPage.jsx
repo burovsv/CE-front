@@ -145,6 +145,7 @@ const AccountPage = () => {
   const [showAccept, setShowAccept] = useState(false);
   const [selectedEmployeeAccount, setSelectedEmployeeAccount] = useState(null);
   const [employeeAccountMoveBalance, setEmployeeAccountMoveBalance] = useState(false);
+  const [employeeAccountMoveBalanceName, setEmployeeAccountMoveBalanceName] = useState('');
   const {
     getEmployeeUser: { data: employee },
   } = useSelector((state) => state.employee);
@@ -366,6 +367,7 @@ const AccountPage = () => {
                                     onClick={() => {
                                       setSelectedEmployeeAccount(row?.id);
                                       setEmployeeAccountMoveBalance(true);
+                                      setEmployeeAccountMoveBalanceName(row?.name);
                                     }}
                                     style={{
                                       display: 'flex',
@@ -543,29 +545,56 @@ const AccountPage = () => {
               ) : isManager === false || selectedEmployeeAccount ? (
                 <>
                   {isManager && (
-                    <button
-                      onClick={() => {
-                        setSelectedEmployeeAccount(null);
-                        setEmployeeAccountMoveBalance(false);
-                      }}
-                      style={{ height: '48px', marginLeft: '10px', marginBottom: '10px', color: '#377BFF', fontWeight: '700' }}>
-                      Вернуться
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      {employeeAccountMoveBalance && <div style={{ marginLeft: '10px', marginBottom: '10px', marginRight: '10px' }}>Сотрудник: {employeeAccountMoveBalanceName}</div>}
+
+                      <button
+                        onClick={() => {
+                          setSelectedEmployeeAccount(null);
+                          setEmployeeAccountMoveBalance(false);
+                        }}
+                        style={{ height: '48px', marginLeft: '10px', marginBottom: '10px', color: '#377BFF', fontWeight: '700' }}>
+                        Вернуться
+                      </button>
+                    </div>
                   )}
                   <div class="wrap__day">
                     <div className="table__common">
-                      <div className="table__common-item">
-                        <div className="table_common-left">Баланс:&nbsp;</div>
-                        <div className="table_common-right">{dataAccount?.balance || 0}</div>
-                      </div>
-                      <div className="table__common-item">
-                        <div className="table_common-left">Часы :&nbsp;</div>
-                        <div className="table_common-right">{dataAccount?.hours || 0}</div>
-                      </div>
-                      <div className="table__common-item">
-                        <div className="table_common-left">С начала месяца :&nbsp;</div>
-                        <div className="table_common-right">{dataAccount?.earned || 0}</div>
-                      </div>
+                      {employeeAccountMoveBalance ? (
+                        <>
+                          <div className="table__common-item">
+                            <div className="table_common-left">Часы :&nbsp;</div>
+                            <div className="table_common-right">{dataAccount?.hours || 0}</div>
+                          </div>
+                          <div className="table__common-item">
+                            <div className="table_common-left">Текущий баланс:&nbsp;</div>
+                            <div className="table_common-right">{dataAccount?.BeginBalance || 0}</div>
+                          </div>{' '}
+                          <div className="table__common-item">
+                            <div className="table_common-left">С начала месяца :&nbsp;</div>
+                            <div className="table_common-right">{dataAccount?.earned || 0}</div>
+                          </div>{' '}
+                          <div className="table__common-item">
+                            <div className="table_common-left">Итоговый баланс :&nbsp;</div>
+                            <div className="table_common-right">{dataAccount?.balance || 0}</div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="table__common-item">
+                            <div className="table_common-left">Баланс:&nbsp;</div>
+                            <div className="table_common-right">{dataAccount?.balance || 0}</div>
+                          </div>
+                          <div className="table__common-item">
+                            <div className="table_common-left">Часы :&nbsp;</div>
+                            <div className="table_common-right">{dataAccount?.hours || 0}</div>
+                          </div>
+                          <div className="table__common-item">
+                            <div className="table_common-left">С начала месяца :&nbsp;</div>
+                            <div className="table_common-right">{dataAccount?.earned || 0}</div>
+                          </div>
+                        </>
+                      )}
                     </div>
                     <div class="blocks__item report " style={{ marginBottom: 0 }}>
                       <div className="date" style={{ gridGap: '0px', gridTemplateColumns: 'auto auto auto' }}>
@@ -598,19 +627,23 @@ const AccountPage = () => {
                         ) : (
                           <>
                             <button class="report__btn" onClick={handleSubmit(onSubmit)}>
-                              Сформировать отчет о личном
+                              Сформировать {!employeeAccountMoveBalance && 'отчет о личном'}
                             </button>
 
-                            {dataAccount?.table && dataAccount?.table?.length > 0 && (
-                              <div class="report__total">
-                                Итого: <b>{dataAccount?.table?.map((row) => (parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)).reduce((partialSum, a) => (parseFloat(partialSum) + parseFloat(a)).toFixed(2), 0)}</b>
-                              </div>
+                            {!employeeAccountMoveBalance && (
+                              <>
+                                {dataAccount?.table && dataAccount?.table?.length > 0 && (
+                                  <div class="report__total">
+                                    Итого: <b>{dataAccount?.table?.map((row) => (parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(2)).reduce((partialSum, a) => (parseFloat(partialSum) + parseFloat(a)).toFixed(2), 0)}</b>
+                                  </div>
+                                )}
+                              </>
                             )}
                           </>
                         )}
                       </div>
                     </div>
-                    {dataAccount?.table && dataAccount?.table?.length > 0 && !loadingAccount ? (
+                    {((dataAccount?.table && dataAccount?.table?.length > 0) || (dataAccount?.MoveBalance && dataAccount?.MoveBalance?.length > 0)) && !loadingAccount ? (
                       <div className="table-common" style={{ ...(employeeAccountMoveBalance && { gridTemplateColumns: 'auto 1fr auto ' }) }}>
                         <div className="table-common__head">Дата</div>
                         <div className="table-common__head">{employeeAccountMoveBalance ? 'Движение' : 'Наименование'}</div>
