@@ -66,6 +66,8 @@ const AccountPage = () => {
   const [childActiveTab, setChildActiveTab] = useState('balance-list-tab');
   const [isManager, setIsManager] = useState(false);
   const [selectedAccessSubdivision, setSelectedAccessSubdivision] = useState(null);
+  const [isAggrement, setIsAggrement] = useState(false);
+  const [comment, setComment] = useState('');
   const [listAccessSubdivision, setListAccessSubdivision] = useState([]);
   const {
     activeMonthYear,
@@ -109,12 +111,14 @@ const AccountPage = () => {
 
   const [showSuccessPrePayment, setShowSuccessPrePayment] = useState(false);
   const [prePaymentEmployee, setPrePaymentEmployee] = useState({});
+  console.log(prePaymentEmployee);
   const [showErrorPrePayment, setShowErrorPrePayment] = useState(false);
   useEffect(() => {
     if (prePaymentCreateData && !prePaymentCreateError) {
       setShowPrePayment(false);
       setShowSuccessPrePayment(true);
       setPrePaymentEmployee({});
+      setComment('');
       setTimeout(() => {
         setShowSuccessPrePayment(false);
       }, 2000);
@@ -140,6 +144,7 @@ const AccountPage = () => {
   const dispatch = useDispatch();
   const [showAccept, setShowAccept] = useState(false);
   const [selectedEmployeeAccount, setSelectedEmployeeAccount] = useState(null);
+  const [employeeAccountMoveBalance, setEmployeeAccountMoveBalance] = useState(false);
   const {
     getEmployeeUser: { data: employee },
   } = useSelector((state) => state.employee);
@@ -356,13 +361,12 @@ const AccountPage = () => {
                                   style={{ cursor: 'pointer' }}>
                                   {row?.hours}
                                 </div>
-                                <div
-                                  onClick={() => {
-                                    setSelectedEmployeeAccount(row?.id);
-                                  }}
-                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
-                                  style={{ textAlign: 'left', cursor: 'pointer', padding: '10px' }}>
+                                <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`} style={{ textAlign: 'left', cursor: 'pointer', padding: '10px' }}>
                                   <div
+                                    onClick={() => {
+                                      setSelectedEmployeeAccount(row?.id);
+                                      setEmployeeAccountMoveBalance(true);
+                                    }}
                                     style={{
                                       display: 'flex',
                                       alignItems: 'center',
@@ -371,7 +375,6 @@ const AccountPage = () => {
                                       padding: '10px',
                                       background: '#feed01',
                                     }}>
-                                    {' '}
                                     {currencyFormat(parseInt(row?.balance) - parseInt(row?.earned))}
                                   </div>
                                 </div>
@@ -433,7 +436,7 @@ const AccountPage = () => {
                                         }
                                       }
                                     }}
-                                    disabled={parseInt(row?.balance) <= prePaymentSettings.minSum || row?.monthSum >= prePaymentSettings.percent}
+                                    disabled={isAggrement ? (Object.keys(prePaymentEmployee)?.filter((preKey) => prePaymentEmployee[preKey]?.sum && row?.userId != preKey).length >= 1 ? true : false) : parseInt(row?.balance) <= prePaymentSettings.minSum || row?.monthSum >= prePaymentSettings.percent}
                                     type="text"
                                     style={{
                                       height: '35px',
@@ -444,6 +447,10 @@ const AccountPage = () => {
                                       boxSizing: 'border-box',
                                       fontFamily: 'inherit',
                                       ...(parseInt(row?.balance) <= prePaymentSettings.minSum && row?.monthSum >= prePaymentSettings.percent && { background: '#F2F2F2' }),
+                                      ...(isAggrement &&
+                                        !(Object.keys(prePaymentEmployee)?.filter((preKey) => prePaymentEmployee[preKey]?.sum && row?.userId != preKey).length >= 1) && {
+                                          background: '#fff',
+                                        }),
                                     }}
                                   />
                                 </div>
@@ -476,11 +483,12 @@ const AccountPage = () => {
                             <div
                               onClick={() => {
                                 const isActive =
-                                  Object.keys(prePaymentEmployee)
+                                  (Object.keys(prePaymentEmployee)
                                     .map((keyPre) => prePaymentEmployee[keyPre].sum)
                                     .filter((filterPre) => filterPre).length >= 1 &&
-                                  activeCashBox &&
-                                  (moment().set('date', prePaymentSettings.startDate).isSameOrBefore(moment()) || moment().set('date', prePaymentSettings.endDate).isSameOrAfter(moment()));
+                                    activeCashBox &&
+                                    (moment().set('date', prePaymentSettings.startDate).isSameOrBefore(moment()) || moment().set('date', prePaymentSettings.endDate).isSameOrAfter(moment()))) ||
+                                  (isAggrement && Object.keys(prePaymentEmployee)?.filter((preKey) => prePaymentEmployee[preKey]?.sum).length >= 1);
 
                                 if (isActive) {
                                   setShowPrePayment(true);
@@ -489,11 +497,12 @@ const AccountPage = () => {
                               class="filter__item"
                               style={{
                                 background:
-                                  Object.keys(prePaymentEmployee)
+                                  (Object.keys(prePaymentEmployee)
                                     .map((keyPre) => prePaymentEmployee[keyPre].sum)
                                     .filter((filterPre) => filterPre).length >= 1 &&
-                                  activeCashBox &&
-                                  (moment().set('date', prePaymentSettings.startDate).isSameOrBefore(moment()) || moment().set('date', prePaymentSettings.endDate).isSameOrAfter(moment()))
+                                    activeCashBox &&
+                                    (moment().set('date', prePaymentSettings.startDate).isSameOrBefore(moment()) || moment().set('date', prePaymentSettings.endDate).isSameOrAfter(moment()))) ||
+                                  (isAggrement && Object.keys(prePaymentEmployee)?.filter((preKey) => prePaymentEmployee[preKey]?.sum).length >= 1)
                                     ? '#FF0000'
                                     : '#BAB8B8',
                                 color: '#Fff',
@@ -504,6 +513,20 @@ const AccountPage = () => {
                             </div>
                             <div>
                               Доступно с {prePaymentSettings.startDate} по {prePaymentSettings.endDate} не более {prePaymentSettings.percent} руб
+                            </div>
+                            <div>
+                              <label style={{ display: 'flex', alignItems: 'center', marginLeft: '20px', userSelect: 'none' }}>
+                                <input
+                                  defaultChecked={isAggrement}
+                                  checked={isAggrement}
+                                  type="checkbox"
+                                  onChange={(event) => {
+                                    setIsAggrement(event.target.checked);
+                                    setPrePaymentEmployee({});
+                                  }}
+                                />
+                                <span></span> СРОЧНО!
+                              </label>
                             </div>
                           </div>
                         )}
@@ -523,6 +546,7 @@ const AccountPage = () => {
                     <button
                       onClick={() => {
                         setSelectedEmployeeAccount(null);
+                        setEmployeeAccountMoveBalance(false);
                       }}
                       style={{ height: '48px', marginLeft: '10px', marginBottom: '10px', color: '#377BFF', fontWeight: '700' }}>
                       Вернуться
@@ -587,19 +611,72 @@ const AccountPage = () => {
                       </div>
                     </div>
                     {dataAccount?.table && dataAccount?.table?.length > 0 && !loadingAccount ? (
-                      <div className="table-common">
+                      <div className="table-common" style={{ ...(employeeAccountMoveBalance && { gridTemplateColumns: 'auto 1fr auto ' }) }}>
                         <div className="table-common__head">Дата</div>
-                        <div className="table-common__head">Наименование</div>
-                        <div className="table-common__head">Кол-во</div>
-                        <div className="table-common__head">Бонус</div>
-                        {dataAccount?.table?.map((row, indexRow) => (
-                          <>
-                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{moment(row?.date_sale).format('DD.MM.YYYY')}</div>
-                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.product}</div>
-                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.quantity}</div>
-                            <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(0)}</div>
-                          </>
-                        ))}
+                        <div className="table-common__head">{employeeAccountMoveBalance ? 'Движение' : 'Наименование'}</div>
+                        {!employeeAccountMoveBalance && <div className="table-common__head">Кол-во</div>}
+                        <div className="table-common__head">{!employeeAccountMoveBalance ? 'Сумма' : 'Бонус'}</div>
+                        {employeeAccountMoveBalance
+                          ? dataAccount?.MoveBalance?.map((row, indexRow) => (
+                              <>
+                                <div
+                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                  style={{
+                                    ...(row?.TypeOfMovementNumber == 1
+                                      ? {
+                                          fontWeight: '600',
+                                          color: '#000',
+                                        }
+                                      : row?.TypeOfMovementNumber == 2
+                                      ? { color: 'green' }
+                                      : row?.TypeOfMovementNumber == 3
+                                      ? { color: 'red' }
+                                      : {}),
+                                  }}>
+                                  {moment(row?.DateMovement).format('DD.MM.YYYY')}
+                                </div>
+                                <div
+                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                  style={{
+                                    ...(row?.TypeOfMovementNumber == 1
+                                      ? {
+                                          fontWeight: '600',
+                                          color: '#000',
+                                        }
+                                      : row?.TypeOfMovementNumber == 2
+                                      ? { color: 'green' }
+                                      : row?.TypeOfMovementNumber == 3
+                                      ? { color: 'red' }
+                                      : {}),
+                                  }}>
+                                  {row?.TypeOfMovementNumber == 1 ? 'Зачислено' : row?.TypeOfMovement}
+                                </div>
+                                <div
+                                  className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}
+                                  style={{
+                                    ...(row?.TypeOfMovementNumber == 1
+                                      ? {
+                                          fontWeight: '600',
+                                          color: '#000',
+                                        }
+                                      : row?.TypeOfMovementNumber == 2
+                                      ? { color: 'green' }
+                                      : row?.TypeOfMovementNumber == 3
+                                      ? { color: 'red' }
+                                      : {}),
+                                  }}>
+                                  {currencyFormat(row?.Sum)}
+                                </div>
+                              </>
+                            ))
+                          : dataAccount?.table?.map((row, indexRow) => (
+                              <>
+                                <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{moment(row?.date_sale).format('DD.MM.YYYY')}</div>
+                                <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.product}</div>
+                                <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{row?.quantity}</div>
+                                <div className={`table-common__cell ${indexRow % 2 !== 0 ? 'table-common__cell-odd' : ''}`}>{(parseFloat(row?.ranc) + parseFloat(row?.turn) + parseFloat(row?.margin)).toFixed(0)}</div>
+                              </>
+                            ))}
                       </div>
                     ) : (!dataAccount?.table || dataAccount?.table?.length === 0) && !loadingAccount ? (
                       <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>На выбраную дату продаж нет. Попробуйте выбрать рабочий день, где были продажи</div>
@@ -770,11 +847,13 @@ const AccountPage = () => {
 
       {showPrePayment && (
         <ModalPrePayment
+          setComment={setComment}
+          comment={comment}
           loading={prePaymentLoading}
           list={prePaymentEmployee}
           onClose={() => {
             if (!prePaymentLoading) {
-              dispatch(prePaymentCreate({ list: prePaymentEmployee, subdivision: selectedAccessSubdivision?.value, cashBox: activeCashBox }));
+              dispatch(prePaymentCreate({ isAggrement, comment, list: prePaymentEmployee, subdivision: selectedAccessSubdivision?.value, cashBox: activeCashBox }));
             }
           }}
           onSave={() => {

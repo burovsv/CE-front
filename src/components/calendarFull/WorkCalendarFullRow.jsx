@@ -135,8 +135,8 @@ const WorkCalendarFullRow = ({
             }}
             width="150"
             className="work-calendar-full-cell-wrap "
-            style={{ position: 'sticky', left: '0px', zIndex: 100, backgroundColor: '#fff', paddingLeft: '32px' }}>
-            <div style={{ width: '32px', top: 0, left: '0', position: 'absolute', height: '100%', borderRight: '0.2px solid rgb(183, 183, 183)' }}>
+            style={{ position: 'sticky', left: '0px', zIndex: 100, backgroundColor: '#fff' }}>
+            {/* <div style={{ width: '32px', top: 0, left: '0', position: 'absolute', height: '100%', borderRight: '0.2px solid rgb(183, 183, 183)' }}>
               <NumberFormat
                 // onBlur={(e) => {
                 //   let updateOrderItem;
@@ -178,7 +178,7 @@ const WorkCalendarFullRow = ({
                   }
                 }}
               />
-            </div>
+            </div> */}
             {item?.lastName} <br />
             {item?.firstName}
             {showMenuHidden && !showHiddenList && isAccessEdit && (
@@ -213,14 +213,14 @@ const WorkCalendarFullRow = ({
                       style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#ffffff' }}>
                       Скрыть
                     </div>{' '}
-                    {/* <div
-                    onClick={() => {
-                      onShowHiddenList();
-                      setShowMenuHidden(false);
-                    }}
-                    style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#ffffff' }}>
-                    Показать
-                  </div> */}
+                    <div
+                      onClick={() => {
+                        onShowHiddenList();
+                        setShowMenuHidden(false);
+                      }}
+                      style={{ width: '100%', textAlign: 'left', padding: '10px', marginRight: 'auto', background: '#ffffff' }}>
+                      Показать
+                    </div>
                   </div>
                 </OutsideClickHandler>
               </div>

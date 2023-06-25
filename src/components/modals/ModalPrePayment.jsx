@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
 import Modal from './Modal';
-const ModalPrePayment = ({ list, onClose, onSave, loading }) => {
+const ModalPrePayment = ({ list, onClose, onSave, loading, setComment, comment }) => {
   return (
     <Modal
       textSend={'Отменить'}
@@ -27,6 +27,27 @@ const ModalPrePayment = ({ list, onClose, onSave, loading }) => {
             </div>
           );
         })}
+        <input
+          defaultValue={''}
+          value={comment}
+          onChange={(event) => {
+            if (event.target.value?.length <= 20) {
+              setComment(event.target.value);
+            }
+          }}
+          placeholder="Комментарий ..."
+          type="text"
+          style={{
+            height: '35px',
+            width: '100%',
+            border: '0.2px solid rgb(230, 230, 230)',
+            outline: 'none',
+            padding: '10px',
+            boxSizing: 'border-box',
+            fontFamily: 'inherit',
+            background: '#fff',
+          }}
+        />
       </div>
     </Modal>
   );
