@@ -627,7 +627,7 @@ const AccountPage = () => {
                         ) : (
                           <>
                             <button class="report__btn" onClick={handleSubmit(onSubmit)}>
-                              Сформировать {!employeeAccountMoveBalance && 'отчет о личном'}
+                              Сформировать {!employeeAccountMoveBalance ? 'отчет о личном' : 'расшифровку'}
                             </button>
 
                             {!employeeAccountMoveBalance && (
@@ -712,7 +712,9 @@ const AccountPage = () => {
                             ))}
                       </div>
                     ) : (!dataAccount?.table || dataAccount?.table?.length === 0) && !loadingAccount ? (
-                      <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>На выбраную дату продаж нет. Попробуйте выбрать рабочий день, где были продажи</div>
+                      <div style={{ margin: '40px auto 0 auto', textAlign: 'center', color: '#ff0d0d', display: 'flex', justifyContent: 'left', marginBottom: '60px' }}>
+                        {employeeAccountMoveBalance ? 'На выбранный месяц нет расходов и доходов или данные не загрузились с 1С' : 'На выбраную дату продаж нет. Попробуйте выбрать рабочий день, где были продажи'}
+                      </div>
                     ) : (
                       <></>
                     )}
