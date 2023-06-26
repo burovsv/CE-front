@@ -175,7 +175,7 @@ const AccountPage = () => {
       setListAccessSubdivision(listSubdivisionData);
       setSelectedAccessSubdivision(selfSubdivision);
     }
-  }, [dataUser, subdivisions]);
+  }, [dataUser, subdivisions, activeSubTab, activeTab]);
 
   const onSubmit = (data) => {
     dispatch(getAccount({ idService: isManager ? selectedEmployeeAccount : employee?.idService, date: moment(data?.date).format('YYYY-MM-DD') }));
@@ -415,26 +415,28 @@ const AccountPage = () => {
                                       setPrePaymentEmployee(updatePrePaymentEmployee);
                                     }}
                                     onBlur={(event) => {
-                                      if (event.target.value == '-' || !event.target.value) {
-                                        let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                        updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
-                                        setPrePaymentEmployee(updatePrePaymentEmployee);
-                                      } else if (parseInt(row?.balance) > prePaymentSettings.minSum && row?.monthSum < prePaymentSettings.percent) {
-                                        let val = parseInt(event.target.value);
-                                        let resultSum = parseInt(row?.balance) - prePaymentSettings.minSum;
-                                        // let maxSum = 0;
-                                        if (resultSum >= prePaymentSettings.percent) {
-                                          resultSum = prePaymentSettings.percent;
-                                        }
-
-                                        if (val <= prePaymentSettings.percent && val > 0 && val <= prePaymentSettings.percent - parseInt(row?.monthSum) && val <= resultSum) {
-                                          let updatePrePaymentEmployee = { ...prePaymentEmployee };
-                                          updatePrePaymentEmployee[row?.userId] = { sum: val, name: row?.name };
-                                          setPrePaymentEmployee(updatePrePaymentEmployee);
-                                        } else {
+                                      if (!employeeAccountMoveBalance) {
+                                        if (event.target.value == '-' || !event.target.value) {
                                           let updatePrePaymentEmployee = { ...prePaymentEmployee };
                                           updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
                                           setPrePaymentEmployee(updatePrePaymentEmployee);
+                                        } else if (parseInt(row?.balance) > prePaymentSettings.minSum && row?.monthSum < prePaymentSettings.percent) {
+                                          let val = parseInt(event.target.value);
+                                          let resultSum = parseInt(row?.balance) - prePaymentSettings.minSum;
+                                          // let maxSum = 0;
+                                          if (resultSum >= prePaymentSettings.percent) {
+                                            resultSum = prePaymentSettings.percent;
+                                          }
+
+                                          if (val <= prePaymentSettings.percent && val > 0 && val <= prePaymentSettings.percent - parseInt(row?.monthSum) && val <= resultSum) {
+                                            let updatePrePaymentEmployee = { ...prePaymentEmployee };
+                                            updatePrePaymentEmployee[row?.userId] = { sum: val, name: row?.name };
+                                            setPrePaymentEmployee(updatePrePaymentEmployee);
+                                          } else {
+                                            let updatePrePaymentEmployee = { ...prePaymentEmployee };
+                                            updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
+                                            setPrePaymentEmployee(updatePrePaymentEmployee);
+                                          }
                                         }
                                       }
                                     }}
