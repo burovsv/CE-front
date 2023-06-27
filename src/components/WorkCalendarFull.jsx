@@ -720,7 +720,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
           </tr>
           {[...fields]
             .sort(function (a, b) {
-              return a.groupPost - b.groupPost || a.orderEmployee - b.orderEmployee;
+              return a.groupPost - b.groupPost;
             })
             ?.map((item, index) => {
               return (
