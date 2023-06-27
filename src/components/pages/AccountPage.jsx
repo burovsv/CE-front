@@ -415,7 +415,7 @@ const AccountPage = () => {
                                       setPrePaymentEmployee(updatePrePaymentEmployee);
                                     }}
                                     onBlur={(event) => {
-                                      if (!employeeAccountMoveBalance) {
+                                      if (!isAggrement) {
                                         if (event.target.value == '-' || !event.target.value) {
                                           let updatePrePaymentEmployee = { ...prePaymentEmployee };
                                           updatePrePaymentEmployee[row?.userId] = { sum: 0, name: row?.name };
@@ -884,6 +884,7 @@ const AccountPage = () => {
 
       {showPrePayment && (
         <ModalPrePayment
+          aggrement={isAggrement}
           setComment={setComment}
           comment={comment}
           loading={prePaymentLoading}

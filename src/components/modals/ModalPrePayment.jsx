@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
 import Modal from './Modal';
-const ModalPrePayment = ({ list, onClose, onSave, loading, setComment, comment }) => {
+const ModalPrePayment = ({ aggrement, list, onClose, onSave, loading, setComment, comment }) => {
   return (
     <Modal
       textSend={'Отменить'}
@@ -20,34 +20,40 @@ const ModalPrePayment = ({ list, onClose, onSave, loading, setComment, comment }
       }}>
       <div style={{ display: 'grid', gridTemplateColumns: Object.keys(list).length == 1 ? '1fr' : '1fr 1fr', columnGap: '20px', marginBottom: '20px', rowGap: '20px' }}>
         {Object.keys(list).map(function (key, index) {
-          return (
-            <div style={{ display: 'grid', alignItems: 'center', gridTemplateColumns: '1fr 84px', columnGap: '43px' }}>
-              <div>{list[key].name}</div>
-              <div style={{ width: '84px', height: '35px', border: '1px solid #E6E6E6', padding: '10px 15px' }}>{list[key].sum}</div>
-            </div>
-          );
+          if (!list[key].sum) {
+            return (
+              <div style={{ display: 'grid', alignItems: 'center', gridTemplateColumns: '1fr 84px', columnGap: '43px' }}>
+                <div>{list[key].name}</div>
+                <div style={{ width: '84px', height: '35px', border: '1px solid #E6E6E6', padding: '10px 15px' }}>{list[key].sum}</div>
+              </div>
+            );
+          }
         })}
-        <input
-          defaultValue={''}
-          value={comment}
-          onChange={(event) => {
-            if (event.target.value?.length <= 20) {
-              setComment(event.target.value);
-            }
-          }}
-          placeholder="Комментарий ..."
-          type="text"
-          style={{
-            height: '35px',
-            width: '100%',
-            border: '0.2px solid rgb(230, 230, 230)',
-            outline: 'none',
-            padding: '10px',
-            boxSizing: 'border-box',
-            fontFamily: 'inherit',
-            background: '#fff',
-          }}
-        />
+        {aggrement && (
+          <div style={{ gridColumn: '1/3' }}>
+            <input
+              defaultValue={''}
+              value={comment}
+              onChange={(event) => {
+                if (event.target.value?.length <= 25) {
+                  setComment(event.target.value);
+                }
+              }}
+              placeholder="Комментарий ..."
+              type="text"
+              style={{
+                height: '35px',
+                width: '100%',
+                border: '0.2px solid rgb(230, 230, 230)',
+                outline: 'none',
+                padding: '10px',
+                boxSizing: 'border-box',
+                fontFamily: 'inherit',
+                background: '#fff',
+              }}
+            />
+          </div>
+        )}
       </div>
     </Modal>
   );
