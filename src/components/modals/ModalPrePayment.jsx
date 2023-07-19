@@ -20,7 +20,7 @@ const ModalPrePayment = ({ aggrement, list, onClose, onSave, loading, setComment
       }}>
       <div style={{ display: 'grid', gridTemplateColumns: Object.keys(list).length == 1 ? '1fr' : '1fr 1fr', columnGap: '20px', marginBottom: '20px', rowGap: '20px' }}>
         {Object.keys(list).map(function (key, index) {
-          if (!list[key].sum) {
+          if (list[key].sum) {
             return (
               <div style={{ display: 'grid', alignItems: 'center', gridTemplateColumns: '1fr 84px', columnGap: '43px' }}>
                 <div>{list[key].name}</div>

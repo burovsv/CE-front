@@ -165,11 +165,15 @@ const AccountPage = () => {
       //       }
       //     });
       // } else {
-      dataUser?.accessBalance?.map((itemAccess) => {
-        if (itemAccess?.subdivisionId != selfSubdivision?.value) {
-          listSubdivisionData.push({ label: itemAccess?.name, value: itemAccess?.subdivisionId, id: itemAccess?.idService });
-        }
-      });
+      [...dataUser?.accessBalance]
+        .sort(function (a, b) {
+          return a?.name.localeCompare(b?.name);
+        })
+        ?.map((itemAccess) => {
+          if (itemAccess?.subdivisionId != selfSubdivision?.value) {
+            listSubdivisionData.push({ label: itemAccess?.name, value: itemAccess?.subdivisionId, id: itemAccess?.idService });
+          }
+        });
       // }
 
       setListAccessSubdivision(listSubdivisionData);
