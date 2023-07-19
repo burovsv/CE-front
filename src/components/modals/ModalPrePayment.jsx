@@ -35,7 +35,7 @@ const ModalPrePayment = ({ aggrement, list, onClose, onSave, loading, setComment
               defaultValue={''}
               value={comment}
               onChange={(event) => {
-                if (event.target.value?.length <= 25) {
+                if (event.target.value?.length <= 50) {
                   setComment(event.target.value);
                 }
               }}

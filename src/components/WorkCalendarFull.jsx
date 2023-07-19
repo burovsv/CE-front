@@ -423,7 +423,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
                 <input style={{ height: '44.22px', border: '1px solid #C0C0C0', padding: '0 10px', width: '205px', marginLeft: '20px' }} {...acceptForm.register('directorComment')} />
                 <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitDirectorAccept)} class="report__btn" style={{ backgroundColor: '#2D7700', color: '#fff', marginLeft: '20px' }}>
                   Согласованно
-                </button>{' '}
+                </button>
                 <button disabled={switchAcceptWorkTableLoading} onClick={acceptForm.handleSubmit(onSubmitDirectorCancel)} class="report__btn" style={{ backgroundColor: 'rgb(252, 0, 0)', color: '#fff', marginLeft: '20px' }}>
                   Отказать
                 </button>
@@ -658,10 +658,22 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
                   onNextMonth={() => {
                     setIsEdited(false);
                     dispatch(setActiveMonthYear(moment(activeMonthYear).add(1, 'months').toString()));
+                    dispatch(
+                      getAcceptWorkTableSingle({
+                        date: moment(activeMonthYear).add(1, 'months').format('YYYY-MM-DD').toString(),
+                        subdivisionId: activeCalendarSubdivision?.id,
+                      }),
+                    );
                   }}
                   onPrevMonth={() => {
                     setIsEdited(false);
                     dispatch(setActiveMonthYear(moment(activeMonthYear).subtract(1, 'months').toString()));
+                    dispatch(
+                      getAcceptWorkTableSingle({
+                        date: moment(activeMonthYear).subtract(1, 'months').format('YYYY-MM-DD').toString(),
+                        subdivisionId: activeCalendarSubdivision?.id,
+                      }),
+                    );
                   }}
                 />
               </div>

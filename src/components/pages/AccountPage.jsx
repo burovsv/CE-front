@@ -150,27 +150,27 @@ const AccountPage = () => {
     getEmployeeUser: { data: employee },
   } = useSelector((state) => state.employee);
   useEffect(() => {
-    if (dataUser && listAccessSubdivision?.length == 0 && subdivisions) {
+    if (dataUser && subdivisions) {
       setIsManager(dataUser?.postSubdivision?.postId == process.env.REACT_APP_SELLER_ID || dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166);
       const selfSubdivision = { value: dataUser?.postSubdivision?.subdivisionId, label: dataUser?.subdivision, id: dataUser?.subdivisionIdService };
       let listSubdivisionData = [selfSubdivision];
-      if (dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166) {
-        [...subdivisions]
-          .sort(function (a, b) {
-            return a?.name.localeCompare(b?.name);
-          })
-          ?.map((sudivItem) => {
-            if (sudivItem?.id != selfSubdivision?.value && sudivItem?.id != 1) {
-              listSubdivisionData.push({ label: sudivItem?.name, value: sudivItem?.id, id: sudivItem?.idService });
-            }
-          });
-      } else {
-        dataUser?.accessBalance?.map((itemAccess) => {
-          if (itemAccess?.subdivisionId != selfSubdivision?.value) {
-            listSubdivisionData.push({ label: itemAccess?.name, value: itemAccess?.subdivisionId, id: itemAccess?.idService });
-          }
-        });
-      }
+      // if (dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166) {
+      //   [...subdivisions]
+      //     .sort(function (a, b) {
+      //       return a?.name.localeCompare(b?.name);
+      //     })
+      //     ?.map((sudivItem) => {
+      //       if (sudivItem?.id != selfSubdivision?.value && sudivItem?.id != 1) {
+      //         listSubdivisionData.push({ label: sudivItem?.name, value: sudivItem?.id, id: sudivItem?.idService });
+      //       }
+      //     });
+      // } else {
+      dataUser?.accessBalance?.map((itemAccess) => {
+        if (itemAccess?.subdivisionId != selfSubdivision?.value) {
+          listSubdivisionData.push({ label: itemAccess?.name, value: itemAccess?.subdivisionId, id: itemAccess?.idService });
+        }
+      });
+      // }
 
       setListAccessSubdivision(listSubdivisionData);
       setSelectedAccessSubdivision(selfSubdivision);
