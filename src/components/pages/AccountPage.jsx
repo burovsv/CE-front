@@ -115,6 +115,7 @@ const AccountPage = () => {
   const [showErrorPrePayment, setShowErrorPrePayment] = useState(false);
   useEffect(() => {
     if (prePaymentCreateData && !prePaymentCreateError) {
+      window.location.reload(false);
       setShowPrePayment(false);
       setShowSuccessPrePayment(true);
       setPrePaymentEmployee({});
@@ -520,7 +521,8 @@ const AccountPage = () => {
                               Выдать
                             </div>
                             <div>
-                              Доступно с {prePaymentSettings.startDate} по {prePaymentSettings.endDate} не более {prePaymentSettings.percent} руб
+                              Доступно с 21 по 31, для выдачи доступно не более 20000 руб. и на итоговом балансе должно оставаться 15000 руб.
+                              {/* Доступно с {prePaymentSettings.startDate} по {prePaymentSettings.endDate} не более {prePaymentSettings.percent} руб */}
                             </div>
                             <div>
                               <label style={{ display: 'flex', alignItems: 'center', marginLeft: '20px', userSelect: 'none' }}>
