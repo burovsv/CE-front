@@ -110,22 +110,31 @@ const KnowledgeBaseSinglePage = () => {
 
         setTextFilesList([]);
 
-        additionalTextFiles.forEach(data => {
+        additionalTextFiles.forEach((data, key) => {
             let url = `${process.env.REACT_APP_SERVER_API}${data.url}`;
             // if (data.type == 'pdf') return
+
             Axios(url).then(res => {
                 // setText(res.data)
                 let file = {
                     name: data.name,
                     content: res.data,
                     type: data.type,
-                    url: `${process.env.REACT_APP_SERVER_API}${data.url}`
+                    url: `${process.env.REACT_APP_SERVER_API}${data.url}`,
+                    key: key
                 }
 
-                setTextFilesList(prev => [...prev, file]);
+                setTextFilesList(prev => {
+                    if (prev.find(item => item.key === key)) {
+                        return [...prev]
+                    } else {
+                        return [...prev, file]
+                    }
+                });
             });
 
         });
+
 
         setName(article.name);
         setDate(article.date);
@@ -184,7 +193,7 @@ const KnowledgeBaseSinglePage = () => {
                                         return (
                                             <Panel header={file.name} key={`2_${index}`}>
                                                 {
-                                                    (file.type == 'pdf')
+                                                    (file.type === 'pdf')
                                                         ? (<PDFViewer document={{
                                                             url: file.url,
                                                         }} />)
