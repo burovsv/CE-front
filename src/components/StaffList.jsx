@@ -8,6 +8,7 @@ import ModalStaff from './modals/ModalStaff';
 const StaffList = () => {
   const dispatch = useDispatch();
   const {
+    getEmployeeUser: { data: dataUser, loading: loadingUser, error: errorUser },
     getStaffList: { loading, data, error },
     getStaffListBySubdivision: { data: staffBySubdivision },
   } = useSelector((state) => state.employee);
@@ -25,18 +26,22 @@ const StaffList = () => {
           </th>{' '}
           <th width="100%">Штат факт</th>
         </tr>
-        {data?.map((item) => (
-          <tr
-            style={{ cursor: 'pointer' }}
-            class={`table-plan-row`}
-            onClick={() => {
-              dispatch(getStaffListBySubdivision({ subdivisionId: item?.id }));
-            }}>
-            <td>{item?.name}</td>
-            <td>{item?.staffCount}</td>
-            <td>{`${item?.sumStaffCount}/${item?.staffCount}`}</td>
-          </tr>
-        ))}
+        {data?.map((item) => {
+          const accessSubdivision = dataUser?.accessBalance?.find((subdivFind) => subdivFind?.subdivisionId == item?.id);
+          if (accessSubdivision)
+            return (
+              <tr
+                style={{ cursor: 'pointer' }}
+                class={`table-plan-row`}
+                onClick={() => {
+                  dispatch(getStaffListBySubdivision({ subdivisionId: item?.id }));
+                }}>
+                <td>{item?.name}</td>
+                <td>{item?.staffCount}</td>
+                <td>{`${item?.sumStaffCount}/${item?.staffCount}`}</td>
+              </tr>
+            );
+        })}
       </table>
       {staffBySubdivision && <ModalStaff />}
     </>

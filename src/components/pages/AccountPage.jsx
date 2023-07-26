@@ -749,7 +749,7 @@ const AccountPage = () => {
                 График
               </button>
             </div>
-            {(dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166) && (
+            {(dataUser?.postSubdivision?.postId == process.env.REACT_APP_DIRECTOR_POST_ID || dataUser?.id == 166 || dataUser?.accessBalance?.length !== 0) && (
               <div class="tab" style={{ marginTop: 0 }}>
                 <button
                   onClick={() => {
