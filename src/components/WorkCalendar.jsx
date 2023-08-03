@@ -25,7 +25,7 @@ const dataCalendar = [
   },
 ];
 
-const WorkCalendar = () => {
+const WorkCalendar = ({ hideCalendar }) => {
   const {
     activeMonthYear,
     showFullCalendar,
@@ -47,8 +47,8 @@ const WorkCalendar = () => {
     return findDate ? findDate : false;
   };
   return (
-    <div style={{ position: 'relative', ...(workCalendarMonthLoading && { paddingBottom: '20px' }) }}>
-      {workCalendarMonthLoading && (
+    <div style={{ position: 'relative', ...(workCalendarMonthLoading && !hideCalendar && { paddingBottom: '20px' }) }}>
+      {workCalendarMonthLoading && !hideCalendar && (
         <div style={{ position: 'absolute', paddingLeft: '10px', bottom: '-60px', left: '50%', transform: 'translateX(-50%)' }} className="loading-account">
           Идет загрузка...
         </div>
@@ -58,7 +58,7 @@ const WorkCalendar = () => {
         minDetail="month"
         maxDetail="month"
         defaultView="month"
-        className={clsx('work-calendar', workCalendarMonthLoading && 'work-calendar-loading')}
+        className={clsx('work-calendar', workCalendarMonthLoading && 'work-calendar-loading', hideCalendar && 'work-calendar-hide')}
         activeStartDate={moment(activeMonthYear).toDate()}
         onActiveStartDateChange={(monthYear) => {
           dispatch(setActiveMonthYear(moment(monthYear.activeStartDate).toString()));
@@ -96,6 +96,8 @@ const WorkCalendar = () => {
               return <div style={{ color: '#000' }}>БЛН</div>;
             } else if (findDate?.type == 'day-off') {
               return <div style={{ color: '#000' }}>ВЫХ</div>;
+            } else if (findDate?.type == 'comand') {
+              return <div style={{ color: '#000' }}>КМД</div>;
             }
           }
         }}

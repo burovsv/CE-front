@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { Calendar } from 'react-calendar';
 import OutsideClickHandler from 'react-outside-click-handler';
 
-const CalendarFilter = ({ date, setDate, onClose }) => {
+const CalendarFilter = ({ date, setDate, onClose = () => {}, dateFormat }) => {
   return (
     <>
       <OutsideClickHandler onOutsideClick={onClose}>
@@ -17,7 +17,7 @@ const CalendarFilter = ({ date, setDate, onClose }) => {
           onChange={() => {}}
           onClickDay={(newDate) => {
             setDate(newDate);
-            onClose();
+            onClose?.();
             //   const currentActive = getDateOnCalendar(datee)?.events;
             //   if (currentActive?.length === 0) {
             //     return;

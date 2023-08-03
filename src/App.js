@@ -24,6 +24,7 @@ import { resetLoginEmployee } from './redux/slices/employee.slice';
 import AdminReportsPage from './components/pages/AdminReports';
 import NewsResultPage from './components/pages/NewsResultPage';
 import AccountPage from './components/pages/AccountPage';
+import AdminAccessPage from './components/pages/AdminAccess';
 import AdminKnowledgeBasePage from './components/pages/AdminKnowledgeBasePage/AdminKnowledgeBasePage';
 function App() {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ function App() {
     (config) => {
       const token = localStorage?.getItem('token');
 
-      config.headers = { request_token: token };
+      config.headers = { 'request-token': token };
 
       return config;
     },
@@ -90,10 +91,11 @@ function App() {
     { path: '/knowledgeBase/:knowledgeBaseId', element: <KnowledgeBaseSinglePage /> },
     { path: '/account', element: <AccountPage /> },
     { path: '/admin/knowledgeBase', element: auth?.role === 'admin' ? <AdminKnowledgeBasePage /> : <Navigate to="/" /> },
-    { path: '/admin/news', element: auth?.role === 'admin' ? <AdminNewsPage /> : <Navigate to="/" /> },
-    { path: '/admin/training', element: auth?.role === 'admin' ? <AdminTestingPage /> : <Navigate to="/" /> },
+    { path: '/admin/news', element: auth?.role === 'admin' || auth?.editorContent ? <AdminNewsPage /> : <Navigate to="/" /> },
+    { path: '/admin/training', element: auth?.role === 'admin' || auth?.editorContent ? <AdminTestingPage /> : <Navigate to="/" /> },
     { path: '/admin/users', element: auth?.role === 'admin' ? <AdminEmployeePage /> : <Navigate to="/" /> },
     { path: '/admin/reports', element: auth?.role === 'admin' ? <AdminReportsPage /> : <Navigate to="/" /> },
+    { path: '/admin/access', element: auth?.role === 'admin' ? <AdminAccessPage /> : <Navigate to="/" /> },
   ]);
   return (
     <>

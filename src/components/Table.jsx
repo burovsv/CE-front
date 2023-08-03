@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router';
 import clsx from 'clsx';
 import Loading from './Loading';
-const Table = ({ isReport, data, loading, title, onEdit, onDelete, onSearch, onAdd, header, onMore, addBtnText, subText, pages, btnRed, list = [], onChangeList, onDownload }) => {
+const Table = ({ isReport, data, loading, title, onEdit, onDelete, onSearch, onAdd, header, onMore, addBtnText, subText, pages, btnRed, list = [], onChangeList, onDownload, transparent = false }) => {
   const [searchTerm, setSearchTerm] = useState();
 
   useEffect(() => {
@@ -15,14 +15,15 @@ const Table = ({ isReport, data, loading, title, onEdit, onDelete, onSearch, onA
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
+
   return (
     <>
       {/* {data?.length !== 0 || !loading ? ( */}
-      <div className="table__wrap">
-        <div className="table__header">
+      <div className="table__wrap" style={{ ...(transparent && { background: 'transparent', padding: '20px 0 0 0' }) }}>
+        <div className="table__header" style={{ ...(transparent && { background: 'transparent' }) }}>
           <div style={{ display: 'flex' }}>
             {list?.length !== 0 ? (
-              <div className="modal__select">
+              <div className="modal__select" style={{ width: '260px' }}>
                 <select style={{ marginBottom: '0' }} onChange={(val) => onChangeList(val.target.value)} placeholder="Должность" disabled={loading}>
                   {list?.map((item) => (
                     <option value={item?.value}>{item?.label}</option>
@@ -40,7 +41,7 @@ const Table = ({ isReport, data, loading, title, onEdit, onDelete, onSearch, onA
             </div> */}
           </div>
           {onSearch && (
-            <div class="search__form">
+            <div class={`search__form ${transparent ? 'search__form-big' : ''}`}>
               <input class="search__input" id="search" type="search" placeholder="Поиск" autoComplete="off" onChange={(e) => setSearchTerm(e.target.value)} />
               <button class="search__btn" type="submit">
                 <a href="">

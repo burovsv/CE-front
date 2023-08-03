@@ -30,6 +30,7 @@ import { updateTesting } from '../../redux/actions/testing/updateTesting.action'
 import { resetCreateTestingFilter } from '../../redux/slices/testingFilter.slice';
 import { getSubdivisionsByPosts } from '../../redux/actions/subdivision/getSubdivisionsByPosts.action';
 import { resetGetPosts } from '../../redux/slices/post.slice';
+import { getCategories } from '../../redux/actions/category/getCategories';
 const ModalTesting = () => {
   const [successCreateTestingFilter, setSuccessCreateTestingFilter] = useState(false);
   const defaultValues = {
@@ -62,6 +63,9 @@ const ModalTesting = () => {
   const [viewPosts, setViewPosts] = useState([]);
   const [viewCats, setViewCats] = useState([]);
   const {
+    getCategories: { data: categoryList, loading: categoryListLoading },
+  } = useSelector((state) => state.category);
+  const {
     getPosts: { data: posts, loading: postsLoading },
   } = useSelector((state) => state.post);
   const {
@@ -91,46 +95,56 @@ const ModalTesting = () => {
     reset();
     dispatch(setActiveModal(''));
   };
-  useEffect(() => {
-    if (posts?.length !== 0 && posts) {
-      const viewPostsArr = posts?.map((cat) => ({ label: cat?.name, value: cat?.id }));
+  // useEffect(() => {
+  //   if (posts?.length !== 0 && posts) {
+  //     const viewPostsArr = posts?.map((cat) => ({ label: cat?.name, value: cat?.id }));
 
-      if (testingSingle) {
-        const activePosts = viewPostsArr.map((viewPost) => (testingSingle?.posts?.find((postActive) => postActive == viewPost?.value) ? viewPost?.value.toString() : false));
+  //     if (testingSingle) {
+  //       const activePosts = viewPostsArr.map((viewPost) => (testingSingle?.posts?.find((postActive) => postActive == viewPost?.value) ? viewPost?.value.toString() : false));
 
-        setValue('postsIds', activePosts);
-      }
-      setViewPosts(viewPostsArr);
-    } else {
-      setViewPosts([]);
-    }
-  }, [posts, testingSingle]);
-  useEffect(() => {
-    if (subdivisionByPosts?.length !== 0 && subdivisionByPosts) {
-      let viewCatsArr = [];
-      let lastCatsVal = getValues('catIds')?.filter((val) => val);
-      let updateCatsVal = [];
-      subdivisionByPosts.map((subdivPost) => {
-        subdivPost?.categories.map((subdivCat) => {
-          viewCatsArr.push({ label: subdivCat?.name, value: subdivCat?.id });
-          updateCatsVal.push(lastCatsVal?.find((val) => val == subdivCat?.id) ? subdivCat?.id.toString() : false);
-        });
-      });
-      setViewCats(viewCatsArr);
-      setValue('catIds', updateCatsVal);
-    } else {
-      setViewCats([]);
-    }
-  }, [subdivisionByPosts, testingSingle]);
+  //       setValue('postsIds', activePosts);
+  //     }
+  //     setViewPosts(viewPostsArr);
+  //   } else {
+  //     setViewPosts([]);
+  //   }
+  // }, [posts, testingSingle]);
+  // useEffect(() => {
+  //   if (subdivisionByPosts?.length !== 0 && subdivisionByPosts) {
+  //     let viewCatsArr = [];
+  //     let lastCatsVal = getValues('catIds')?.filter((val) => val);
+  //     let updateCatsVal = [];
+  //     subdivisionByPosts.map((subdivPost) => {
+  //       subdivPost?.categories.map((subdivCat) => {
+  //         viewCatsArr.push({ label: subdivCat?.name, value: subdivCat?.id });
+  //         updateCatsVal.push(lastCatsVal?.find((val) => val == subdivCat?.id) ? subdivCat?.id.toString() : false);
+  //       });
+  //     });
+  //     setViewCats(viewCatsArr);
+  //     console.log(updateCatsVal);
+  //     setValue('catIds', updateCatsVal);
+  //   } else {
+  //     setViewCats([]);
+  //   }
+  // }, [subdivisionByPosts, testingSingle]);
+
+  // useEffect(() => {
+  //   if (viewCats?.length !== 0 && testingSingle && isInitCats) {
+  //     const activeCats = viewCats.map((viewCat) => (testingSingle?.cats?.find((catActive) => catActive == viewCat?.value) ? viewCat?.value.toString() : false));
+
+  //     setValue('catIds', activeCats);
+  //     setIsInitCats(false);
+  //   }
+  // }, [viewCats]);
 
   useEffect(() => {
-    if (viewCats?.length !== 0 && testingSingle && isInitCats) {
-      const activeCats = viewCats.map((viewCat) => (testingSingle?.cats?.find((catActive) => catActive == viewCat?.value) ? viewCat?.value.toString() : false));
+    if (categoryList && testingSingle) {
+      const activeCats = categoryList.map((viewCat) => (testingSingle?.categories?.find((catActive) => catActive?.id == viewCat?.id) ? viewCat?.id.toString() : false));
 
       setValue('catIds', activeCats);
       setIsInitCats(false);
     }
-  }, [viewCats]);
+  }, [categoryList, testingSingle]);
 
   useEffect(() => {
     if (createTestingFilterData) {
@@ -148,6 +162,7 @@ const ModalTesting = () => {
     dispatch(getSubdivisions());
     dispatch(getTestingFilters());
     dispatch(getPosts());
+    dispatch(getCategories());
     return () => {
       dispatch(resetGetPosts());
       dispatch(resetGetSubdivisionsByPosts());
@@ -174,11 +189,11 @@ const ModalTesting = () => {
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
-      if (name?.includes('postsIds') && value?.postsIds) {
-        const selectedPosts = value?.postsIds.filter((postId) => postId);
+      // if (name?.includes('postsIds') && value?.postsIds) {
+      //   const selectedPosts = value?.postsIds.filter((postId) => postId);
 
-        dispatch(getSubdivisionsByPosts(selectedPosts));
-      }
+      //   // dispatch(getSubdivisionsByPosts(selectedPosts));
+      // }
       //DATE START VALIDE
       const dateEndFormatStart = moment(value?.dateStart, 'DD.MM.YYYY');
       var startDateStart = moment('01.01.2022', 'DD.MM.YYYY');
@@ -249,11 +264,11 @@ const ModalTesting = () => {
                   },
                 })}
               />
-              <div className="" style={{ marginBottom: '20px' }}>
+              {/* <div className="" style={{ marginBottom: '20px' }}>
                 <CheckboxGroup control={control} disabled={subdivisionByPostsLoading} name="postsIds" list={viewPosts} register={register} />
-              </div>
+              </div> */}
               <div className="" style={{ marginBottom: '20px' }}>
-                <CheckboxGroup control={control} disabled={subdivisionByPostsLoading} name="catIds" list={viewCats} register={register} />
+                <CheckboxGroup control={control} disabled={subdivisionByPostsLoading} name="catIds" list={categoryList?.map((itemCat) => ({ label: itemCat?.name, value: itemCat?.id }))} register={register} />
               </div>
               <div className="modal__select">
                 <select {...register('testingFilterId', { required: true })}>
