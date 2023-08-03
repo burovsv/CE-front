@@ -16,6 +16,8 @@ import AdminEmployeePage from './components/pages/AdminEmployeePage';
 import NewsSinglePage from './components/pages/NewsSinglePage';
 import TestingPage from './components/pages/TestingPage';
 import StudyPage from './components/pages/StudyPage';
+import KnowledgeBasePage from './components/pages/KnowledgeBasePage/KnowledgeBasePage';
+import KnowledgeBaseSinglePage from './components/pages/KnowledgeBaseSinglePage/KnowledgeBaseSinglePage';
 import SearchPage from './components/pages/SearchPage';
 import axios from 'axios';
 import { resetLoginEmployee } from './redux/slices/employee.slice';
@@ -23,6 +25,7 @@ import AdminReportsPage from './components/pages/AdminReports';
 import NewsResultPage from './components/pages/NewsResultPage';
 import AccountPage from './components/pages/AccountPage';
 import AdminAccessPage from './components/pages/AdminAccess';
+import AdminKnowledgeBasePage from './components/pages/AdminKnowledgeBasePage/AdminKnowledgeBasePage';
 function App() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -48,7 +51,6 @@ function App() {
       return response;
     },
     (error) => {
-      console.log();
       if (error?.request?.responseURL?.substring(error?.request?.responseURL?.length - 9) !== '/api/auth' && error?.response?.data?.error === 'PROBLEM_WITH_TOKEN') {
         window.location.href = '/auth';
       }
@@ -69,13 +71,13 @@ function App() {
     dispatch(authEmployee());
   }, []);
   useEffect(() => {
-    console.log('AUTH NULL');
     if (auth === null) {
       dispatch(resetLoginEmployee());
       navigate('/auth');
     }
   }, [auth]);
 
+  // sveta добавила knowledgeBase
   let routes = useRoutes([
     { path: '/', element: <HomePage /> },
     { path: '/auth', element: <AuthPage /> },
@@ -85,7 +87,10 @@ function App() {
 
     { path: '/study/', element: <StudyPage /> },
     { path: '/testing', element: <TestingPage /> },
+    { path: '/knowledgeBase', element: <KnowledgeBasePage /> },
+    { path: '/knowledgeBase/:knowledgeBaseId', element: <KnowledgeBaseSinglePage /> },
     { path: '/account', element: <AccountPage /> },
+    { path: '/admin/knowledgeBase', element: auth?.role === 'admin' ? <AdminKnowledgeBasePage /> : <Navigate to="/" /> },
     { path: '/admin/news', element: auth?.role === 'admin' || auth?.editorContent ? <AdminNewsPage /> : <Navigate to="/" /> },
     { path: '/admin/training', element: auth?.role === 'admin' || auth?.editorContent ? <AdminTestingPage /> : <Navigate to="/" /> },
     { path: '/admin/users', element: auth?.role === 'admin' ? <AdminEmployeePage /> : <Navigate to="/" /> },

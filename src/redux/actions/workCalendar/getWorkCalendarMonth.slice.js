@@ -28,7 +28,6 @@ export const reducerGetWorkCalendarMonth = {
   [getWorkCalendarMonth.fulfilled]: (state, action) => {
     state.getWorkCalendarMonth.loading = false;
     const newData = action.payload;
-    console.log(newData?.workCalendars?.[0]);
     if (newData?.workCalendars?.[0]) {
       try {
         newData.workCalendars = JSON.parse(newData?.workCalendars?.[0]?.calendarData);

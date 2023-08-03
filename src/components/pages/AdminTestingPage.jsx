@@ -27,7 +27,6 @@ const AdminTestingPage = () => {
   }, [paramsData]);
 
   useEffect(() => {
-    console.log(paramsData?.page);
     if (paramsData?.page == 1) {
       setViewData(testings);
     } else {

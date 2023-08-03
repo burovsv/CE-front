@@ -11,7 +11,6 @@ export const addYouTubeIframe = (desc) => {
       const youTube = youTubeIframe(linkNotTag);
       newDesc = newDesc.replace(link, youTube);
     });
-    console.log(newDesc);
     return newDesc;
   }
 

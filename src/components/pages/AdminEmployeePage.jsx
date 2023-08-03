@@ -31,7 +31,6 @@ const AdminEmployeePage = () => {
   }, [paramsData]);
 
   useEffect(() => {
-    console.log(paramsData?.page);
     if (paramsData?.page == 1) {
       setViewData(employees);
     } else {

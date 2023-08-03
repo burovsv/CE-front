@@ -10,7 +10,6 @@ const SearchPage = () => {
     globalSearch: { data: searchResult, loading: searchLoading },
   } = useSelector((state) => state.search);
   const [searchParams] = useSearchParams();
-  console.log(searchParams.get('term'));
 
   return (
     <>

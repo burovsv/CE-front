@@ -15,11 +15,13 @@ const Menu = () => {
     { name: 'Главная', path: '/', icon: '/img/nav/main.png' },
     { name: 'Обучения', path: '/study', icon: '/img/nav/training.png' },
     { name: 'Тестирование', path: '/testing', icon: '/img/nav/testing.png' },
+    { name: 'База знаний', path: '/knowledgeBase', icon: '/img/nav/knowledge.png' },
   ];
   let adminMenu = [
     { name: 'Новости', path: '/admin/news', icon: '/img/nav/main.png' },
     { name: 'Обучение', path: '/admin/news/?study=true', icon: '/img/nav/main.png' },
     { name: 'Тестирование', path: '/admin/training', icon: '/img/nav/training.png' },
+    { name: 'База знаний', path: '/admin/knowledgeBase', icon: '/img/nav/knowledge.png' },
   ];
   if (role === 'admin') {
     adminMenu.push({ name: 'Отчеты', path: '/admin/reports', icon: '/img/list.svg' });

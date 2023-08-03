@@ -14,7 +14,6 @@ export const getUserNews = createAsyncThunk('news/getUserNews', async (data, { r
       return fulfillWithValue(res.data);
     })
     .catch((res) => {
-      console.log(res);
       return rejectWithValue(res.response.data);
     });
 });

@@ -176,7 +176,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
         let parseCalendarData = [];
         try {
           parseCalendarData = JSON.parse(employee?.workCalendars[0]?.calendarData);
-        } catch (error) {}
+        } catch (error) { }
 
         const fillCalendarData = allDaysGenerate?.map((dayItem) => {
           const findEqualDay = parseCalendarData?.find((parseItem) => {
@@ -323,7 +323,7 @@ const WorkCalendarFull = ({ onClose, onOpenAccept }) => {
       let totalWorkers1 = [];
       let totalWorkers2 = [];
       let totalWorkers3 = [];
-
+      console.log(value);
       allDays?.map((item, dayIndex) => {
         totalWorkers1.push(countWorkers(value?.calendar, dayIndex));
         totalWorkers2.push(countMinTimeWorkers(value?.calendar, dayIndex, 'startTime'));

@@ -147,9 +147,7 @@ const ModalEmployee = () => {
   }, [watch]);
   const onAddNewsCategory = (data) => {
     dispatch(createCategory(data));
-    console.log(data);
   };
-  console.log(errors);
   return (
     <>
       <Modal

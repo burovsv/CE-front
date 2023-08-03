@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { setActiveModal } from '../../redux/slices/app.slice';
 const Modal = ({ styleSendBtn = {}, titleCenter, children, onSave, onClose, title, disabled, textSend, textCancel, modalStyle = {}, isThanks, styleFooter = {}, styleCloseBtn = {} }) => {
   const dispatch = useDispatch();
+
   return (
     <>
       <div className="overlay-modal">

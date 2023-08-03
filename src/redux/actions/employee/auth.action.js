@@ -12,7 +12,6 @@ export const authEmployee = createAsyncThunk('employee/authEmployee', async (dat
       return fulfillWithValue(res.data);
     })
     .catch((res) => {
-      console.log(res);
       return rejectWithValue(res.response.data);
     });
 });

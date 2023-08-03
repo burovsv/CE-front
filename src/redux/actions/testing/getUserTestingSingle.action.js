@@ -12,7 +12,6 @@ export const getUserTestingSingle = createAsyncThunk('testing/getUserTestingSing
       return fulfillWithValue(res.data);
     })
     .catch((res) => {
-      console.log(res);
       return rejectWithValue(res.response.data);
     });
 });

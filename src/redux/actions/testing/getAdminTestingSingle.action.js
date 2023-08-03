@@ -12,7 +12,6 @@ export const getAdminTestingSingle = createAsyncThunk('testing/getAdminTestingSi
       return fulfillWithValue(res.data);
     })
     .catch((res) => {
-      console.log(res);
       return rejectWithValue(res.response.data);
     });
 });

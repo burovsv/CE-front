@@ -14,6 +14,22 @@ import { testingFilterReducer } from './slices/testingFilter.slice';
 import { workCalendarReducer } from './slices/workCalendar.slice';
 import { employeeHiddenReducer } from './slices/employeeHidden.slice';
 
+import { articleReducer } from './slices/article.slice';
+import { markReducer } from './slices/mark.slice';
+import { sectionReducer } from './slices/section.slice';
+import { sectionGroupReducer } from './slices/sectionGroup.slice';
+import { employeePositionReducer } from './slices/employeePosition.slice';
+import { articlePostReducer } from './slices/articlePost.slice';
+import { articleMarkReducer } from './slices/articleMark.slice';
+import { articleFileReducer } from './slices/articleFile.slice';
+
+import { articleFilterByMarksReducer } from './slices/articleFilterByMarks.slice';
+import { articleFilterByEmployeePositionsReducer } from './slices/articleFilterByEmployeePositions.slice';
+import { articleSearchReducer } from './slices/articleSearch.slice';
+
+// загруза доков на сервер
+import { uploadArticleFileReducer } from './slices/uploadArticleFile.slice';
+
 export const store = configureStore({
   reducer: {
     employeeHistory: employeeHistoryReducer,
@@ -30,5 +46,17 @@ export const store = configureStore({
     search: searchReducer,
     testingFilter: testingFilterReducer,
     workCalendar: workCalendarReducer,
+    article: articleReducer,
+    mark: markReducer,
+    section: sectionReducer,
+    sectionGroup: sectionGroupReducer,
+    employeePosition: employeePositionReducer,
+    articleMark: articleMarkReducer,
+    articlePost: articlePostReducer,
+    uploadArticleFile: uploadArticleFileReducer,
+    articleFile: articleFileReducer,
+    articleFilterByMarks: articleFilterByMarksReducer,
+    articleFilterByEmployeePositions: articleFilterByEmployeePositionsReducer,
+    articleSearch: articleSearchReducer,
   },
 });
