@@ -48,7 +48,6 @@ const Info = () => {
       });
 
       let findDate = getNextDate(allDates, new Date());
-      console.log(findDate);
       let findEvent = findSameDate(calendarData, findDate);
       dispatch(setNextEventCalendar(findEvent));
     }
@@ -106,7 +105,6 @@ const Info = () => {
   const onClickUpload = () => {
     hiddenFileInput.current.click();
   };
-  console.log(pathname);
   return (
     employee && (
       <div class="info">

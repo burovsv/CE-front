@@ -43,12 +43,10 @@ const AdminReportsPage = () => {
         subdivView.push({ value: subdiv?.id, label: subdiv?.name });
       });
       setViewSubdivisions(subdivView);
-      console.log(subdivView);
     }
   }, [subdivisions, subdivisionsLoading]);
 
   useEffect(() => {
-    console.log(paramsData?.page);
     if (paramsData?.page == 1) {
       setViewData(employees);
     } else {

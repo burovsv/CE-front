@@ -61,7 +61,6 @@ const WorkCalendar = () => {
         className={clsx('work-calendar', workCalendarMonthLoading && 'work-calendar-loading')}
         activeStartDate={moment(activeMonthYear).toDate()}
         onActiveStartDateChange={(monthYear) => {
-          console.log(monthYear);
           dispatch(setActiveMonthYear(moment(monthYear.activeStartDate).toString()));
         }}
         tileContent={({ date }) => {

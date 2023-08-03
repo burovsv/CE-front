@@ -12,7 +12,6 @@ export const getAdminNewsSingle = createAsyncThunk('news/getAdminNewsSingle', as
       return fulfillWithValue(res.data);
     })
     .catch((res) => {
-      console.log(res);
       return rejectWithValue(res.response.data);
     });
 });

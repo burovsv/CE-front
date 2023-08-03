@@ -9,11 +9,10 @@ export const getEmployeePositions = createAsyncThunk('employeePositions/list', a
   return await axios
     .get(`${process.env.REACT_APP_SERVER_API}/employeePositions/list`, {})
     .then((res) => {
-        console.log('data', res.data);
       return fulfillWithValue(res.data);
     })
     .catch((res) => {
-        console.log('error', res.response.data);
+      console.log('error', res.response.data);
       return rejectWithValue(res.response.data);
     });
 });

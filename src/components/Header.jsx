@@ -35,7 +35,6 @@ const Header = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      console.log('search CALL');
       if (searchText !== undefined) {
         navigate(`/search?term=${searchText}`);
       }

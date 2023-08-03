@@ -145,7 +145,6 @@ const ModalNews = () => {
   };
 
   const onSubmit = (data) => {
-    console.log(data);
     const formData = new FormData();
     const formatData = covertNewsToFormData(data);
     Object.keys(formatData).map(function (key, index) {

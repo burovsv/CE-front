@@ -556,7 +556,7 @@ const ModalArticle = () => {
         // определяем формат
         const format = ext(file.name);
         let el = {}
-        if (format == 'docx') {
+        if (format === 'docx') {
             let content = (additionDocDesc) ? additionDocDesc : file;
             let fileContent = new File([content], "text.txt", { type: "text/plain" })
             el = {
@@ -564,14 +564,14 @@ const ModalArticle = () => {
                 content: fileContent,
                 type: 'docx',
             }
-        } else if (format == 'pdf') {
+        } else if (format === 'pdf') {
             el = {
                 name: textFileName,
                 content: file,
                 type: 'pdf',
             }
         } else {
-            console.log('не поддерживаемый формат');
+            // console.log('не поддерживаемый формат');
         }
 
         setTextFileName('');

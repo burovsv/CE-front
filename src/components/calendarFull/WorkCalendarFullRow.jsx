@@ -85,7 +85,6 @@ const WorkCalendarFullRow = ({ setIsEdited, item, control, index }) => {
               }
             }}
             onClickMenu={(type) => {
-              console.log(isAccessEditCalendar());
               if (isAccessEditCalendar()) {
                 let updateCell = { type };
                 if (type) {

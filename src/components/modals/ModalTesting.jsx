@@ -117,7 +117,6 @@ const ModalTesting = () => {
         });
       });
       setViewCats(viewCatsArr);
-      console.log(updateCatsVal);
       setValue('catIds', updateCatsVal);
     } else {
       setViewCats([]);
@@ -208,7 +207,7 @@ const ModalTesting = () => {
 
   return (
     <>
-      <Modal title="Добавление тестирование" onSave={handleSubmit(onSubmit)} onClose={() => {}}>
+      <Modal title="Добавление тестирование" onSave={handleSubmit(onSubmit)} onClose={() => { }}>
         <div style={{ minHeight: '400px', position: 'relative' }}>
           {!testingSingleLoading ? (
             <div>

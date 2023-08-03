@@ -50,7 +50,6 @@ function App() {
       return response;
     },
     (error) => {
-      console.log();
       if (error?.request?.responseURL?.substring(error?.request?.responseURL?.length - 9) !== '/api/auth' && error?.response?.data?.error === 'PROBLEM_WITH_TOKEN') {
         window.location.href = '/auth';
       }
@@ -71,7 +70,6 @@ function App() {
     dispatch(authEmployee());
   }, []);
   useEffect(() => {
-    console.log('AUTH NULL');
     if (auth === null) {
       dispatch(resetLoginEmployee());
       navigate('/auth');
