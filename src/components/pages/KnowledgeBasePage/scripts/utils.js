@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-function createHierarchicalList(sectionGroupsArray, sectionsArray, articlesArray) {
+export function createHierarchicalList(sectionGroupsArray, sectionsArray, articlesArray) {
     //   создать массив иерархических групп разделов
     let hierarchicalList = [];
 
@@ -27,4 +27,32 @@ function createHierarchicalList(sectionGroupsArray, sectionsArray, articlesArray
     return hierarchicalList;
 }
 
-export default createHierarchicalList;
+export const collapseHierarchicalGroup = (group, initHierarchicalList) => {
+    const hierarchicalList = _.cloneDeep(initHierarchicalList);
+    const foundGroup = _.find(hierarchicalList, { id: group.id, level: group.level });
+    const isCollapsed = !foundGroup?.isCollapsed
+    foundGroup.isCollapsed = isCollapsed;
+    foundGroup.isHide = false;
+
+    if (foundGroup?.children) {
+        _.forEach(foundGroup.children, (child) => {
+            child.isHide = isCollapsed;
+            child.isCollapsed = isCollapsed;
+        });
+    }
+
+    return hierarchicalList;
+}
+
+export const initHierarchicalItem = (el, level, parent = null, isGroup = false, isCollapsed = false) => {
+    return {
+        id: el.id,
+        name: el.name,
+        parent: parent,
+        isGroup: isGroup,
+        isCollapsed: isCollapsed,
+        level: level,
+        children: (el?.children) ? el.children : null,
+        data: el
+    }
+}

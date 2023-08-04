@@ -13,12 +13,9 @@ import { resetGetMarks } from '../../../redux/slices/mark.slice';
 import { resetGetSectionGroups } from '../../../redux/slices/sectionGroup.slice';
 import { resetGetSections } from '../../../redux/slices/section.slice';
 
-import createHierarchicalList from "./scripts/createHierarchicalList"
+import { createHierarchicalList, collapseHierarchicalGroup, initHierarchicalItem } from "./scripts/utils"
 
-import { Link } from 'react-router-dom';
-import { log } from 'util';
-
-
+import { SectionGroupElement, SectionElement, ArticleElement } from './components';
 
 const KnowledgeBasePage = () => {
 
@@ -29,102 +26,20 @@ const KnowledgeBasePage = () => {
 
     const [initHierarchicalList, setInitHierarchicalList] = useState([]);
 
-    const onSectionGroupClick = (e, group) => {
-        let hierarchicalList = _.cloneDeep(initHierarchicalList);
-        let foundGroup = _.find(hierarchicalList, { id: group.id, level: group.level });
-        let isCollapsed = !foundGroup?.isCollapsed
-        foundGroup.isCollapsed = isCollapsed;
-        foundGroup.isHide = false;
-
-        if (foundGroup?.children) {
-            _.forEach(foundGroup.children, (child) => {
-                child.isHide = isCollapsed;
-                child.isCollapsed = isCollapsed;
-            });
-        }
-
+    const onSectionGroupClick = useCallback((group) => {
+        const hierarchicalList = collapseHierarchicalGroup(group, initHierarchicalList)
         setInitHierarchicalList(hierarchicalList);
-    }
-
-    const sectionGroupElement = (sectionGroup) => {
-        const element = (
-            <div onClick={(e) => onSectionGroupClick(e, sectionGroup)} className="knowledge-base__section-group-container">
-                {sectionGroup?.name}
-            </div>
-        );
-        return element;
-    };
-
-    const sectionElement = (section) => {
-        let result = (section?.children) ? section.children.length : 0;
-        const element = (
-            <div className="knowledge-page__section-container" onClick={(e) => onSectionGroupClick(e, section)} >
-                <div className="knowledge-page__section-name">
-                    {section?.name}
-                </div>
-                <div className="knowledge-page__section-result" >
-                    Результаты: {result}
-                </div>
-            </div>
-        );
-        return element;
-    };
-
-    const articleElement = (article) => {
-        const articlesMarks = article?.data?.marks ?? [];
-
-        const element = (
-            <div className="knowledge-page__article_container">
-                <div className="knowledge-page__article_name" >
-                    <Link className="knowledge-page__article_link" to={`/knowledgeBase/${article?.id}`} >
-                        {article?.name ?? ''}
-                    </Link>
-                    <div className="knowledge-page__article_date">
-                        26.12.2022
-                    </div>
-                </div>
-                <div className="knowledge-page__article_mark-container">
-                    <div> Метки: </div>
-                    <div className="knowledge-page__article_mark">
-                        {articlesMarks.map((mark, index) => {
-                            return (
-                                <span>
-                                    {mark?.name}{(index === articlesMarks.length - 1) ? '' : ', '}
-                                </span>
-                            )
-                        })}
-                    </div>
-                </div>
-            </div>
-        );
-        return element;
-    };
-
-    const initHierarchicalItem = (el, level, parent = null, isGroup = false, isCollapsed = false) => {
-        return {
-            id: el.id,
-            name: el.name,
-            parent: parent,
-            isGroup: isGroup,
-            isCollapsed: isCollapsed,
-            level: level,
-            children: (el?.children) ? el.children : null,
-            data: el
-        }
-    }
+    }, [initHierarchicalList])
 
     const {
         getArticlesUser: { data: articlesUser, loading: loadingArticlesUser, error: errorArticlesUser }
     } = useSelector((state) => state.article);
-
     const {
         getMarks: { data: marks, loading: loadingMarks, error: errorMarks, count: marksCount }
     } = useSelector((state) => state.mark);
-
     const {
         getSections: { data: sections, loading: loadingSection, error: errorSection, count: sectionCount }
     } = useSelector((state) => state.section);
-
     const {
         getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
     } = useSelector((state) => state.sectionGroup);
@@ -132,11 +47,9 @@ const KnowledgeBasePage = () => {
     const getFilterMarks = useSelector((state) => state.articleFilterByMarks)
     const getFilterEmployeePositions = useSelector((state) => state.articleFilterByEmployeePositions)
     const getArticleSearch = useSelector((state) => state.articleSearch)
-
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // инициализируем данные из бд
         dispatch(getArticlesUser());
         dispatch(getMarks());
         dispatch(getSections());
@@ -156,30 +69,27 @@ const KnowledgeBasePage = () => {
             return;
         }
 
-        let articlesArray = (!_.isEmpty(articlesList)) ? articlesList : [];
-        let sectionsArray = (!_.isEmpty(sectionsList)) ? sectionsList : [];
-        let sectionGroupsArray = (!_.isEmpty(sectionGroupsList)) ? sectionGroupsList : [];
+        const articlesArray = (!_.isEmpty(articlesList)) ? articlesList : articlesUser.map((el) => initHierarchicalItem(el, 2, el.sectionId));
+        const sectionsArray = (!_.isEmpty(sectionsList)) ? sectionsList : sections.map((el) => initHierarchicalItem(el, 1, el.sectionGroupId, true));
+        const sectionGroupsArray = (!_.isEmpty(sectionGroupsList)) ? sectionGroupsList : sectionGroups.map((el) => initHierarchicalItem(el, 0, null, true));
 
         if (_.isEmpty(articlesList)) {
-            articlesArray = articlesUser.map((el) => initHierarchicalItem(el, 2, el.sectionId))
             setArticlesList(articlesArray);
         }
         if (_.isEmpty(sectionsList)) {
-            sectionsArray = sections.map((el) => initHierarchicalItem(el, 1, el.sectionGroupId, true))
             setSectionsList(sectionsArray);
         }
         if (_.isEmpty(sectionGroupsList)) {
-            sectionGroupsArray = sectionGroups.map((el) => initHierarchicalItem(el, 0, null, true))
             setSectionGroupsList(sectionGroupsArray);
         }
 
-        let hierarchicalList = createHierarchicalList(sectionGroupsArray, sectionsArray, articlesArray);
+        const hierarchicalList = createHierarchicalList(sectionGroupsArray, sectionsArray, articlesArray);
         setInitHierarchicalList(hierarchicalList);
     }, [articlesUser, sections, sectionGroups, marks])
 
     useEffect(() => {
-        let marksForFilter = getFilterMarks.value.map(el => ({ id: el }));
-        let employeePositionsForFilter = getFilterEmployeePositions.value.map(el => ({ id: el }));
+        const marksForFilter = getFilterMarks.value.map(el => ({ id: el }));
+        const employeePositionsForFilter = getFilterEmployeePositions.value.map(el => ({ id: el }));
 
         let filteringArticlesArray = _.cloneDeep(articlesList);
 
@@ -196,32 +106,30 @@ const KnowledgeBasePage = () => {
         }
 
         if (!_.isEmpty(getArticleSearch)) {
-            let text = getArticleSearch.value.toUpperCase();
+            const text = getArticleSearch.value.toUpperCase();
             filteringArticlesArray = _.filter(filteringArticlesArray, el => el.name.toUpperCase().includes(text));
         }
 
-        let hierarchicalList = createHierarchicalList(sectionGroupsList, sectionsList, filteringArticlesArray);
+        const hierarchicalList = createHierarchicalList(sectionGroupsList, sectionsList, filteringArticlesArray);
         setInitHierarchicalList(hierarchicalList);
-
     }, [getFilterMarks, getFilterEmployeePositions, getArticleSearch])
 
     const createHierarchicalElementList = useCallback(() => {
-        let newHierarchicalList = [];
-        newHierarchicalList = initHierarchicalList.map((el) => {
+        const newHierarchicalList = initHierarchicalList.map((el) => {
             if (el?.isCollapsed && el?.isHide) return null;
             switch (el.level) {
                 case 0:
-                    return sectionGroupElement(el);
+                    return <SectionGroupElement sectionGroup={el} onSectionGroupClickHandler={onSectionGroupClick} />
                 case 1:
-                    return sectionElement(el);
+                    return <SectionElement section={el} onSectionGroupClickHandler={onSectionGroupClick} />
                 case 2:
-                    return articleElement(el);
+                    return <ArticleElement article={el} />;
                 default:
                     return null;
             }
         });
         return newHierarchicalList;
-    }, [initHierarchicalList])
+    }, [initHierarchicalList, onSectionGroupClick])
 
     useEffect(() => {
         setSectionGroupsElement(createHierarchicalElementList());

@@ -38,6 +38,8 @@ import { createArticle } from '../../../redux/actions/knowledgeBase/createArticl
 import { resetCreateArticle } from '../../../redux/slices/article.slice';
 import { resetGetOneArticle } from '../../../redux/slices/article.slice';
 import { updateArticle } from '../../../redux/actions/knowledgeBase/updateArticle.action';
+import { getArticles } from '../../../redux/actions/knowledgeBase/getArticles.action';
+import { resetGetArticles } from '../../../redux/slices/article.slice';
 
 import ReactQuill, { Quill } from 'react-quill';
 import * as mammoth from 'mammoth/mammoth.browser.js';
@@ -303,7 +305,7 @@ const ModalArticle = () => {
     }
 
     const onSectionChange = (e) => {
-        let section = sections.find((item) => item.id == e.target.value)
+        let section = sections.find((item) => item.id === e.target.value)
         setArticleSection(e.target.value);
     }
 

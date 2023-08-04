@@ -14,29 +14,15 @@ import { resetGetSectionGroups } from '../../../redux/slices/sectionGroup.slice'
 import { resetGetArticles } from '../../../redux/slices/article.slice';
 
 import ModalArticle from '../../modals/ModalArticle/ModalArticle';
-import ModalTesting from '../../modals/ModalTesting';
-
-
-
-import moment from 'moment';
-import { resetCreateTesting, resetGetAdminTesting, resetUpdateTesting } from '../../../redux/slices/testing.slice';
-import Loading from '../../Loading';
-import { getAdminTestingSingle } from '../../../redux/actions/testing/getAdminTestingSingle.action';
-import { deleteTesting } from '../../../redux/actions/testing/deleteTesting.action';
 
 const AdminKnowledgeBasePage = () => {
-  const [paramsData, setParamsData] = useState({ page: 1, search: '' });
   const [viewData, setViewData] = useState([]);
   const { activeModal } = useSelector((state) => state.app);
-
-
   const dispatch = useDispatch();
-  // получаем статьи, группы, разделы
+
   const {
     getArticles: { data: articles, loading: loadingArticles, success: successArticle, error, count: articlesCount },
-    // updateArticle: { data: updateArticleData, loading: updateArticleLoading },
     getOneArticle: { data: oneArticleData, loading: oneArticleDataLoading },
-    // deleteArticle: { data: deleteArticleData, loading: deleteArticleLoading },
   } = useSelector((state) => state.article)
   const {
     getSections: { data: sections, loading: loadingSection, success: successSection, error: errorSection, count: sectionCount }
@@ -45,7 +31,6 @@ const AdminKnowledgeBasePage = () => {
   const {
     getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, success: successSectionGroup, error: errorSectionGroup, count: sectionGroupCount },
   } = useSelector((state) => state.sectionGroup);
-
 
   // Инициализируем 
   useEffect(() => {
