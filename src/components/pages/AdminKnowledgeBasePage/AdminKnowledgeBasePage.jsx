@@ -33,7 +33,6 @@ const AdminKnowledgeBasePage = () => {
   } = useSelector((state) => state.sectionGroup);
 
   useEffect(() => {
-    console.log("aaa", { activeModal, oneArticleDataLoading });
     dispatch(getArticles());
     dispatch(getSectionGroups());
     dispatch(getSections());
@@ -65,50 +64,33 @@ const AdminKnowledgeBasePage = () => {
   const header = [
     {
       title: 'Дата',
-      prop: 'date',
-      // onChange: (val) => {
-      //   // return moment(val).format('DD.MM.YYYY');
-      // },
+      prop: 'date'
     },
     {
       title: 'Статья',
-      prop: 'name',
-      // onChange: (val) => {
-      //   // return moment(val).format('DD.MM.YYYY');
-      // },
+      prop: 'name'
     },
     { title: 'Раздел', prop: 'sectionName' },
 
     {
       title: 'Группа',
       prop: 'sectionGroupName'
-      // onChange: (val) => {
-      //   // return val?.categories?.map((cat) => <div>{cat?.name}</div>);
-      // },
     },
   ];
 
   let element = (
     <div>
       <Table
-        // pages={testingCount}
-        // loading={loading}
         header={header}
         data={viewData}
-        // onMore={() => setParamsData({ page: paramsData?.page + 1, search: paramsData?.search })}
         onAdd={() => dispatch(setActiveModal('modal-knowledgeBase'))}
         addBtnText="Добавить"
-        // subText={testingSuccess && 'Новость добавлена'}
-        // onSearch={(term) => setParamsData({ page: 1, search: term })}
         onEdit={(val) => {
           dispatch(setActiveModal('modal-knowledgeBase'));
           dispatch(getOneArticle({ id: val?.id }));
         }}
-      // onDelete={(val) => dispatch(deleteTesting({ testingId: val?.id }))}
-      // onDelete={(val) => console.log('удалаяем статью', val)}
       />
       {activeModal === 'modal-knowledgeBase' && <ModalArticle />}
-      {/* {(createTestingLoading || deleteTestingLoading || updateTestingLoading) && <Loading overlay />} */}
     </div>
   );
   return element;

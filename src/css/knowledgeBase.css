@@ -16,6 +16,7 @@
   font-size: 12px;
   margin-top: 20px;
   display: flex;
+  gap: 8px;
 }
 
 .knowledge-page__article_container {
@@ -51,6 +52,7 @@
   background-color: #E7E7E7;
   padding: 10px 40px;
   display: flex;
+  gap: 8px;
 }
 
 .knowledge-page__section-name {
@@ -62,5 +64,4 @@
   font-weight: 400;
   color: #00000080;
   font-size: 12px;
-  padding-left: 10px;
 }
