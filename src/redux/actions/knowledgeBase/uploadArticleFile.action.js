@@ -5,19 +5,20 @@ export const initStateUploadArticleFile = {
     uploadArticleFile: { data: null, loading: false, error: null },
 };
 
-export const uploadArticleFile = createAsyncThunk('/article/file/upload', async ({file, isMain, articleId, type}, { rejectWithValue, fulfillWithValue }) => {
+export const uploadArticleFile = createAsyncThunk('/article/file/upload', async ({ file, isMain, articleId, type, name }, { rejectWithValue, fulfillWithValue }) => {
 
     let formData = new FormData();
     formData.append('file', file);
     formData.append('isMain', isMain);
     formData.append('articleId', articleId);
     formData.append('type', type);
+    formData.append('name', name);
 
     return await axios
         .post(`${process.env.REACT_APP_SERVER_API}/article/file/upload`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
-              }
+            }
         })
         .then((res) => {
             return fulfillWithValue(res.data);

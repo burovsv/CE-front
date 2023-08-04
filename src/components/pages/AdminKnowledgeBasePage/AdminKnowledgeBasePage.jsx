@@ -32,8 +32,8 @@ const AdminKnowledgeBasePage = () => {
     getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, success: successSectionGroup, error: errorSectionGroup, count: sectionGroupCount },
   } = useSelector((state) => state.sectionGroup);
 
-  // Инициализируем 
   useEffect(() => {
+    console.log("aaa", { activeModal, oneArticleDataLoading });
     dispatch(getArticles());
     dispatch(getSectionGroups());
     dispatch(getSections());
@@ -43,7 +43,7 @@ const AdminKnowledgeBasePage = () => {
       dispatch(resetGetSectionGroups());
       dispatch(resetGetSections());
     }
-  }, [activeModal])
+  }, [activeModal, oneArticleDataLoading, ModalArticle])
 
   useEffect(() => {
     if (articles && sections && sectionGroups && !activeModal) {

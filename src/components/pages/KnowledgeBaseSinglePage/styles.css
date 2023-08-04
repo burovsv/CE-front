@@ -1,0 +1,35 @@
+.knowledge-base-single-page__root {
+    color: #1e2d2d;
+    background-color: #ffffff;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+.knowledge-base-single-page__to-back {
+    margin-bottom: 20px;
+}
+
+.knowledge-base-single-page__to-back a {
+    margin-left: 5px;
+    color: #000000;
+}
+
+.knowledge-base-single-page__description-container {
+    margin-left: 20px;
+    color: #909090;
+}
+
+.knowledge-base-single-page__description-container div {
+    margin-top: 10px;
+}
+
+.knowledge-base-single-page__main-content {
+    width: 100%;
+    margin-top: 20px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.knowledge-base-single-page__main-content img {
+    max-width: 95%;
+}

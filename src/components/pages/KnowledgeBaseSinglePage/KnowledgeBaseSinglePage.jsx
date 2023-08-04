@@ -2,33 +2,24 @@ import React from "react";
 import * as _ from "lodash";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useLocation, useParams } from 'react-router';
-// import { addYouTubeIframe } from '../../utils/addYouTubeIframe';
+import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-
 import { Collapse } from "antd";
-import PDFViewer from 'pdf-viewer-reactjs'
-import ReactPlayer from 'react-player'
+import Axios from "axios";
 
 import { getArticlesUser } from '../../../redux/actions/knowledgeBase/getArticlesUser.action';
-import { getMarks } from '../../../redux/actions/knowledgeBase/getMarks.action';
-import { getSections } from '../../../redux/actions/knowledgeBase/getSections.action';
 import { getSectionGroups } from '../../../redux/actions/knowledgeBase/getSectionGroups.action';
-
 import { resetGetArticlesUser } from "../../../redux/slices/article.slice";
-import { resetGetMarks } from "../../../redux/slices/mark.slice";
-import { resetGetSections } from "../../../redux/slices/section.slice";
 import { resetGetSectionGroups } from "../../../redux/slices/sectionGroup.slice";
 
-import Axios from "axios";
+import { VideoPlayer, TextCollapseElement } from "./components";
+import "./styles.css"
 
 const { Panel } = Collapse;
 
 const KnowledgeBaseSinglePage = () => {
     const [name, setName] = useState('');
-    const [date, setDate] = useState('');
-    const [description, setDescription] = useState('');
     const [section, setSection] = useState('');
     const [sectionGroup, setSectionGroup] = useState('');
     const [articleMarks, setArticleMarks] = useState([]);
@@ -36,22 +27,11 @@ const KnowledgeBaseSinglePage = () => {
     const [textFilesList, setTextFilesList] = useState([]);
     const [videoFilesList, setVideoFilesList] = useState([]);
 
-    const [textFilesElement, setTextFilesElement] = useState('');
-
     const { knowledgeBaseId } = useParams();
 
     const {
         getArticlesUser: { data: articles, loading: loadingArticlesUser, error: errorArticlesUser }
     } = useSelector((state) => state.article);
-
-    const {
-        getMarks: { data: marks, loading: loadingMarks, error: errorMarks, count: marksCount }
-    } = useSelector((state) => state.mark);
-
-    const {
-        getSections: { data: sections, loading: loadingSection, error: errorSection, count: sectionCount }
-    } = useSelector((state) => state.section);
-
     const {
         getSectionGroups: { data: sectionGroups, loading: loadingSectionGroup, error: errorSectionGroup, count: sectionGroupCount }
     } = useSelector((state) => state.sectionGroup);
@@ -59,64 +39,42 @@ const KnowledgeBaseSinglePage = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // инициализируем данные из бд
         dispatch(getArticlesUser());
-        dispatch(getMarks());
-        dispatch(getSections());
         dispatch(getSectionGroups());
         return () => {
             dispatch(resetGetArticlesUser());
-            dispatch(resetGetMarks());
-            dispatch(resetGetSections());
             dispatch(resetGetSectionGroups());
         }
     }, []);
 
-
     useEffect(() => {
         if (!articles) return
 
-        let article = articles.find(el => el.id == knowledgeBaseId);
-        let sectionGroupId = article?.section?.sectionGroupId;
+        const article = articles.find(el => el.id == knowledgeBaseId);
+        const sectionGroupId = article?.section?.sectionGroupId;
+        const sectionGroup = sectionGroups?.find(group => group.id === sectionGroupId);
+        const articleMarks = article?.marks ?? [];
+        const articleFiles = article?.articleFiles ?? [];
+        const mainContentUrl = _.find(articleFiles, { 'isMain': true })?.url ?? '';
+        const url = `${process.env.REACT_APP_SERVER_API}${mainContentUrl}`;
 
-        let sectionGroup = sectionGroups?.find(group => group.id == sectionGroupId);
-        let articleMarks = article?.marks ?? [];
-
-        let articleFiles = article?.articleFiles ?? [];
-
-        let mainContentUrl = _.find(articleFiles, { 'isMain': true })?.url ?? '';
-        let additionalTextFiles = _.filter(articleFiles, function (el) {
-            return el.isMain == false && el.type != 'video'
+        const additionalTextFiles = _.filter(articleFiles, function (el) {
+            return el.isMain === false && el.type !== 'video'
         }) ?? [];
-        let additionalVideoFiles = _.filter(articleFiles, { 'isMain': false, 'type': 'video' }) ?? [];
 
+        const additionalVideoFiles = _.filter(articleFiles, { 'isMain': false, 'type': 'video' }) ?? [];
         setVideoFilesList(additionalVideoFiles)
 
-        let url = `${process.env.REACT_APP_SERVER_API}${mainContentUrl}`;
-
-        // let reader = new FileReader();
-        // reader.readAsDataURL(mainContentUrl);
-        // reader.onload = function () {
-        //     console.log(reader);
-        //     setMainContent(reader.result);
-        // };
-
-        // получить файл по url
-
         Axios(url).then(res => {
-            // setText(res.data)
             setMainContent(res.data);
         });
-
         setTextFilesList([]);
 
         additionalTextFiles.forEach((data, key) => {
             let url = `${process.env.REACT_APP_SERVER_API}${data.url}`;
-            // if (data.type == 'pdf') return
 
             Axios(url).then(res => {
-                // setText(res.data)
-                let file = {
+                const file = {
                     name: data.name,
                     content: res.data,
                     type: data.type,
@@ -135,99 +93,45 @@ const KnowledgeBaseSinglePage = () => {
 
         });
 
-
-        setName(article.name);
-        setDate(article.date);
-        setDescription(article.content);
-        setSection(article?.section?.name);
-        setSectionGroup(sectionGroup.name);
-        setArticleMarks(articleMarks);
-
-        // должны обнулить значение article
+        setName(article?.name ?? "");
+        setSection(article?.section?.name ?? "");
+        setSectionGroup(sectionGroup?.name ?? "");
+        setArticleMarks(articleMarks ?? []);
     }, [articles]);
 
-    const element = (
-        <div
-            style={{
-                color: '#1e2d2d',
-                height: '100%',
-                backgroundColor: 'white',
-                marginTop: '20px',
-                padding: '20px',
-            }}
-        >
-            <div style={{ marginBottom: '20px' }}>
+    return (
+        <div className="knowledge-base-single-page__root">
+            <div className="knowledge-base-single-page__to-back">
                 <ArrowLeftOutlined />
-                <Link to={`/knowledgeBase`} style={{ marginLeft: '5px', color: 'black' }}>Назад</Link>
+                <Link to={`/knowledgeBase`}>Назад</Link>
             </div>
             <h2>Статья: {name}</h2>
-            <div style={{ marginLeft: '20px', color: '#909090' }}>
-                <div style={{ marginTop: '10px' }}>Группа: {sectionGroup}</div>
-                <div style={{ marginTop: '10px' }}>Раздел: {section}</div>
-                <div style={{ marginTop: '10px' }}>Метки: {articleMarks.map((mark, index) => {                // песли последний элемент запяту не ставим
-                    if (index === articleMarks.length - 1) {
-                        return <span id={index}>{mark.name}</span>
-                    } else {
-                        return <span id={index}>{mark.name}, </span>
-                    }
-                })}
+            <div className="knowledge-base-single-page__description-container">
+                <div>Группа: {sectionGroup}</div>
+                <div>Раздел: {section}</div>
+                <div>
+                    Метки: {articleMarks.map((mark, index) => <span id={index}>{mark.name}{index < articleMarks.length - 1 ? "," : "."} </span>)}
                 </div>
             </div>
-            <div style={{
-                marginTop: '20px',
-                lineHeight: '1.6',
-                // fontSize: '1.2rem',
-                textAlign: 'justify',
-
-            }}>
-                <div className="knowledge-base-single-page__main-content">
-
-                    <Collapse>
-                        <Panel header="Основная статья" key="1">
-                            {mainContent ? (<div dangerouslySetInnerHTML={{ __html: mainContent }} />) : ("")}
+            <div className="knowledge-base-single-page__main-content">
+                <Collapse>
+                    <Panel header="Основная статья" key="1">
+                        {mainContent ? <div dangerouslySetInnerHTML={{ __html: mainContent }} /> : ""}
+                    </Panel>
+                    {(!_.isEmpty(textFilesList))
+                        ? < Panel header="Дополнительные текстовые материалы" key="2">
+                            {textFilesList.map((file, index) => <TextCollapseElement file={file} index={index} />)}
                         </Panel>
-                        {(!_.isEmpty(textFilesList))
-                            ? < Panel header="Дополнительные текстовые материалы" key="2">
-                                <Collapse ghost>
-                                    {textFilesList.map((file, index) => {
-                                        return (
-                                            <Panel header={file.name} key={`2_${index}`}>
-                                                {
-                                                    (file.type === 'pdf')
-                                                        ? (<PDFViewer document={{
-                                                            url: file.url,
-                                                        }} />)
-                                                        : (<div dangerouslySetInnerHTML={{ __html: file.content }} />)
-                                                }
-
-                                            </Panel>
-                                        )
-                                    })}
-                                </Collapse>
-                            </Panel>
-                            : null}
-                        {(!_.isEmpty(videoFilesList))
-                            ? <Panel header="Дополнительные видео материалы" key="3">
-                                <Collapse ghost>
-                                    {videoFilesList.map((file, index) => {
-                                        return (
-                                            <Panel header={file.name} key={`2_${index}`}>
-                                                <p>{file?.description}</p>
-                                                <ReactPlayer url={file.url} />
-                                            </Panel>
-                                        )
-                                    })}
-                                </Collapse>
-                            </Panel>
-                            : null}
-                    </Collapse>
-                </div>
+                        : null}
+                    {(!_.isEmpty(videoFilesList))
+                        ? <Panel header="Дополнительные видео материалы" key="3">
+                            {videoFilesList.map((file, index) => <VideoPlayer file={file} index={index} />)}
+                        </Panel>
+                        : null}
+                </Collapse>
             </div>
-        </div >
+        </div>
     )
-
-
-    return element;
 }
 
 export default KnowledgeBaseSinglePage;
