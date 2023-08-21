@@ -180,7 +180,7 @@ const PlanTab = ({ list }) => {
                       {itemCompt?.use_personal_plan && <th width="100px">Факт</th>}
                       {itemCompt?.use_plan && <th width="100px">План</th>}
 
-                      {itemCompt?.type_result != undefined && <th width="100px">{itemCompt?.type_result ? 'Количество' : 'Сумма'}</th>}
+                      {<th width="100px">{itemCompt?.use_quantity ? 'Количество' : 'Факт'}</th>}
 
                       {itemCompt?.use_plan && <th width="100px">Процент выполнение</th>}
                       <th width="100%">Место</th>
@@ -200,7 +200,7 @@ const PlanTab = ({ list }) => {
                             {itemCompt?.use_personal_plan && <td>{currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
                             {itemCompt?.use_plan && <td>{currencyFormat(massItem?.plan_city) ? currencyFormat(Math.ceil(massItem?.plan_city)) : '-'}</td>}
 
-                            {itemCompt?.type_result != undefined && <td>{itemCompt?.type_result ? Math.ceil(massItem?.trade_city_quantity) : currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
+                            {<td>{itemCompt?.use_quantity ? Math.ceil(massItem?.trade_city_quantity) : currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
 
                             {itemCompt?.use_plan && <td>{Math.ceil(massItem?.trade_city_percent) + '%'}</td>}
 
@@ -225,8 +225,24 @@ const PlanTab = ({ list }) => {
         ) : dataEmployeeCompetitions?.length >= 1 ? (
           dataEmployeeCompetitions?.map((itemEmpoyeComp) => {
             if (activeCompetition === itemEmpoyeComp?.id_competition) {
+              let employeeListResult = [];
               const isUserPlan = itemEmpoyeComp?.mass_id?.filter((filterItem) => !filterItem?.name?.includes('undefined') && filterItem?.id_city === activeSubdiv && filterItem?.user_plan)?.length;
               const isTradeUserPlan = itemEmpoyeComp?.mass_id?.filter((filterItem) => !filterItem?.name?.includes('undefined') && filterItem?.id_city === activeSubdiv && filterItem?.trade_user_plan)?.length;
+              if (!itemEmpoyeComp?.group_competition) {
+                employeeListResult = [...itemEmpoyeComp?.mass_id]?.sort((a, b) => a.place - b.place);
+              } else {
+                if (itemEmpoyeComp?.use_quantity) {
+                  employeeListResult = [...itemEmpoyeComp?.mass_id]
+                    ?.sort((a, b) => b.trade_sum - a.trade_sum)
+                    .slice(0, 10)
+                    ?.map((empl, emplIndex) => ({ ...empl, place: emplIndex + 1 }));
+                } else {
+                  employeeListResult = [...itemEmpoyeComp?.mass_id]
+                    ?.sort((a, b) => b.trade_quantity - a.trade_quantity)
+                    .slice(0, 10)
+                    ?.map((empl, emplIndex) => ({ ...empl, place: emplIndex + 1 }));
+                }
+              }
               return (
                 <table>
                   <tr class="table-plan-title">
@@ -234,65 +250,65 @@ const PlanTab = ({ list }) => {
                   </tr>
                   <tr class="table-plan-head">
                     <th>Сотрудник</th>
-                    <th>Факт сумма</th>
+
                     {!!isUserPlan && <th>Личный план</th>}
+                    <th>Факт сумма</th>
                     {!!isTradeUserPlan && <th>Процент выполнение</th>}
 
                     <th>Количество</th>
                     <th>Место</th>
                   </tr>
-                  {[...itemEmpoyeComp?.mass_id]
-                    ?.sort((a, b) => a.place - b.place)
-                    ?.map(
-                      (itemEmployMass) =>
-                        !itemEmployMass?.name?.includes('undefined') &&
-                        itemEmployMass?.id_city === activeSubdiv && (
-                          <>
-                            <tr
-                              onClick={() => {
-                                const isShowEmpl = isManager || dataUser?.idService == itemEmployMass.id;
-                                if (isShowEmpl) {
-                                  if (activeEmployee) {
-                                    setActiveEmployee(null);
-                                  } else {
-                                    setActiveEmployee(itemEmployMass?.id);
-                                  }
+                  {employeeListResult?.map(
+                    (itemEmployMass) =>
+                      !itemEmployMass?.name?.includes('undefined') &&
+                      (itemEmployMass?.id_city === activeSubdiv || itemEmpoyeComp?.group_competition) && (
+                        <>
+                          <tr
+                            onClick={() => {
+                              const isShowEmpl = isManager || dataUser?.idService == itemEmployMass.id;
+                              if (isShowEmpl) {
+                                if (activeEmployee) {
+                                  setActiveEmployee(null);
+                                } else {
+                                  setActiveEmployee(itemEmployMass?.id);
                                 }
-                              }}
-                              class={`table-plan-row ${dataUser?.idService == itemEmployMass.id ? 'table-plan-row-current' : ''}`}>
-                              <td>{itemEmployMass?.name}</td>
-                              <td>{currencyFormat(Math.ceil(itemEmployMass?.trade_sum)) || '-'}</td>
-                              {!!isUserPlan && <td>{currencyFormat(Math.ceil(itemEmployMass?.user_plan)) ? currencyFormat(parseInt(itemEmployMass?.user_plan)) : '-'}</td>}
-                              {!!isTradeUserPlan && <td>{currencyFormat(Math.ceil(itemEmployMass?.trade_user_plan)) || '-'}</td>}
+                              }
+                            }}
+                            class={`table-plan-row ${dataUser?.idService == itemEmployMass.id ? 'table-plan-row-current' : ''}`}>
+                            <td>{itemEmployMass?.name}</td>
 
-                              <td>{Math.ceil(itemEmployMass?.trade_quantity)}</td>
-                              <td>{itemEmployMass?.place}</td>
-                            </tr>
-                            {itemEmployMass.id === activeEmployee && (
-                              <>
-                                {loadingCompetitionProducts ? (
-                                  <tr style={{ padding: 0, background: '#F9F9F9' }}>
-                                    <td colSpan={4} className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
-                                      &nbsp;Идет загрузка...
-                                    </td>
+                            {!!isUserPlan && <td>{currencyFormat(Math.ceil(itemEmployMass?.user_plan)) ? currencyFormat(parseInt(itemEmployMass?.user_plan)) : '-'}</td>}
+                            <td>{currencyFormat(Math.ceil(itemEmployMass?.trade_sum)) || '-'}</td>
+                            {!!isTradeUserPlan && <td>{currencyFormat(Math.ceil(itemEmployMass?.trade_user_plan)) || '-'}</td>}
+
+                            <td>{Math.ceil(itemEmployMass?.trade_quantity)}</td>
+                            <td>{itemEmployMass?.place}</td>
+                          </tr>
+                          {itemEmployMass.id === activeEmployee && (
+                            <>
+                              {loadingCompetitionProducts ? (
+                                <tr style={{ padding: 0, background: '#F9F9F9' }}>
+                                  <td colSpan={4} className="loading-account" style={{ color: '#FF0505', padding: '15px 20px' }}>
+                                    &nbsp;Идет загрузка...
+                                  </td>
+                                </tr>
+                              ) : dataCompetitionProducts?.length >= 1 ? (
+                                dataCompetitionProducts?.map((itemProd) => (
+                                  <tr class="table-plan-row" style={{ background: '#f2f2f2' }}>
+                                    <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
+                                    <td>{itemProd?.trade_sum}</td>
+                                    <td>{itemProd?.trade_quantity}</td>
+                                    <td></td>
                                   </tr>
-                                ) : dataCompetitionProducts?.length >= 1 ? (
-                                  dataCompetitionProducts?.map((itemProd) => (
-                                    <tr class="table-plan-row" style={{ background: '#f2f2f2' }}>
-                                      <td style={{ whiteSpace: 'normal' }}>{itemProd?.product}</td>
-                                      <td>{itemProd?.trade_sum}</td>
-                                      <td>{itemProd?.trade_quantity}</td>
-                                      <td></td>
-                                    </tr>
-                                  ))
-                                ) : (
-                                  <div style={{ fontWeight: '600', color: '#FF0505', padding: '15px 20px' }}>Товаров не найдено</div>
-                                )}
-                              </>
-                            )}
-                          </>
-                        ),
-                    )}
+                                ))
+                              ) : (
+                                <div style={{ fontWeight: '600', color: '#FF0505', padding: '15px 20px' }}>Товаров не найдено</div>
+                              )}
+                            </>
+                          )}
+                        </>
+                      ),
+                  )}
                 </table>
               );
             }
