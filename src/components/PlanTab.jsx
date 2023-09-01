@@ -178,7 +178,7 @@ const PlanTab = ({ list }) => {
                     <tr class="table-plan-head">
                       <th width="170px">Подразделение</th>
                       {itemCompt?.use_personal_plan && <th width="100px">Факт</th>}
-                      {itemCompt?.mass_city[0]?.mass_segment && itemCompt?.mass_city[0]?.mass_segment?.map((itemSegm) => <th>{itemSegm?.segment}</th>)}
+                      {itemCompt?.mass_city[0]?.mass_segment[0]?.segment && itemCompt?.mass_city[0]?.mass_segment?.map((itemSegm) => <th>{itemSegm?.segment}</th>)}
                       {itemCompt?.use_plan && <th width="100px">План</th>}
 
                       {<th width="100px">{itemCompt?.use_quantity ? 'Количество' : 'Факт'}</th>}
@@ -186,7 +186,7 @@ const PlanTab = ({ list }) => {
                       {itemCompt?.use_plan && <th width="100px">Прогноз выполнения</th>}
                       <th width="100%">Место</th>
                     </tr>
-                    {itemCompt?.mass_city[0]?.mass_segment && (
+                    {itemCompt?.mass_city[0]?.mass_segment[0]?.segment && (
                       <tr class="table-plan-head">
                         <th width="170px"></th>
                         {itemCompt?.use_personal_plan && <th width="100px"></th>}
@@ -197,6 +197,7 @@ const PlanTab = ({ list }) => {
                               <td>сумма</td>
                             </th>
                           ))}
+                        <th width="150px">Проникновение</th>
                         {itemCompt?.use_plan && <th width="100px"></th>}
 
                         {<th width="100px">{}</th>}
@@ -217,16 +218,21 @@ const PlanTab = ({ list }) => {
                               }
                             }}>
                             <td>{massItem?.name_city || '-'}</td>
-                            {massItem?.mass_segment?.map((itemSegm) => (
-                              <td width="100%" style={{ padding: 0 }}>
-                                <td width="100%">
-                                  <div style={{ textAlign: 'center', paddingRight: '7px' }}>{itemSegm?.segment_quantity}</div>
-                                </td>
-                                <td width="100%">
-                                  <div style={{ textAlign: 'center', paddingRight: '7px' }}>{itemSegm?.segment_sum}</div>
-                                </td>
-                              </td>
-                            ))}
+                            {massItem?.mass_segment[0]?.segment && (
+                              <>
+                                {massItem?.mass_segment?.map((itemSegm) => (
+                                  <td width="100%" style={{ padding: 0 }}>
+                                    <td width="100%">
+                                      <div style={{ textAlign: 'center', paddingRight: '7px' }}>{itemSegm?.segment_quantity}</div>
+                                    </td>
+                                    <td width="100%">
+                                      <div style={{ textAlign: 'center', paddingRight: '7px' }}>{itemSegm?.segment_sum}</div>
+                                    </td>
+                                  </td>
+                                ))}
+                                <td>{massItem?.trade_city_formula}</td>
+                              </>
+                            )}
                             {itemCompt?.use_personal_plan && <td>{currencyFormat(Math.ceil(massItem?.trade_city_sum))}</td>}
                             {itemCompt?.use_plan && <td>{currencyFormat(massItem?.plan_city) ? currencyFormat(Math.ceil(massItem?.plan_city)) : '-'}</td>}
 
