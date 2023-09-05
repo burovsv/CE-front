@@ -8,7 +8,7 @@ const ModalTesting = () => {
   const dispatch = useDispatch();
   return (
     <>
-      <Modal title="Добавление тестирование" onSave={() => {}}>
+      <Modal title="Добавление тестирования" onSave={() => {}}>
         <input type="text" placeholder="Заголовок новости" />
         <div className="date">
           <div className="date__wrap">

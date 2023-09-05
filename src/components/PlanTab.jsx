@@ -218,7 +218,7 @@ const PlanTab = ({ list }) => {
                               }
                             }}>
                             <td>{massItem?.name_city || '-'}</td>
-                            {massItem?.mass_segment[0]?.segment && (
+                            {itemCompt?.mass_city[0]?.mass_segment[0]?.segment && (
                               <>
                                 {massItem?.mass_segment?.map((itemSegm) => (
                                   <td width="100%" style={{ padding: 0 }}>

@@ -222,7 +222,7 @@ const ModalTesting = () => {
 
   return (
     <>
-      <Modal title="Добавление тестирование" onSave={handleSubmit(onSubmit)} onClose={() => {}}>
+      <Modal title="Добавление тестирования" onSave={handleSubmit(onSubmit)} onClose={() => {}}>
         <div style={{ minHeight: '400px', position: 'relative' }}>
           {!testingSingleLoading ? (
             <div>

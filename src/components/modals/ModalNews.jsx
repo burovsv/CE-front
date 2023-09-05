@@ -347,7 +347,7 @@ const ModalNews = () => {
   return (
     <>
       <Modal
-        title="Добавление тестирование"
+        title="Добавление тестирования"
         onSave={handleSubmit(onSubmit)}
         disabled={newsFiltersLoading}
         onClose={() => {
